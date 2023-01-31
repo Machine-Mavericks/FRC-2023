@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,7 +9,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 
-public class Gyro extends SubsystemBase {
+// Subysstem class for NavX2
+// Still experimental - Jan 30/2023
+public class NavX2 extends SubsystemBase {
   
 // subsystem shuffleboard controls
 private GenericEntry m_gyroPitch;
@@ -22,13 +20,13 @@ private GenericEntry m_gyroRoll;
 private GenericEntry m_xAcceleration;
 private GenericEntry m_yAcceleration;
 
-// make our gyro object
+// make our gyro2 object
 private AHRS gyro;
 
-/** Creates a new Gyro. */
-public Gyro() {
+/** Creates a new Gyro2. */
+public NavX2() {
   //gyro = new AHRS(Port.kMXP);
-  gyro = new AHRS(Port.kMXP);
+  gyro = new AHRS(Port.kUSB);
   gyro.reset();
   gyro.calibrate();
   initializeShuffleboard();
@@ -43,7 +41,6 @@ public Gyro() {
   /** Gets the yaw of the robot
    * @return current yaw value (-180 to 180) */
   public double getYaw() {
-    // Flip angle since gyro is mounted upside down
     return gyro.getYaw();  
   }
 
@@ -63,7 +60,7 @@ public Gyro() {
   /** Accumulated yaw
    * @return accumulated angle in degrees */
   public double continuousYaw() {
-    return gyro.getAngle();
+    return -gyro.getAngle();
   }
 
   /** Get Roll
@@ -91,7 +88,7 @@ public Gyro() {
   /** Initialize subsystem shuffleboard page and controls */
   private void initializeShuffleboard() {
     // Create odometry page in shuffleboard
-    ShuffleboardTab Tab = Shuffleboard.getTab("Gyroscope");
+    ShuffleboardTab Tab = Shuffleboard.getTab("NavX2");
 
     // create controls to display robot position, angle, and gyro angle
     ShuffleboardLayout l1 = Tab.getLayout("Gyroscope", BuiltInLayouts.kList);
@@ -116,3 +113,4 @@ public Gyro() {
 
 
 }
+

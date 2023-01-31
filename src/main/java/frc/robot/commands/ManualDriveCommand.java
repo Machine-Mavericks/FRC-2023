@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.OI;
 
+
+// This is the default teleop command - used to drive robot based on joystick inputs
 public class ManualDriveCommand extends CommandBase {
   /** Creates a new ManualDriveCommand. */
   public ManualDriveCommand() {
@@ -21,13 +23,13 @@ public class ManualDriveCommand extends CommandBase {
   @Override
   public void execute() {
     // get joystick drive inputs - use methods in OI module to get inputs
-    double dX = OI.getXDriveInput();
-    double dY = OI.getYDriveInput();
-    double omega = OI.getRotateDriveInput();
+    double dX = OI.getXDriveInput()*1.25;
+    double dY = OI.getYDriveInput()*1.25;
+    double omega = OI.getRotateDriveInput()*1.25;
 
     // command robot to drive
     // swap x, y, omega as necessary to get robot driving with desired axes
-    RobotContainer.swervedrive.drive(dY, dX, -omega, true);
+    RobotContainer.swervedrive.drive(dX, dY, omega, true);
   }
 
   // Called once the command ends or is interrupted.

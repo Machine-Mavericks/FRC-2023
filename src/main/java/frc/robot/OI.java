@@ -51,15 +51,15 @@ public class OI {
     // The sticks/controllers are kept private so that if we want to switch them later, this is the only place needing changes
     // Use buttons and DoubleSuppliers to expose any inputs you want elsewhere
     public static double getXDriveInput(){
-        return OI.driverController.getLeftX()*0.5;
+        return OI.driverController.getLeftX();
     }
 
     public static double getYDriveInput(){
-        return OI.driverController.getLeftY()*0.5;
+        return OI.driverController.getLeftY();
     }
 
     public static double getRotateDriveInput(){
-        return OI.driverController.getRightX()*0.5;
+        return OI.driverController.getRightX();
     }
 
 }

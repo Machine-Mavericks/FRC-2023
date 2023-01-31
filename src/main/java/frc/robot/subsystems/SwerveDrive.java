@@ -24,6 +24,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.Utils;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class SwerveDrive extends SubsystemBase {
@@ -38,7 +39,8 @@ public class SwerveDrive extends SubsystemBase {
   static final double ENC_PULSE_PER_REV = 2048.0;
 
   // wheel diameter (m)
-  static final double WHEEL_DIAMETER_METERS = 0.1016 * 0.96248;
+  // last factor adjustment is for 2023 robot base
+  static final double WHEEL_DIAMETER_METERS = 0.1016 * 0.96248 * 1.0181;
   
   // drive motor unit conversion factors
   static final double ENCODERPULSE_TO_METERS = (1.0 / ENC_PULSE_PER_REV) * (1.0 / DRIVE_RATIO) * WHEEL_DIAMETER_METERS * Math.PI;
@@ -52,8 +54,8 @@ public class SwerveDrive extends SubsystemBase {
   // = <Motor free speed RPM> / 60 / Drive Gear ratio * <Wheel diameter meters> * pi
   //static final double MAX_VELOCITY_METERS_PER_SECOND = (6380.0 / 60.0) * (1.0 / DRIVE_RATIO) * WHEEL_DIAMETER_METERS * Math.PI;
   
-  // set temporary maximum speed for safe testing purposes (use 1.5 m/s)
-  static final double MAX_VELOCITY_METERS_PER_SECOND = 1.50;
+  // set temporary maximum speed for safe testing purposes (use 1.75 m/s)
+  static final double MAX_VELOCITY_METERS_PER_SECOND = 1.75;
 
   // shuffboard entries - used to display swerve drive data
   private GenericEntry m_LFCanCoderPos;
@@ -106,18 +108,8 @@ public class SwerveDrive extends SubsystemBase {
   private TalonFX m_LRDriveMotor;
   private TalonFX m_RRDriveMotor;
 
-  /**The model representing the drivetrain's kinematics */
-  public static final double TRACKWIDTH_METERS = 0.6;
-  public static final double WHEELBASE_METERS = 0.6;
-  private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-            // Front left
-            new Translation2d(TRACKWIDTH_METERS*0.5, WHEELBASE_METERS*0.5),
-            // Front right
-            new Translation2d(TRACKWIDTH_METERS*0.5, -WHEELBASE_METERS*0.5),
-            // Back left
-            new Translation2d(-TRACKWIDTH_METERS*0.5, WHEELBASE_METERS*0.5),
-            // Back right
-            new Translation2d(-TRACKWIDTH_METERS*0.5, -WHEELBASE_METERS*0.5));
+  // The drivetrain's kinematics model
+  private final SwerveDriveKinematics m_kinematics;
 
   // Swerve module states - contains speed(m/s) and angle for each swerve module
   SwerveModuleState[] m_states;
@@ -126,6 +118,30 @@ public class SwerveDrive extends SubsystemBase {
   /** Creates a new SwerveDrive. */
   /** Class Constuctor */
   public SwerveDrive() {
+    
+    // set for 2023 robot dimensions
+    double TRACKWIDTH_METERS = 0.47;
+    double WHEELBASE_METERS = 0.47;
+    
+    // if using 2022 robot, update dimensions
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022)
+    {
+      TRACKWIDTH_METERS = 0.6;
+      WHEELBASE_METERS = 0.6;
+    }
+  
+    // set up swerve drive kinematics
+    m_kinematics = new SwerveDriveKinematics(
+            // Front left
+            new Translation2d(TRACKWIDTH_METERS*0.5, WHEELBASE_METERS*0.5),
+            // Front right
+            new Translation2d(TRACKWIDTH_METERS*0.5, -WHEELBASE_METERS*0.5),
+            // Back left
+            new Translation2d(-TRACKWIDTH_METERS*0.5, WHEELBASE_METERS*0.5),
+            // Back right
+            new Translation2d(-TRACKWIDTH_METERS*0.5, -WHEELBASE_METERS*0.5));
+    
+    
     // create CANCoder objects - set absolute range of +/-180deg
     m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER);
     m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER);
@@ -226,7 +242,6 @@ public class SwerveDrive extends SubsystemBase {
     m_LRDriveMotor.configMaxIntegralAccumulator(0, 0.15*METERS_TO_ENCODERPULSE);
     m_RRDriveMotor.configMaxIntegralAccumulator(0, 0.15*METERS_TO_ENCODERPULSE);
 
-
     // initialize encoders of each steer motor according to CANCoder positions
     ResetSteerEncoders();
 
@@ -237,10 +252,24 @@ public class SwerveDrive extends SubsystemBase {
   
   // seed the encoder value of steering motors based on CANcoder and alignment position
   public void ResetSteerEncoders() {
-    m_LFSteerMotor.setSelectedSensorPosition((m_LFCanCoder.getAbsolutePosition()-(3.4)) * DEG_TO_ENCODERPULSE, 0, 0);
-    m_RFSteerMotor.setSelectedSensorPosition((m_RFCanCoder.getAbsolutePosition()-(0.97)) * DEG_TO_ENCODERPULSE, 0, 0);
-    m_LRSteerMotor.setSelectedSensorPosition((m_LRCanCoder.getAbsolutePosition()-(-2.8)) * DEG_TO_ENCODERPULSE, 0, 0);
-    m_RRSteerMotor.setSelectedSensorPosition((m_RRCanCoder.getAbsolutePosition()-(-3.1)) * DEG_TO_ENCODERPULSE, 0, 0);
+    
+    // wheel alignment calibration for 2023 robot base
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    {
+      m_LFSteerMotor.setSelectedSensorPosition((m_LFCanCoder.getAbsolutePosition()-(-26.60)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RFSteerMotor.setSelectedSensorPosition((m_RFCanCoder.getAbsolutePosition()-(-157.98)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_LRSteerMotor.setSelectedSensorPosition((m_LRCanCoder.getAbsolutePosition()-(18.89)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RRSteerMotor.setSelectedSensorPosition((m_RRCanCoder.getAbsolutePosition()-(-47.11)) * DEG_TO_ENCODERPULSE, 0, 0);
+    }
+    
+    // wheel alignment calibration for 2022 robot base
+    else if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022)
+    {
+      m_LFSteerMotor.setSelectedSensorPosition((m_LFCanCoder.getAbsolutePosition()-(3.4)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RFSteerMotor.setSelectedSensorPosition((m_RFCanCoder.getAbsolutePosition()-(0.97)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_LRSteerMotor.setSelectedSensorPosition((m_LRCanCoder.getAbsolutePosition()-(-2.8)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RRSteerMotor.setSelectedSensorPosition((m_RRCanCoder.getAbsolutePosition()-(-3.1)) * DEG_TO_ENCODERPULSE, 0, 0);
+    }
   }
 
   private int updateCounter=0;
@@ -263,10 +292,24 @@ public class SwerveDrive extends SubsystemBase {
 
   public void drive(ChassisSpeeds speed, boolean fieldOriented) {
   
+    // reorient x, y and omega, to make robot base match desired coordinate system
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023) {
+      speed = new ChassisSpeeds(speed.vyMetersPerSecond,
+                                speed.vxMetersPerSecond,
+                                speed.omegaRadiansPerSecond); 
+    }
+
+    else if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022) {
+      speed = new ChassisSpeeds(speed.vyMetersPerSecond,
+                              speed.vxMetersPerSecond,
+                              -speed.omegaRadiansPerSecond);   
+    }
+
     // if chassis speed relative to field, then convert so it is relative to robot
     if (fieldOriented) {
       // convert speeds from field relative according to current gyro angle 
-      speed = ChassisSpeeds.fromFieldRelativeSpeeds(speed, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
+      // note negative sign for gyro angle to have robot drive in correct direction
+      speed = ChassisSpeeds.fromFieldRelativeSpeeds(speed, Rotation2d.fromDegrees(-RobotContainer.gyro.getYaw()));
     }
       
     // determine desired swerve module states from desired chassis speeds
