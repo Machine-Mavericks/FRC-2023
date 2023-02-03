@@ -26,10 +26,11 @@ public class ManualDriveCommand extends CommandBase {
     double dX = OI.getXDriveInput()*1.25;
     double dY = OI.getYDriveInput()*1.25;
     double omega = OI.getRotateDriveInput()*1.25;
+    boolean Park = OI.getParkButton();
 
     // command robot to drive
     // swap x, y, omega as necessary to get robot driving with desired axes
-    RobotContainer.swervedrive.drive(dX, dY, omega, true);
+    RobotContainer.swervedrive.drive(dX, dY, omega, true,Park);
   }
 
   // Called once the command ends or is interrupted.

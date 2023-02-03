@@ -110,6 +110,9 @@ public class SwerveDrive extends SubsystemBase {
 
   // The drivetrain's kinematics model
   private final SwerveDriveKinematics m_kinematics;
+  private Translation2d m_CenterOfRotation;
+  private Rotation2d m_ParkAngleLF;
+  private Rotation2d m_ParkAngleRF;
 
   // Swerve module states - contains speed(m/s) and angle for each swerve module
   SwerveModuleState[] m_states;
@@ -140,8 +143,11 @@ public class SwerveDrive extends SubsystemBase {
             new Translation2d(-TRACKWIDTH_METERS*0.5, WHEELBASE_METERS*0.5),
             // Back right
             new Translation2d(-TRACKWIDTH_METERS*0.5, -WHEELBASE_METERS*0.5));
-    
-    
+
+    m_CenterOfRotation = new Translation2d(0.0,0.0);
+    m_ParkAngleLF = new Rotation2d(45.0);
+    m_ParkAngleRF = new Rotation2d(-45.0);
+
     // create CANCoder objects - set absolute range of +/-180deg
     m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER);
     m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER);
@@ -287,10 +293,10 @@ public class SwerveDrive extends SubsystemBase {
   
   /** Set Robot Chassis Speed - (i.e. drive robot at selcted speeds)
       ChassisSpeeds x,y in m/s, omega in rad/s */
-  public void drive(double dx, double dy, double omega, boolean fieldOriented)
-    { drive (new ChassisSpeeds(dx, dy, omega), fieldOriented); }
+  public void drive(double dx, double dy, double omega, boolean fieldOriented, boolean Park)
+    { drive (new ChassisSpeeds(dx, dy, omega), fieldOriented, Park); }
 
-  public void drive(ChassisSpeeds speed, boolean fieldOriented) {
+  public void drive(ChassisSpeeds speed, boolean fieldOriented, boolean Park) {
   
     // reorient x, y and omega, to make robot base match desired coordinate system
     if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023) {
@@ -313,8 +319,20 @@ public class SwerveDrive extends SubsystemBase {
     }
       
     // determine desired swerve module states from desired chassis speeds
-    m_states = m_kinematics.toSwerveModuleStates(speed);
-    
+    //m_states = m_kinematics.toSwerveModuleStates(speed);
+
+    // try this to see if the swerve modules will leave the wheel angles alone when the speed is zero instead of setting the angle to zero
+    m_states = m_kinematics.toSwerveModuleStates(speed, m_CenterOfRotation);
+
+    // Park will override any of the drive inputs for chassis speeds
+    if (Park) {
+      // Note that the LF and RR wheels are both set to the same angle. Same for the RF and LR wheels
+      m_states[0].angle = m_ParkAngleLF;       m_states[0].speedMetersPerSecond = 0;
+      m_states[1].angle = m_ParkAngleRF;       m_states[1].speedMetersPerSecond = 0;
+      m_states[2].angle = m_ParkAngleRF;       m_states[2].speedMetersPerSecond = 0;
+      m_states[3].angle = m_ParkAngleLF;       m_states[3].speedMetersPerSecond = 0;
+    }
+   
     // if desired speed of a swerve(s) exceed maximum possible, then reduce all speeds while maintaining ratio
     SwerveDriveKinematics.desaturateWheelSpeeds(m_states, MAX_VELOCITY_METERS_PER_SECOND);
 

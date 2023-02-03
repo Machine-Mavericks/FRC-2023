@@ -25,7 +25,7 @@ public class OI {
 
     /** Buttons on the driver sticks/controller */
     private static class DriverButtons {
-        
+        private static final Button Park = XboxController.Button.kLeftBumper;
     }
 
     /** Buttons on the operator controller */
@@ -60,6 +60,10 @@ public class OI {
 
     public static double getRotateDriveInput(){
         return OI.driverController.getRightX();
+    }
+
+    public static boolean getParkButton(){
+        return OI.driverController.getLeftBumper();
     }
 
 }
