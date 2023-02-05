@@ -12,6 +12,8 @@ import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.commands.ManualDriveCommand;
 
+import frc.robot.subsystems.LEDBlinkin;
+import frc.robot.commands.LEDCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,6 +28,7 @@ public class RobotContainer {
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry(); 
 
+  public static final LEDBlinkin LEDStrip = new LEDBlinkin();
   
   /* Constructor */
   public RobotContainer() {
@@ -36,6 +39,7 @@ public class RobotContainer {
   public static void init() {
     // set swerve drive default command to manual driving mode
     swervedrive.setDefaultCommand(new ManualDriveCommand());
+    LEDStrip.setDefaultCommand(new LEDCommand());
 
     // Configure the button bindings
     configureButtonBindings();
