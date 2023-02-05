@@ -31,7 +31,8 @@ public class OI {
 
     /** Buttons on the operator controller */
     private static class OperatorButtons {
-        
+        private static final Button BALANCE_BUTTON = XboxController.Button.kY;
+        private static final Button RESET_BUTTON = XboxController.Button.kA;
         /** Button used as example */
         //private static final Button EXAMPLE = XboxController.Button.kA;
     }
