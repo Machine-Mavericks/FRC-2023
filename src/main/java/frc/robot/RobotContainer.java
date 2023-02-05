@@ -4,15 +4,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.NavX2;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
 import frc.robot.commands.ManualDriveCommand;
+import frc.robot.commands.PrecisionDriveToPose;
+import edu.wpi.first.math.geometry.Pose2d;
 
 
 /**
@@ -26,12 +30,16 @@ public class RobotContainer {
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
   public static final NavX2 gyro2 = new NavX2();
+  public static final Limelight limelight1 = new Limelight("tags");
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
   public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
   
+
   /* Constructor */
   public RobotContainer() {
+    // Configure the button bindings
+    configureButtonBindings();
   }
 
   /** Initialise the container for the robot. Contains subsystems, OI devices, and
@@ -40,8 +48,7 @@ public class RobotContainer {
     // set swerve drive default command to manual driving mode
     swervedrive.setDefaultCommand(new ManualDriveCommand());
 
-    // Configure the button bindings
-    configureButtonBindings();
+
   }
 
   /**
@@ -52,7 +59,13 @@ public class RobotContainer {
    */
   private static void configureButtonBindings() {
     
-    // TODO: Add your button bindings here    
+    // TODO: Add your button bindings here
+    /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
+                                                            false,
+                                                            1.0, 3.0, 30.0)
+    
+    ); */
+       
   }
 
   /**

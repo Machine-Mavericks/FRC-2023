@@ -25,13 +25,15 @@ public class OI {
 
     /** Buttons on the driver sticks/controller */
     private static class DriverButtons {
-        
+        /** Button to perform precision robot move */
+        static final Button ROBOT_PRECISION_MOVE = XboxController.Button.kA;
     }
 
     /** Buttons on the operator controller */
     private static class OperatorButtons {
+        
         /** Button used as example */
-        private static final Button EXAMPLE = XboxController.Button.kA;
+        //private static final Button EXAMPLE = XboxController.Button.kA;
     }
 
     // This contains objects for both joystick and controller driving
@@ -46,6 +48,9 @@ public class OI {
     private static final XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
     /** Controller used by driver, mapped to {@link #OPERATOR_CONTROLLER_PORT} */
     private static final XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
+
+    /** button for move command. Mapped to {@link DriverButtons#ROBOT_PRECISION_MOVE} */
+    public static final JoystickButton PrecisionMoveButton = new JoystickButton(driverController, DriverButtons.ROBOT_PRECISION_MOVE.value);
 
 
     // The sticks/controllers are kept private so that if we want to switch them later, this is the only place needing changes

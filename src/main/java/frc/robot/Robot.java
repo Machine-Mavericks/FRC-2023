@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
       SwerveBase2022,
       SwerveBase2023
   }
-  public static final RobotBaseType robotBase = RobotBaseType.SwerveBase2023;
+  public static final RobotBaseType robotBase = RobotBaseType.SwerveBase2022;
 
 
   /**
@@ -38,8 +38,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
-
   }
 
   /**
@@ -91,6 +89,9 @@ public class Robot extends TimedRobot {
     
     // Reset swerve drive encoders - temporary - code likely to be moved later.
     RobotContainer.swervedrive.ResetSteerEncoders();
+
+    // set AprilTags camera pipeline to 0
+    RobotContainer.limelight1.setPipeline(0);
     
     // Reset odometry
     RobotContainer.swerveodometry.InitializetoZero();
