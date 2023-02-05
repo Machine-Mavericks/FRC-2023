@@ -42,9 +42,9 @@ public class BalanceCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double driveSpeed = gyro.getRoll() < 2.5 && gyro.getRoll() > -2.5 ? 0 : (pid.calculate(gyro.getRoll(), setpoint));
+    double driveSpeed = gyro.getPitch() < 2.5 && gyro.getPitch() > -2.5 ? 0 : (pid.calculate(gyro.getPitch(), setpoint));
     swervedrive.drive(driveSpeed, 0, 0, false);
-    System.out.println(gyro.getRoll());
+    System.out.println(gyro.getPitch());
   }
 
   // Called once the command ends or is interrupted.
