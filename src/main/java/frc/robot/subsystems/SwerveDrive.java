@@ -126,8 +126,8 @@ public class SwerveDrive extends SubsystemBase {
   public SwerveDrive() {
     
     // set for 2023 robot dimensions
-    double TRACKWIDTH_METERS = 0.47;
-    double WHEELBASE_METERS = 0.47;
+    double TRACKWIDTH_METERS = 0.466;
+    double WHEELBASE_METERS = 0.466;
     
     // if using 2022 robot, update dimensions
     if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022)
@@ -192,9 +192,9 @@ public class SwerveDrive extends SubsystemBase {
 
     // accumulate error only if witin 10deg of target - experimental - leave commented out
     //m_LFSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
-    //m_RFSteerMotor.config_IntegralZone(0, 5*DEG_TO_ENCODERPULSE);
-    //m_LRSteerMotor.config_IntegralZone(0, 5*DEG_TO_ENCODERPULSE);
-    //m_RRSteerMotor.config_IntegralZone(0, 5*DEG_TO_ENCODERPULSE);
+    //m_RFSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
+    //m_LRSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
+    //m_RRSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
 
     // allow accumulate up to ~90,000x1ms error  (i.e. 1deg error for 1s)
     // 90,000 x Igain(=0.001) = 90,  causing motor to apply 90/1023 full voltage
@@ -261,11 +261,13 @@ public class SwerveDrive extends SubsystemBase {
     
     // wheel alignment calibration for 2023 robot base
     if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
-    {
-      m_LFSteerMotor.setSelectedSensorPosition((m_LFCanCoder.getAbsolutePosition()-(-25.50)) * DEG_TO_ENCODERPULSE, 0, 0);
-      m_RFSteerMotor.setSelectedSensorPosition((m_RFCanCoder.getAbsolutePosition()-(-158.90)) * DEG_TO_ENCODERPULSE, 0, 0);
-      m_LRSteerMotor.setSelectedSensorPosition((m_LRCanCoder.getAbsolutePosition()-(20.47)) * DEG_TO_ENCODERPULSE, 0, 0);
-      m_RRSteerMotor.setSelectedSensorPosition((m_RRCanCoder.getAbsolutePosition()-(-47.37)) * DEG_TO_ENCODERPULSE, 0, 0);
+    { // as of Feb 5/2023:
+      //LR=-25.50, LR=20.47
+      // RF=-158.90, RR=-47.37
+      m_LFSteerMotor.setSelectedSensorPosition((m_LFCanCoder.getAbsolutePosition()-(-24.70)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RFSteerMotor.setSelectedSensorPosition((m_RFCanCoder.getAbsolutePosition()-(-158.99)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_LRSteerMotor.setSelectedSensorPosition((m_LRCanCoder.getAbsolutePosition()-(22.47)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RRSteerMotor.setSelectedSensorPosition((m_RRCanCoder.getAbsolutePosition()-(-44.12)) * DEG_TO_ENCODERPULSE, 0, 0);
     }
     
     // wheel alignment calibration for 2022 robot base
@@ -302,7 +304,7 @@ public class SwerveDrive extends SubsystemBase {
     if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023) {
       speed = new ChassisSpeeds(speed.vxMetersPerSecond,
                                 speed.vyMetersPerSecond,
-                                speed.omegaRadiansPerSecond); 
+                                -speed.omegaRadiansPerSecond); 
     }
 
     else if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022) {
@@ -315,7 +317,7 @@ public class SwerveDrive extends SubsystemBase {
     if (fieldOriented) {
       // convert speeds from field relative according to current gyro angle 
       // note negative sign for gyro angle to have robot drive in correct direction
-      speed = ChassisSpeeds.fromFieldRelativeSpeeds(speed, Rotation2d.fromDegrees(-RobotContainer.gyro.getYaw()));
+      speed = ChassisSpeeds.fromFieldRelativeSpeeds(speed, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
     }
       
     // determine desired swerve module states from desired chassis speeds
@@ -468,7 +470,7 @@ public SwerveDriveKinematics getKinematics() {
       .getEntry();
 
     // create max accel slider control
-       m_AccelLimit = Tab.add("Max Acceleration", 7.0)
+       m_AccelLimit = Tab.add("Max Accel", 7.0)
        .withPosition(0, 2)
        .withSize(2, 1)
        .withWidget(BuiltInWidgets.kNumberSlider)
@@ -604,7 +606,7 @@ public SwerveDriveKinematics getKinematics() {
   // returns maximum drive speed set in shuffleboard slider
   public double getMaxAccel()
   {
-    return m_AccelLimit.getDouble(0);
+    return m_AccelLimit.getDouble(7.0);
   }
 
   // return maximum rotational speed

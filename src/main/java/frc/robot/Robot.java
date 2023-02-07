@@ -83,10 +83,8 @@ public class Robot extends TimedRobot {
     
     // Reset gyro - temporary - code likely to be moved later
     RobotContainer.gyro.resetGyro();
+    //RobotContainer.gyro2.resetGyro();
 
-    // Reset gyro2 - temporary - code likely to be moved later
-    RobotContainer.gyro2.resetGyro();
-    
     // Reset swerve drive encoders - temporary - code likely to be moved later.
     RobotContainer.swervedrive.ResetSteerEncoders();
 
@@ -99,6 +97,7 @@ public class Robot extends TimedRobot {
 
     // set default swerve drive command to manual drive mode
     RobotContainer.swervedrive.setDefaultCommand(new ManualDriveCommand());
+
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

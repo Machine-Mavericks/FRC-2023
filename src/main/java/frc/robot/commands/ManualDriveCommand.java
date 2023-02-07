@@ -28,6 +28,10 @@ public class ManualDriveCommand extends CommandBase {
     double maxSpeed = RobotContainer.swervedrive.getMaxSpeed();
     double maxAccel = RobotContainer.swervedrive.getMaxAccel();
 
+    // check - ensure maxAccel is resonable value to ensure robot can slow down in reasonable time
+    if (maxAccel < 5.0)
+      maxAccel = 5.0;
+
     // max rate of change of speed
     double MaxChange = 0.02*maxAccel;
 

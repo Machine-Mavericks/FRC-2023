@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
-import frc.robot.subsystems.NavX2;
+import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
@@ -29,7 +29,7 @@ public class RobotContainer {
 
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
-  public static final NavX2 gyro2 = new NavX2();
+  // public static final Pigeon gyro2 = new Pigeon();
   public static final Limelight limelight1 = new Limelight("tags");
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
