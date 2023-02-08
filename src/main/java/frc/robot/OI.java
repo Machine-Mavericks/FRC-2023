@@ -44,9 +44,6 @@ public class OI {
     /** Controller used by driver, mapped to {@link #OPERATOR_CONTROLLER_PORT} */
     private static final XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
 
-    /** button for move command. Mapped to {@link DriverButtons#ROBOT_PRECISION_MOVE} */
-    public static final JoystickButton PrecisionMoveButton = new JoystickButton(driverController, DriverButtons.ROBOT_PRECISION_MOVE.value);
-
 
     // The sticks/controllers are kept private so that if we want to switch them later, this is the only place needing changes
     // Use buttons and DoubleSuppliers to expose any inputs you want elsewhere

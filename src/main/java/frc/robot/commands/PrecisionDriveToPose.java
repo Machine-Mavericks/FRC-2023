@@ -142,14 +142,14 @@ public class PrecisionDriveToPose extends CommandBase {
       rotSpeed = -m_rotspeed;
 
     // drive robot according to x,y,rot PID controller speeds
-    RobotContainer.swervedrive.drive(xSpeed, ySpeed, rotSpeed, true);  
+    RobotContainer.swervedrive.drive(xSpeed, ySpeed, rotSpeed, true, false);  
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     // we have finished path. Stop robot
-    RobotContainer.swervedrive.drive(0.0, 0.0, 0.0, false);
+    RobotContainer.swervedrive.drive(0.0, 0.0, 0.0, false, false);
   }
 
   // Returns true when the command should end.
