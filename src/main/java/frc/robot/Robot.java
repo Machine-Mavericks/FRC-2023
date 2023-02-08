@@ -38,8 +38,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
-
   }
 
   /**
@@ -85,12 +83,13 @@ public class Robot extends TimedRobot {
     
     // Reset gyro - temporary - code likely to be moved later
     RobotContainer.gyro.resetGyro();
+    //RobotContainer.gyro2.resetGyro();
 
-    // Reset gyro2 - temporary - code likely to be moved later
-    RobotContainer.gyro2.resetGyro();
-    
     // Reset swerve drive encoders - temporary - code likely to be moved later.
     RobotContainer.swervedrive.ResetSteerEncoders();
+
+    // set AprilTags camera pipeline to 0
+    RobotContainer.limelight1.setPipeline(0);
     
     // Reset odometry
     RobotContainer.swerveodometry.InitializetoZero();
@@ -98,6 +97,7 @@ public class Robot extends TimedRobot {
 
     // set default swerve drive command to manual drive mode
     RobotContainer.swervedrive.setDefaultCommand(new ManualDriveCommand());
+
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
