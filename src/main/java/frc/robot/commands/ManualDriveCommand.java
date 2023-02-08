@@ -36,9 +36,11 @@ public class ManualDriveCommand extends CommandBase {
     double MaxChange = 0.02*maxAccel;
 
     // get joystick drive inputs - use methods in OI module to get inputs
+
     double inputdX = OI.getXDriveInput();
     double inputdY = OI.getYDriveInput();
     double inputomega = OI.getRotateDriveInput();
+    boolean Park = OI.getParkButton();
     
     // implement dead-zoning of joystick inputs
     inputdX = Math.abs(inputdX) > 0.05 ? inputdX : 0;
@@ -63,7 +65,7 @@ public class ManualDriveCommand extends CommandBase {
 
     // command robot to drive
     // swap x, y, omega as necessary to get robot driving with desired axes
-    RobotContainer.swervedrive.drive(dY, dX, omega, true);
+    RobotContainer.swervedrive.drive(dX, dY, omega, true,Park);
 
     // record our speeds for use next time
     prevdX = dX;
