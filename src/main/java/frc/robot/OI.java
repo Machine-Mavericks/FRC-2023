@@ -23,15 +23,12 @@ public class OI {
         private static final int OPERATOR_CONTROLLER = 3;
     }
 
-    /** Buttons on the driver sticks/controller */
-    private static class DriverButtons {
-        
-    }
 
     /** Buttons on the operator controller */
     private static class OperatorButtons {
+        
         /** Button used as example */
-        private static final Button EXAMPLE = XboxController.Button.kA;
+        //private static final Button EXAMPLE = XboxController.Button.kA;
     }
 
     // This contains objects for both joystick and controller driving
@@ -60,6 +57,10 @@ public class OI {
 
     public static double getRotateDriveInput(){
         return OI.driverController.getRightX()*0.5;
+    }
+
+    public static boolean getParkButton(){
+        return OI.driverController.getLeftBumper();
     }
 
 }

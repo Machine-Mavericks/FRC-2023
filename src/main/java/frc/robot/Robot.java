@@ -17,8 +17,17 @@ import frc.robot.commands.ManualDriveCommand;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
   private RobotContainer m_robotContainer;
+
+
+  /** This is where to select which swerve robot base is being used
+     * Subsystems refer to this to set their constants or etc. */
+  public enum RobotBaseType {
+      SwerveBase2022,
+      SwerveBase2023
+  }
+  public static final RobotBaseType robotBase = RobotBaseType.SwerveBase2022;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,8 +38,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
-
   }
 
   /**
@@ -76,14 +83,21 @@ public class Robot extends TimedRobot {
     
     // Reset gyro - temporary - code likely to be moved later
     RobotContainer.gyro.resetGyro();
-    
+    //RobotContainer.gyro2.resetGyro();
+
     // Reset swerve drive encoders - temporary - code likely to be moved later.
     RobotContainer.swervedrive.ResetSteerEncoders();
+
+    // set AprilTags camera pipeline to 0
+    RobotContainer.limelight1.setPipeline(0);
     
     // Reset odometry
     RobotContainer.swerveodometry.InitializetoZero();
+    RobotContainer.swerveestimator.InitializetoZero();
 
+    // set default swerve drive command to manual drive mode
     RobotContainer.swervedrive.setDefaultCommand(new ManualDriveCommand());
+
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

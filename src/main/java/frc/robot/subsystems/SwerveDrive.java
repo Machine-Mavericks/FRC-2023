@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -15,7 +16,6 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
 import frc.robot.RobotMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,7 +24,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.Utils;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import java.util.Map;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -38,7 +41,8 @@ public class SwerveDrive extends SubsystemBase {
   static final double ENC_PULSE_PER_REV = 2048.0;
 
   // wheel diameter (m)
-  static final double WHEEL_DIAMETER_METERS = 0.1016 * 0.96248;
+  // last factor adjustment is for 2023 robot base
+  static final double WHEEL_DIAMETER_METERS = 0.1016 * 0.96248 * 1.0181;
   
   // drive motor unit conversion factors
   static final double ENCODERPULSE_TO_METERS = (1.0 / ENC_PULSE_PER_REV) * (1.0 / DRIVE_RATIO) * WHEEL_DIAMETER_METERS * Math.PI;
@@ -50,10 +54,10 @@ public class SwerveDrive extends SubsystemBase {
 
   // theoretical maximum speed of drive (m/s)
   // = <Motor free speed RPM> / 60 / Drive Gear ratio * <Wheel diameter meters> * pi
-  //static final double MAX_VELOCITY_METERS_PER_SECOND = (6380.0 / 60.0) * (1.0 / DRIVE_RATIO) * WHEEL_DIAMETER_METERS * Math.PI;
+  // static final double MAX_VELOCITY_METERS_PER_SECOND = (6380.0 / 60.0) * (1.0 / DRIVE_RATIO) * WHEEL_DIAMETER_METERS * Math.PI;
   
-  // set temporary maximum speed for safe testing purposes (use 1.5 m/s)
-  static final double MAX_VELOCITY_METERS_PER_SECOND = 1.50;
+  // set temporary maximum speed for safe testing purposes (use 1.75 m/s)
+  static final double MAX_VELOCITY_METERS_PER_SECOND = 1.75;
 
   // shuffboard entries - used to display swerve drive data
   private GenericEntry m_LFCanCoderPos;
@@ -89,6 +93,10 @@ public class SwerveDrive extends SubsystemBase {
   private GenericEntry m_LRDriveMotorTemp;
   private GenericEntry m_RRDriveMotorTemp;
   private GenericEntry m_BattVolts;
+  private GenericEntry m_SpeedLimit;
+  private GenericEntry m_AccelLimit;
+  private GenericEntry m_RotateSpeedLimit;
+
 
   // create CANCoder sensor objects
   private CANCoder m_LFCanCoder;
@@ -106,10 +114,33 @@ public class SwerveDrive extends SubsystemBase {
   private TalonFX m_LRDriveMotor;
   private TalonFX m_RRDriveMotor;
 
-  /**The model representing the drivetrain's kinematics */
-  public static final double TRACKWIDTH_METERS = 0.6;
-  public static final double WHEELBASE_METERS = 0.6;
-  private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+  // The drivetrain's kinematics model
+  private final SwerveDriveKinematics m_kinematics;
+  private Translation2d m_CenterOfRotation;
+  private Rotation2d m_ParkAngleLF;
+  private Rotation2d m_ParkAngleRF;
+
+  // Swerve module states - contains speed(m/s) and angle for each swerve module
+  SwerveModuleState[] m_states;
+
+
+  /** Creates a new SwerveDrive. */
+  /** Class Constuctor */
+  public SwerveDrive() {
+    
+    // set for 2023 robot dimensions
+    double TRACKWIDTH_METERS = 0.466;
+    double WHEELBASE_METERS = 0.466;
+    
+    // if using 2022 robot, update dimensions
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022)
+    {
+      TRACKWIDTH_METERS = 0.6;
+      WHEELBASE_METERS = 0.6;
+    }
+  
+    // set up swerve drive kinematics
+    m_kinematics = new SwerveDriveKinematics(
             // Front left
             new Translation2d(TRACKWIDTH_METERS*0.5, WHEELBASE_METERS*0.5),
             // Front right
@@ -119,13 +150,10 @@ public class SwerveDrive extends SubsystemBase {
             // Back right
             new Translation2d(-TRACKWIDTH_METERS*0.5, -WHEELBASE_METERS*0.5));
 
-  // Swerve module states - contains speed(m/s) and angle for each swerve module
-  SwerveModuleState[] m_states;
+    m_CenterOfRotation = new Translation2d(0.0,0.0);
+    m_ParkAngleLF = new Rotation2d(45.0);
+    m_ParkAngleRF = new Rotation2d(-45.0);
 
-
-  /** Creates a new SwerveDrive. */
-  /** Class Constuctor */
-  public SwerveDrive() {
     // create CANCoder objects - set absolute range of +/-180deg
     m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER);
     m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER);
@@ -170,9 +198,9 @@ public class SwerveDrive extends SubsystemBase {
 
     // accumulate error only if witin 10deg of target - experimental - leave commented out
     //m_LFSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
-    //m_RFSteerMotor.config_IntegralZone(0, 5*DEG_TO_ENCODERPULSE);
-    //m_LRSteerMotor.config_IntegralZone(0, 5*DEG_TO_ENCODERPULSE);
-    //m_RRSteerMotor.config_IntegralZone(0, 5*DEG_TO_ENCODERPULSE);
+    //m_RFSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
+    //m_LRSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
+    //m_RRSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
 
     // allow accumulate up to ~90,000x1ms error  (i.e. 1deg error for 1s)
     // 90,000 x Igain(=0.001) = 90,  causing motor to apply 90/1023 full voltage
@@ -226,7 +254,6 @@ public class SwerveDrive extends SubsystemBase {
     m_LRDriveMotor.configMaxIntegralAccumulator(0, 0.15*METERS_TO_ENCODERPULSE);
     m_RRDriveMotor.configMaxIntegralAccumulator(0, 0.15*METERS_TO_ENCODERPULSE);
 
-
     // initialize encoders of each steer motor according to CANCoder positions
     ResetSteerEncoders();
 
@@ -237,10 +264,26 @@ public class SwerveDrive extends SubsystemBase {
   
   // seed the encoder value of steering motors based on CANcoder and alignment position
   public void ResetSteerEncoders() {
-    m_LFSteerMotor.setSelectedSensorPosition((m_LFCanCoder.getAbsolutePosition()-(3.4)) * DEG_TO_ENCODERPULSE, 0, 0);
-    m_RFSteerMotor.setSelectedSensorPosition((m_RFCanCoder.getAbsolutePosition()-(0.97)) * DEG_TO_ENCODERPULSE, 0, 0);
-    m_LRSteerMotor.setSelectedSensorPosition((m_LRCanCoder.getAbsolutePosition()-(-2.8)) * DEG_TO_ENCODERPULSE, 0, 0);
-    m_RRSteerMotor.setSelectedSensorPosition((m_RRCanCoder.getAbsolutePosition()-(-3.1)) * DEG_TO_ENCODERPULSE, 0, 0);
+    
+    // wheel alignment calibration for 2023 robot base
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    { // as of Feb 5/2023:
+      //LR=-25.50, LR=20.47
+      // RF=-158.90, RR=-47.37
+      m_LFSteerMotor.setSelectedSensorPosition((m_LFCanCoder.getAbsolutePosition()-(-24.70)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RFSteerMotor.setSelectedSensorPosition((m_RFCanCoder.getAbsolutePosition()-(-158.99)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_LRSteerMotor.setSelectedSensorPosition((m_LRCanCoder.getAbsolutePosition()-(22.47)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RRSteerMotor.setSelectedSensorPosition((m_RRCanCoder.getAbsolutePosition()-(-44.12)) * DEG_TO_ENCODERPULSE, 0, 0);
+    }
+    
+    // wheel alignment calibration for 2022 robot base
+    else if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022)
+    {
+      m_LFSteerMotor.setSelectedSensorPosition((m_LFCanCoder.getAbsolutePosition()-(3.4)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RFSteerMotor.setSelectedSensorPosition((m_RFCanCoder.getAbsolutePosition()-(0.97)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_LRSteerMotor.setSelectedSensorPosition((m_LRCanCoder.getAbsolutePosition()-(-2.8)) * DEG_TO_ENCODERPULSE, 0, 0);
+      m_RRSteerMotor.setSelectedSensorPosition((m_RRCanCoder.getAbsolutePosition()-(-3.1)) * DEG_TO_ENCODERPULSE, 0, 0);
+    }
   }
 
   private int updateCounter=0;
@@ -258,20 +301,46 @@ public class SwerveDrive extends SubsystemBase {
   
   /** Set Robot Chassis Speed - (i.e. drive robot at selcted speeds)
       ChassisSpeeds x,y in m/s, omega in rad/s */
-  public void drive(double dx, double dy, double omega, boolean fieldOriented)
-    { drive (new ChassisSpeeds(dx, dy, omega), fieldOriented); }
+  public void drive(double dx, double dy, double omega, boolean fieldOriented, boolean Park)
+    { drive (new ChassisSpeeds(dx, dy, omega), fieldOriented, Park); }
 
-  public void drive(ChassisSpeeds speed, boolean fieldOriented) {
+  public void drive(ChassisSpeeds speed, boolean fieldOriented, boolean Park) {
   
+    // reorient x, y and omega, to make robot base match desired coordinate system
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023) {
+      speed = new ChassisSpeeds(speed.vxMetersPerSecond,
+                                speed.vyMetersPerSecond,
+                                -speed.omegaRadiansPerSecond); 
+    }
+
+    else if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022) {
+      speed = new ChassisSpeeds(speed.vxMetersPerSecond,
+                              speed.vyMetersPerSecond,
+                              speed.omegaRadiansPerSecond);   
+    }
+
     // if chassis speed relative to field, then convert so it is relative to robot
     if (fieldOriented) {
       // convert speeds from field relative according to current gyro angle 
+      // note negative sign for gyro angle to have robot drive in correct direction
       speed = ChassisSpeeds.fromFieldRelativeSpeeds(speed, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
     }
       
     // determine desired swerve module states from desired chassis speeds
-    m_states = m_kinematics.toSwerveModuleStates(speed);
-    
+    //m_states = m_kinematics.toSwerveModuleStates(speed);
+
+    // try this to see if the swerve modules will leave the wheel angles alone when the speed is zero instead of setting the angle to zero
+    m_states = m_kinematics.toSwerveModuleStates(speed, m_CenterOfRotation);
+
+    // Park will override any of the drive inputs for chassis speeds
+    if (Park) {
+      // Note that the LF and RR wheels are both set to the same angle. Same for the RF and LR wheels
+      m_states[0].angle = m_ParkAngleLF;       m_states[0].speedMetersPerSecond = 0;
+      m_states[1].angle = m_ParkAngleRF;       m_states[1].speedMetersPerSecond = 0;
+      m_states[2].angle = m_ParkAngleRF;       m_states[2].speedMetersPerSecond = 0;
+      m_states[3].angle = m_ParkAngleLF;       m_states[3].speedMetersPerSecond = 0;
+    }
+   
     // if desired speed of a swerve(s) exceed maximum possible, then reduce all speeds while maintaining ratio
     SwerveDriveKinematics.desaturateWheelSpeeds(m_states, MAX_VELOCITY_METERS_PER_SECOND);
 
@@ -402,9 +471,38 @@ public SwerveDriveKinematics getKinematics() {
     // Create odometry page in shuffleboard
     ShuffleboardTab Tab = Shuffleboard.getTab("SwerveDrive");
 
+    // create max speed slider control
+    m_SpeedLimit = Tab.add("Speed Limit", 1.00)
+       .withPosition(0, 0)
+       .withSize(2, 1)
+       .withWidget(BuiltInWidgets.kNumberSlider)
+       .withProperties(Map.of("min", 0, "max", MAX_VELOCITY_METERS_PER_SECOND))
+       .getEntry();
+
+    // create max accel slider control
+    m_RotateSpeedLimit = Tab.add("Max Rotate Spd", 0.5)
+      .withPosition(0, 1)
+      .withSize(2, 1)
+      .withWidget(BuiltInWidgets.kNumberSlider)
+      .withProperties(Map.of("min", 0, "max",1))
+      .getEntry();
+
+    // create max accel slider control
+       m_AccelLimit = Tab.add("Max Accel", 7.0)
+       .withPosition(0, 2)
+       .withSize(2, 1)
+       .withWidget(BuiltInWidgets.kNumberSlider)
+       .withProperties(Map.of("min", 5, "max",10))
+       .getEntry();
+
+    // create button/command to reset swerve steering
+       Tab.add("Reset Swerve", new InstantCommand(()->{ResetSteerEncoders();}))
+       .withPosition(0,3)
+       .withSize(2, 1);
+
     // create controls to left-front swerve data
     ShuffleboardLayout l1 = Tab.getLayout("Left-Front", BuiltInLayouts.kList);
-    l1.withPosition(0, 0);
+    l1.withPosition(3, 0);
     l1.withSize(1, 5);
     m_LFCanCoderPos = l1.add("CanCoder Deg", 0.0).getEntry();
     m_LFSteerMotorPos = l1.add("Steer Pos'n", 0.0).getEntry();
@@ -417,7 +515,7 @@ public SwerveDriveKinematics getKinematics() {
 
     // create controls to right-front swerve data
     ShuffleboardLayout l2 = Tab.getLayout("Right-Front", BuiltInLayouts.kList);
-    l2.withPosition(1, 0);
+    l2.withPosition(4, 0);
     l2.withSize(1, 5);
     m_RFCanCoderPos = l2.add("CanCoder Deg", 0.0).getEntry();
     m_RFSteerMotorPos = l2.add("Steer Posn", 0.0).getEntry();
@@ -430,7 +528,7 @@ public SwerveDriveKinematics getKinematics() {
 
     // create controls to left-rear swerve data
     ShuffleboardLayout l3 = Tab.getLayout("Left-Rear", BuiltInLayouts.kList);
-    l3.withPosition(2, 0);
+    l3.withPosition(5, 0);
     l3.withSize(1, 5);
     m_LRCanCoderPos = l3.add("CanCoder Deg", 0.0).getEntry();
     m_LRSteerMotorPos = l3.add("Steer Posn", 0.0).getEntry();
@@ -443,7 +541,7 @@ public SwerveDriveKinematics getKinematics() {
 
     // create controls to right-rear swerve data
     ShuffleboardLayout l4 = Tab.getLayout("Right-Rear", BuiltInLayouts.kList);
-    l4.withPosition(3, 0);
+    l4.withPosition(6, 0);
     l4.withSize(1, 5);
     m_RRCanCoderPos = l4.add("CanCoder Deg", 0.0).getEntry();
     m_RRSteerMotorPos = l4.add("Steer Posn", 0.0).getEntry();
@@ -456,7 +554,7 @@ public SwerveDriveKinematics getKinematics() {
 
     // create controls to bus voltage
     ShuffleboardLayout l5 = Tab.getLayout("Battery", BuiltInLayouts.kList);
-    l5.withPosition(4, 0);
+    l5.withPosition(7, 0);
     l5.withSize(1, 1);
     m_BattVolts = l5.add("Volts", 0.0).getEntry();
   }
@@ -514,5 +612,24 @@ public SwerveDriveKinematics getKinematics() {
 
     // update battery voltage (volts)
     m_BattVolts.setDouble(m_LFDriveMotor.getBusVoltage());
+  }
+
+
+  // returns maximum drive speed set in shuffleboard slider
+  public double getMaxSpeed()
+  {
+    return m_SpeedLimit.getDouble(0);
+  }
+
+  // returns maximum drive speed set in shuffleboard slider
+  public double getMaxAccel()
+  {
+    return m_AccelLimit.getDouble(7.0);
+  }
+
+  // return maximum rotational speed
+  public double getMaxRotateSpeed()
+  {
+    return m_RotateSpeedLimit.getDouble(0);
   }
 }
