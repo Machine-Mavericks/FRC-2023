@@ -51,7 +51,20 @@ public class Arm extends SubsystemBase {
   private GenericEntry m_ArmCanCoderPos;
   private GenericEntry m_ArmMotorPosDeg;
   private GenericEntry m_ArmMotorPos;
+  private GenericEntry m_ArmSpeedSP;
+  private GenericEntry m_ArmSpeedFB;
 
+
+  // Arm Position in degrees for the end arm section relative to the mid arm section
+  double m_EndArmPositionDeg;
+
+  // Arm Position in degrees for the mid arm section relative to the fixed arm upright
+  double m_MidArmPositionDeg;
+
+  // limit arm positions in degrees
+  static final double MIN_MID_ARM_POS_DEG = -10;
+  static final double MAX_MID_ARM_POS_DEG = 370;
+  
   // create CANCoder sensor objects
   private CANCoder m_ArmCanCoder;
 
@@ -76,7 +89,7 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.config_kP(0, 0.1, 0);
     m_ArmMotor.config_kI(0, 0.000, 0);
     m_ArmMotor.config_kD(0, 0.05, 0);
-   
+
     // initialize encoders of each steer motor according to CANCoder positions
     ResetArmEncoders();
 
@@ -116,7 +129,7 @@ public class Arm extends SubsystemBase {
     double TargetSpeed = speed;
     if (TargetSpeed > MAX_VELOCITY_DEG_PER_SECOND) {TargetSpeed = MAX_VELOCITY_DEG_PER_SECOND;}
 
-    
+    // Just come code from swerve... Comments to be deleted when finished
     /*
     // ---------- Angle Determination for LF Swerve
     
@@ -144,22 +157,43 @@ public class Arm extends SubsystemBase {
     // set angle of swerve drive
     m_LFSteerMotor.set(ControlMode.Position, (LFCurrentAngleDeg + LFAngleDiff)*DEG_TO_ENCODERPULSE);
     */
-
     
-    // ---------- Set Arm Motor Speed
-    // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
-    m_ArmMotor.set(ControlMode.Velocity, TargetSpeed*DEG_TO_ENCODERPULSE*0.1, DemandType.ArbitraryFeedForward, 0.0);
-    //m_ArmMotor.set(ControlMode.Velocity, -9220, DemandType.ArbitraryFeedForward,0.0);
-        
-  }
+    GetArmPosition();
 
+    if ((m_EndArmPositionDeg <= MIN_MID_ARM_POS_DEG)||(m_EndArmPositionDeg >= MAX_MID_ARM_POS_DEG)){
+        // Outside of allowable range!  STOP!
+        m_ArmMotor.set(ControlMode.Velocity, 0.0);
+      }else{
+        // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
+        // The FeedForward is not added in yet, but we could do this and populate it below instead of 0.0 hardcoded
+        m_ArmMotor.set(ControlMode.Velocity, TargetSpeed*DEG_TO_ENCODERPULSE*0.1, DemandType.ArbitraryFeedForward, 0.0);
+      }
+
+    //m_ArmMotor.set(ControlMode.Velocity, -9220, DemandType.ArbitraryFeedForward,0.0);
+  }
 
 // Set Arm Position deg
-   public void ArmPosition(double PosDeg) {
-  
-    
+   public void SetArmPosition(double PosDeg) {
+   
   }
 
+// Get Arm Position in degrees
+private void GetArmPosition() {
+    // determine the arm position with the mod operator but note that it will can return between -360 and 360 so need to add a rotation to make it in the 0-360 range.
+  double MidArmPositionDeg = (m_ArmMotor.getSelectedSensorPosition()*ENCODERPULSE_TO_DEG)%360;
+  if (MidArmPositionDeg < 0.0) {
+    m_MidArmPositionDeg = MidArmPositionDeg + 360.0;
+  }else{
+    m_MidArmPositionDeg = MidArmPositionDeg;
+  }
+
+  // Add in code here to determine the end arm position if needed....
+
+  // Possibly add in code here to hard stop the arm and not let it start back up again if it goes too far beyond
+  // an allowable range so the robot does not beat itslef up.
+
+
+}
 
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
@@ -176,6 +210,8 @@ public class Arm extends SubsystemBase {
     m_ArmCanCoderPos = l1.add("CanCoder Deg", 0.0).getEntry();
     m_ArmMotorPosDeg = l1.add("Motor Pos Deg", 0.0).getEntry();
     m_ArmMotorPos = l1.add("Motor Pos'n", 0.0).getEntry();
+    m_ArmSpeedSP = l1.add("Arm Speed SP", 0.0).getEntry();
+    m_ArmSpeedFB = l1.add("Arm Speed FB", 0.0).getEntry();
     
   }
 
@@ -185,10 +221,16 @@ public class Arm extends SubsystemBase {
     m_ArmCanCoderPos.setDouble(m_ArmCanCoder.getAbsolutePosition());
 
     // update arm motor position values (degrees)
-    m_ArmMotorPosDeg.setDouble((m_ArmMotor.getSelectedSensorPosition()*ENCODERPULSE_TO_DEG)%360);
+    m_ArmMotorPosDeg.setDouble((m_ArmMotor.getSelectedSensorPosition()*ENCODERPULSE_TO_DEG)%180);
 
-    // update steer motor position values (encoder pulses)
+    // update arm motor position values (encoder pulses)
     m_ArmMotorPos.setDouble(m_ArmMotor.getSelectedSensorPosition());
+
+    // update arm motor speed reference (Setpoint) in deg/second    The x10 is because it's the encoder pulses per 100ms
+    m_ArmSpeedSP.setDouble(m_ArmMotor.getClosedLoopTarget()*ENCODERPULSE_TO_DEG*10);
+
+    // update arm motor speed reference (Setpoint) in deg/second    The x10 is because it's the encoder pulses per 100ms
+    m_ArmSpeedFB.setDouble(m_ArmMotor.getSelectedSensorVelocity()*ENCODERPULSE_TO_DEG*10);
 
   }
 
