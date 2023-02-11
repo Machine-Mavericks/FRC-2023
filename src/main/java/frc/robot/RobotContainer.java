@@ -14,7 +14,9 @@ import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
+import frc.robot.subsystems.Arm;
 import frc.robot.commands.ManualDriveCommand;
+import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
 import edu.wpi.first.math.geometry.Pose2d;
 
@@ -34,7 +36,7 @@ public class RobotContainer {
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
   public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
-  
+  public static final Arm arm = new Arm();  
 
   /* Constructor */
   public RobotContainer() {
@@ -47,7 +49,9 @@ public class RobotContainer {
   public static void init() {
     // set swerve drive default command to manual driving mode
     swervedrive.setDefaultCommand(new ManualDriveCommand());
-
+  
+    // set default arm command to manual drive mode
+    arm.setDefaultCommand(new ManualArmSpeed());
 
   }
 

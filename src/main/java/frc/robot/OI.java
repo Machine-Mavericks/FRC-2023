@@ -63,4 +63,8 @@ public class OI {
         return OI.driverController.getLeftBumper();
     }
 
+    public static double getArmSpeed(){
+        return OI.driverController.getRightY();
+    }
+
 }
