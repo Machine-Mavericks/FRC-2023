@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -14,6 +15,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Limelight extends SubsystemBase {
   /** Creates a new limelight. */
+
+    // network table to communicate to camera with
+    private NetworkTable m_table;
 
     // subsystem shuffleboard controls
     private GenericEntry m_Pipeline;
@@ -40,6 +44,10 @@ public class Limelight extends SubsystemBase {
      */
     public Limelight(String name) {
   
+      m_table = NetworkTableInstance.getDefault().getTable("limelight-"+name);
+
+
+
       // set initial pipeline to 0
       setPipeline(0);
   
@@ -67,12 +75,12 @@ public class Limelight extends SubsystemBase {
     /** set camera's current pipeline: 0 to 9 */
     void setPipeline(int num) {
       if (num >= 0 && num <= 9)
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(num);
+      m_table.getEntry("pipeline").setNumber(num);
     }
   
     /** returns camera's current pipeline: 0 to 9 */
     Double getPipeline() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("getPipe").getDouble(0);
+      return m_table.getEntry("getPipe").getDouble(0);
     }
   
     // ---------------Camera Access Functions ---------------------
@@ -82,7 +90,7 @@ public class Limelight extends SubsystemBase {
      * returns -27 to +27 degrees
      */
     public float getHorizontalTargetOffsetAngle() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getFloat(0);
+      return m_table.getEntry("tx").getFloat(0);
     }
   
     /**
@@ -91,12 +99,12 @@ public class Limelight extends SubsystemBase {
      */
      float getVerticalTargetOffsetAngle() {
       
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getFloat(0);
+      return m_table.getEntry("ty").getFloat(0);
     }
   
     /** get rotation angle between view of camera of target */
     float getTargetSkew() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ts").getFloat(0);
+      return m_table.getEntry("ts").getFloat(0);
     }
   
     /** Camera translation vector definition */
@@ -117,7 +125,30 @@ public class Limelight extends SubsystemBase {
         roll = 0.0;
       }
     };
+    
+    public class Cube {
+      public double distance;
+
+      public Cube(){
+        distance = 0;
+      }
+    };
+
+    public class Cone {
+      public double distance;
+      public boolean upright;
+
+      public Cone(){
+        distance = 0;
+        upright = true;
+      }
+    };
   
+
+    
+
+
+
     /** get camera translation vector to target */
     CamTran getCameraTranslation() {
   
@@ -125,7 +156,7 @@ public class Limelight extends SubsystemBase {
       CamTran camtran = new CamTran();
   
       // get camera translation vector from camera
-      double[] vector = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camTran").getDoubleArray(new double[]{});
+      double[] vector = m_table.getEntry("camTran").getDoubleArray(new double[]{});
      
       // if translation vector is valid (has 6 numbers in it) go ahead and record data in structure
       if (vector.length>=6)
@@ -142,96 +173,98 @@ public class Limelight extends SubsystemBase {
       
       return camtran;
     }
+
+
   
     // get target detection time latency
     public double getLatencyContribution() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tl").getDouble(0);
+      return m_table.getEntry("tl").getDouble(0);
     }
   
     /** get whether target is currently detected or not, returns 0 or 1 */ 
     public double isTargetPresent() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
+      return m_table.getEntry("tv").getDouble(0);
     }
   
     /** get target area atributes - 0 to 100% of image */
     public double getTargetArea() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
+      return m_table.getEntry("ta").getDouble(0);
     }
   
     /** returns shortest sidelength of target fitted bounding box (# pixels) */
     public double getShortestSide() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tshort").getDouble(0);
+      return m_table.getEntry("tshort").getDouble(0);
     }
   
     /** returns longest sidelength of target fitted bounding box (# pixels) */
     public double getLongestSide() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tlong").getDouble(0);
+      return m_table.getEntry("tlong").getDouble(0);
     }
   
     /** Horizontal sidelength of the rough bounding box (0 - 320 pixels) */
     public double getHorizontalSideLength() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("thor").getDouble(0);
+      return m_table.getEntry("thor").getDouble(0);
     }
   
     /** Vertical sidelength of the rough bounding box (0 - 320 pixels) */
     public double getVerticalSideLength() {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tvert").getDouble(0);
+      return m_table.getEntry("tvert").getDouble(0);
     }
   
     /** Get primary april tag id */
     public double getPrimAprilTagID () {
-      return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0);
+      return m_table.getEntry("tid").getDouble(0);
     }
 
     // ---------- get raw target attributes ----------
   
     /** Raw Screenspace X */
     float getRawScreenspaceX0()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx0").getFloat(0); }
+    {  return m_table.getEntry("tx0").getFloat(0); }
   
     /** Raw Screenspace X */
     float getRawScreenspaceX1()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx1").getFloat(0); }
+    {  return m_table.getEntry("tx1").getFloat(0); }
   
     /** Raw Screenspace X */
     float getRawScreenspaceX2()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx2").getFloat(0); }
+    {  return m_table.getEntry("tx2").getFloat(0); }
   
     /** Raw Screenspace Y */
     float getRawScreenspaceY0()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty0").getFloat(0);}
+    {  return m_table.getEntry("ty0").getFloat(0);}
   
     /** Raw Screenspace Y */
     float getRawScreenspaceY1()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty1").getFloat(0); }
+    {  return m_table.getEntry("ty1").getFloat(0); }
   
     /** Raw Screenspace Y */
     float getRawScreenspaceY2()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty2").getFloat(0); }
+    {  return m_table.getEntry("ty2").getFloat(0); }
   
     /** Area (0% of image to 100% of image) */
     float getRawArea0()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta0").getFloat(0);}
+    {  return m_table.getEntry("ta0").getFloat(0);}
   
     /** Area (0% of image to 100% of image) */
     float getRawArea1()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta1").getFloat(0);}
+    {  return m_table.getEntry("ta1").getFloat(0);}
   
     /** Area (0% of image to 100% of image) */
     float getRawArea2()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta2").getFloat(0);}
+    {  return m_table.getEntry("ta2").getFloat(0);}
   
     /** Skew or rotation (-90 degrees to 0 degrees) */
     float getRawSkew0()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ts0").getFloat(0);}
+    {  return m_table.getEntry("ts0").getFloat(0);}
   
     /** Skew or rotation (-90 degrees to 0 degrees) */
     float getRawSkew1()
-    {  return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ts1").getFloat(0);}
+    {  return m_table.getEntry("ts1").getFloat(0);}
   
     /** Skew or rotation (-90 degrees to 0 degrees) */
     float getRawSkew2()
-    { return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ts2").getFloat(0);}
+    { return m_table.getEntry("ts2").getFloat(0);}
   
   // -------------------- Subsystem Shuffleboard Methods --------------------
 
