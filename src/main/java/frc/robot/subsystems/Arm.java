@@ -21,21 +21,25 @@ import frc.robot.RobotMap;
 import frc.robot.Utils;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 
-public class Arm extends SubsystemBase {
+public class Arm extends ProfiledPIDSubsystem {
 
   // Arm Gear Ratios
   // This is the gearbox ratio at the motor
-  static final double GEARBOX_RATIO = 16;
+  static final double GEARBOX_RATIO = 80;
   // This is the chain driven gear ratio of the first arm section connected to the upright section
-  static final double MID_ARM_RATIO = 2;
+  static final double MID_ARM_RATIO = 2.25;
   // This is the chain driven gear ration of the second arm section connected to the first arm section and grabber
-  static final double END_ARM_RATIO = 1.666666;
+  static final double END_ARM_RATIO = 1.81818181;
   
   //static final double ARM_RATIO = GEARBOX_RATIO * MID_ARM_RATIO * END_ARM_RATIO;
   // This ARM_RATIO below is just for testing on the bench
-  static final double ARM_RATIO = 90;
+  static final double ARM_RATIO = 81;
 
   // encoder pulse per revolution
   static final double ENC_PULSE_PER_REV = 2048.0;
@@ -62,8 +66,13 @@ public class Arm extends SubsystemBase {
   double m_MidArmPositionDeg;
 
   // limit arm positions in degrees
-  static final double MIN_MID_ARM_POS_DEG = -10;
-  static final double MAX_MID_ARM_POS_DEG = 370;
+  // degree limits in the range of 0 - 360 degrees
+  // if the valid range includes the zero , then set the ARM_POS_LIMIT_INCLUDES_0 must be set true
+  // ensure the zero value of the arm position is not near eithe of the MIN or MAX arm position limits
+  // because then the arm will be allowed to travel outside the limits to get back inside the limits but going the wrong direction.
+  static final boolean ARM_POS_LIMIT_INCLUDES_0 = false;
+  static final double MIN_MID_ARM_POS_DEG = 30;
+  static final double MAX_MID_ARM_POS_DEG = 180;
   
   // create CANCoder sensor objects
   private CANCoder m_ArmCanCoder;
@@ -71,10 +80,30 @@ public class Arm extends SubsystemBase {
   // create motor objects
   private TalonFX m_ArmMotor;
 
+  private final ArmFeedforward m_feedforward =
+  new ArmFeedforward(0.0,0.0,0.0,0.0);
+  //  ArmConstants.kVVoltSecondPerRad, ArmConstants.kAVoltSecondSquaredPerRad);
+//new ArmFeedforward(
+  //   ArmConstants.kSVolts, ArmConstants.kGVolts,
+  //  ArmConstants.kVVoltSecondPerRad, ArmConstants.kAVoltSecondSquaredPerRad);
+
   /** Creates a new Arm. */
   /** Class Constuctor */
   public Arm() {
-    
+    super(
+      new ProfiledPIDController(
+          0.1,
+          0,
+          0,
+          new TrapezoidProfile.Constraints(
+              6.0,
+              6.0)),
+      0);
+  //m_encoder.setDistancePerPulse(ArmConstants.kEncoderDistancePerPulse);
+  // Start arm at rest in neutral position
+//  setGoal(ArmConstants.kArmOffsetRads);
+
+
     // create CANCoder objects - set absolute range of +/-180deg
     m_ArmCanCoder = new CANCoder(RobotMap.CANID.ARM_CANCODER);
     m_ArmCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
@@ -104,7 +133,7 @@ public class Arm extends SubsystemBase {
     // Add this in once the robot is built with an appropriate value
     // m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(-158.99)) * DEG_TO_ENCODERPULSE, 0, 0);
     // for testing on the bench unit, simply set it to zero because we don't have a cancoder
-    m_ArmMotor.setSelectedSensorPosition(0.0 * DEG_TO_ENCODERPULSE,0,0);
+    m_ArmMotor.setSelectedSensorPosition(30 * DEG_TO_ENCODERPULSE,0,0);
   
   }
 
@@ -158,27 +187,46 @@ public class Arm extends SubsystemBase {
     m_LFSteerMotor.set(ControlMode.Position, (LFCurrentAngleDeg + LFAngleDiff)*DEG_TO_ENCODERPULSE);
     */
     
-    GetArmPosition();
+    GetArmPositions();
 
-    if ((m_EndArmPositionDeg <= MIN_MID_ARM_POS_DEG)||(m_EndArmPositionDeg >= MAX_MID_ARM_POS_DEG)){
-        // Outside of allowable range!  STOP!
-        m_ArmMotor.set(ControlMode.Velocity, 0.0);
-      }else{
-        // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
-        // The FeedForward is not added in yet, but we could do this and populate it below instead of 0.0 hardcoded
-        m_ArmMotor.set(ControlMode.Velocity, TargetSpeed*DEG_TO_ENCODERPULSE*0.1, DemandType.ArbitraryFeedForward, 0.0);
-      }
+    // This code will set the speed of the arm to zero as soon as the arm angle goes out of the valid range but only if the target speed is still
+    // driving it out of range. If the target speed is telling the arm to go back to the valid range, then it will allow the arm to move that way.
+    // Note:  
 
+    if (!ARM_POS_LIMIT_INCLUDES_0 && ((m_MidArmPositionDeg <= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0))){
+      m_ArmMotor.set(ControlMode.Velocity, 0.0);
+    } else if (!ARM_POS_LIMIT_INCLUDES_0 && ((m_MidArmPositionDeg >= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0))){
+      m_ArmMotor.set(ControlMode.Velocity, 0.0);
+    } else if (ARM_POS_LIMIT_INCLUDES_0 && ((m_MidArmPositionDeg >= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0))){
+      m_ArmMotor.set(ControlMode.Velocity, 0.0);
+    } else if (ARM_POS_LIMIT_INCLUDES_0 && ((m_MidArmPositionDeg <= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0))){
+      m_ArmMotor.set(ControlMode.Velocity, 0.0);
+    } else {
+      // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
+      // The FeedForward is not added in yet, but we could do this and populate it below instead of 0.0 hardcoded
+      m_ArmMotor.set(ControlMode.Velocity, TargetSpeed*DEG_TO_ENCODERPULSE*0.1, DemandType.ArbitraryFeedForward, 0.0);
+    }
+    //Just some test code to set the arm speed
     //m_ArmMotor.set(ControlMode.Velocity, -9220, DemandType.ArbitraryFeedForward,0.0);
   }
 
+
 // Set Arm Position deg
    public void SetArmPosition(double PosDeg) {
-   
+
+    // Add code to limit or cancel if an invalid arm position is selected.
+    m_ArmMotor.set(ControlMode.Position, PosDeg*DEG_TO_ENCODERPULSE, DemandType.ArbitraryFeedForward, 0.0);
+
   }
 
 // Get Arm Position in degrees
-private void GetArmPosition() {
+public double GetArmPosition() {
+  GetArmPositions();
+  return m_MidArmPositionDeg;
+}
+
+// Get Arm Position in degrees
+private void GetArmPositions() {
     // determine the arm position with the mod operator but note that it will can return between -360 and 360 so need to add a rotation to make it in the 0-360 range.
   double MidArmPositionDeg = (m_ArmMotor.getSelectedSensorPosition()*ENCODERPULSE_TO_DEG)%360;
   if (MidArmPositionDeg < 0.0) {
@@ -186,14 +234,28 @@ private void GetArmPosition() {
   }else{
     m_MidArmPositionDeg = MidArmPositionDeg;
   }
+}
+
 
   // Add in code here to determine the end arm position if needed....
 
   // Possibly add in code here to hard stop the arm and not let it start back up again if it goes too far beyond
   // an allowable range so the robot does not beat itslef up.
 
+  @Override
+  public void useOutput(double output, TrapezoidProfile.State setpoint) {
+    // Calculate the feedforward from the sepoint
+    double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
+    // Add the feedforward to the PID output to get the motor output
+    
+    //m_motor.setVoltage(output + feedforward);
+  }
 
-}
+  @Override
+  public double getMeasurement() {
+//    return m_encoder.getDistance() + ArmConstants.kArmOffsetRads;
+    return 0.0;
+  }
 
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
@@ -221,7 +283,7 @@ private void GetArmPosition() {
     m_ArmCanCoderPos.setDouble(m_ArmCanCoder.getAbsolutePosition());
 
     // update arm motor position values (degrees)
-    m_ArmMotorPosDeg.setDouble((m_ArmMotor.getSelectedSensorPosition()*ENCODERPULSE_TO_DEG)%180);
+    m_ArmMotorPosDeg.setDouble(m_MidArmPositionDeg);
 
     // update arm motor position values (encoder pulses)
     m_ArmMotorPos.setDouble(m_ArmMotor.getSelectedSensorPosition());
