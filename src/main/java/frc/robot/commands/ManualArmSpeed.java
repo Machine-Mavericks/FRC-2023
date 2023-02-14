@@ -32,7 +32,7 @@ public class ManualArmSpeed extends CommandBase {
         InputSpeed = Math.abs(InputSpeed) > 0.05 ? InputSpeed : 0;
 
         //Scale the input speed to deg/second with the controller sending a max of 180 deg/second full scale
-        InputSpeed = InputSpeed * 180.0;
+        InputSpeed = InputSpeed * 110.0;
         RobotContainer.arm.ArmSpeed(InputSpeed);
         //Just teting
         //System.out.println((System.currentTimeMillis()) + " ManualArmSpeed set to: " + InputSpeed);   

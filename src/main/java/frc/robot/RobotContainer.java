@@ -18,6 +18,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
+import frc.robot.commands.SetArmPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 
 
@@ -62,7 +63,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private static void configureButtonBindings() {
-    
+
+    OI.ArmLocation2Button.onTrue(new SetArmPosition(50));
+
     // TODO: Add your button bindings here
     /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
                                                             false,

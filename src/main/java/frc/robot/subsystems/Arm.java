@@ -49,7 +49,7 @@ public class Arm extends ProfiledPIDSubsystem {
   static final double DEG_TO_ENCODERPULSE = 1.0 / ENCODERPULSE_TO_DEG;
 
   // limit arm speed to this rotational speed
-  static final double MAX_VELOCITY_DEG_PER_SECOND = 180;
+  static final double MAX_VELOCITY_DEG_PER_SECOND = 110;
 
   // shuffboard entries - used to display arm data
   private GenericEntry m_ArmCanCoderPos;
@@ -65,12 +65,12 @@ public class Arm extends ProfiledPIDSubsystem {
   // Arm Position in degrees for the mid arm section relative to the fixed arm upright
   double m_MidArmPositionDeg;
 
-  // limit arm positions in degrees
-  // degree limits in the range of 0 - 360 degrees
-  // if the valid range includes the zero , then set the ARM_POS_LIMIT_INCLUDES_0 must be set true
-  // ensure the zero value of the arm position is not near eithe of the MIN or MAX arm position limits
-  // because then the arm will be allowed to travel outside the limits to get back inside the limits but going the wrong direction.
-  static final boolean ARM_POS_LIMIT_INCLUDES_0 = false;
+  // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
+  double m_ArmCanCoderOffsetDeg;
+
+  // Limit arm positions in degrees - degree limits in the range of 30 - 330 degrees
+  // The arm zero degree mark will be when the arm is pointing directly down and the angle increases towards the pickup area and further increases to the drop off area.
+  // It is important to ensure ensure the zero value of the arm position is not near either of the MIN or MAX arm position limits.
   static final double MIN_MID_ARM_POS_DEG = 30;
   static final double MAX_MID_ARM_POS_DEG = 180;
   
@@ -124,6 +124,10 @@ public class Arm extends ProfiledPIDSubsystem {
 
     // create subsystem shuffle board page
     initializeShuffleboard();
+
+    // This is simply here for arm testing, can be removed later on
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.2);
+
   }
 
   
@@ -133,14 +137,20 @@ public class Arm extends ProfiledPIDSubsystem {
     // Add this in once the robot is built with an appropriate value
     // m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(-158.99)) * DEG_TO_ENCODERPULSE, 0, 0);
     // for testing on the bench unit, simply set it to zero because we don't have a cancoder
-    m_ArmMotor.setSelectedSensorPosition(30 * DEG_TO_ENCODERPULSE,0,0);
-  
+    m_ArmMotor.setSelectedSensorPosition(90 * DEG_TO_ENCODERPULSE,0,0);
+
+    // Add this in once the robot is built with an appropriate value
+    //m_ArmCanCoderOffsetDeg = m_ArmCanCoder.getAbsolutePosition();
+    // for testing on the bench unit, simply set it to zero because we don't have a cancoder
+    m_ArmCanCoderOffsetDeg = 0.0;
   }
 
   private int updateCounter=0;
   @Override
   public void periodic() {
-    
+
+    GetArmPositions();
+
     // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
     updateCounter+=1;
     if (updateCounter>=5)
@@ -187,19 +197,12 @@ public class Arm extends ProfiledPIDSubsystem {
     m_LFSteerMotor.set(ControlMode.Position, (LFCurrentAngleDeg + LFAngleDiff)*DEG_TO_ENCODERPULSE);
     */
     
-    GetArmPositions();
-
     // This code will set the speed of the arm to zero as soon as the arm angle goes out of the valid range but only if the target speed is still
     // driving it out of range. If the target speed is telling the arm to go back to the valid range, then it will allow the arm to move that way.
-    // Note:  
-
-    if (!ARM_POS_LIMIT_INCLUDES_0 && ((m_MidArmPositionDeg <= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0))){
+    // Note:  The location of zero degrees is what identifies which way the arm is allowed to move outside of the invalid range of motion.
+    if ((m_MidArmPositionDeg <= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0)){
       m_ArmMotor.set(ControlMode.Velocity, 0.0);
-    } else if (!ARM_POS_LIMIT_INCLUDES_0 && ((m_MidArmPositionDeg >= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0))){
-      m_ArmMotor.set(ControlMode.Velocity, 0.0);
-    } else if (ARM_POS_LIMIT_INCLUDES_0 && ((m_MidArmPositionDeg >= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0))){
-      m_ArmMotor.set(ControlMode.Velocity, 0.0);
-    } else if (ARM_POS_LIMIT_INCLUDES_0 && ((m_MidArmPositionDeg <= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0))){
+    } else if ((m_MidArmPositionDeg >= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0)){
       m_ArmMotor.set(ControlMode.Velocity, 0.0);
     } else {
       // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
@@ -212,16 +215,21 @@ public class Arm extends ProfiledPIDSubsystem {
 
 
 // Set Arm Position deg
-   public void SetArmPosition(double PosDeg) {
+   public boolean SetArmPosition(double PosDeg) {
 
     // Add code to limit or cancel if an invalid arm position is selected.
-    m_ArmMotor.set(ControlMode.Position, PosDeg*DEG_TO_ENCODERPULSE, DemandType.ArbitraryFeedForward, 0.0);
 
+    if ((PosDeg > MIN_MID_ARM_POS_DEG) && (PosDeg < MAX_MID_ARM_POS_DEG)) {
+      m_ArmMotor.set(ControlMode.Position, PosDeg*DEG_TO_ENCODERPULSE, DemandType.ArbitraryFeedForward, 0.0);
+      return true;
+    } else {
+    return false;
+    }
   }
 
-// Get Arm Position in degrees
+// Get Arm Position in degrees 
 public double GetArmPosition() {
-  GetArmPositions();
+  //GetArmPositions();  // This was moved to periodic
   return m_MidArmPositionDeg;
 }
 
@@ -241,6 +249,7 @@ private void GetArmPositions() {
 
   // Possibly add in code here to hard stop the arm and not let it start back up again if it goes too far beyond
   // an allowable range so the robot does not beat itslef up.
+
 
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
@@ -280,7 +289,7 @@ private void GetArmPositions() {
   /** Update subsystem shuffle board page with current Gyro values */
   private void updateShuffleboard() {
     // update CANCoder position values (degrees)
-    m_ArmCanCoderPos.setDouble(m_ArmCanCoder.getAbsolutePosition());
+    m_ArmCanCoderPos.setDouble((m_ArmCanCoder.getAbsolutePosition()+m_ArmCanCoderOffsetDeg)%360);
 
     // update arm motor position values (degrees)
     m_ArmMotorPosDeg.setDouble(m_MidArmPositionDeg);

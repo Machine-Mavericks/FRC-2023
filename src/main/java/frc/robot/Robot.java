@@ -102,6 +102,7 @@ public class Robot extends TimedRobot {
     // set default arm command to manual speed
     RobotContainer.arm.setDefaultCommand(new ManualArmSpeed());
 
+
         // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
