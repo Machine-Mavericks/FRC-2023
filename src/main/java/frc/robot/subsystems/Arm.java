@@ -27,8 +27,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 
-public class Arm extends ProfiledPIDSubsystem {
-
+public class Arm extends SubsystemBase {
+//public class Arm extends ProfiledPIDSubsystem {
   // Arm Gear Ratios
   // This is the gearbox ratio at the motor
   static final double GEARBOX_RATIO = 80;
@@ -89,8 +89,8 @@ public class Arm extends ProfiledPIDSubsystem {
 
   /** Creates a new Arm. */
   /** Class Constuctor */
-  public Arm() {
-    super(
+/**   public Arm() {
+   super(
       new ProfiledPIDController(
           0.1,
           0,
@@ -99,10 +99,14 @@ public class Arm extends ProfiledPIDSubsystem {
               6.0,
               6.0)),
       0);
+  */
   //m_encoder.setDistancePerPulse(ArmConstants.kEncoderDistancePerPulse);
   // Start arm at rest in neutral position
 //  setGoal(ArmConstants.kArmOffsetRads);
 
+/** Creates a new Arm. */
+  /** Class Constuctor */
+  public Arm() {
 
     // create CANCoder objects - set absolute range of +/-180deg
     m_ArmCanCoder = new CANCoder(RobotMap.CANID.ARM_CANCODER);
@@ -251,6 +255,8 @@ private void GetArmPositions() {
   // an allowable range so the robot does not beat itslef up.
 
 
+  /**
+
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     // Calculate the feedforward from the sepoint
@@ -265,6 +271,9 @@ private void GetArmPositions() {
 //    return m_encoder.getDistance() + ArmConstants.kArmOffsetRads;
     return 0.0;
   }
+
+ */
+
 
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
