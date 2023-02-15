@@ -36,6 +36,8 @@ public class ManualArmSpeed extends CommandBase {
         RobotContainer.arm.ArmSpeed(InputSpeed);
         //Just teting
         //System.out.println((System.currentTimeMillis()) + " ManualArmSpeed set to: " + InputSpeed);   
+
+        
   }
 
   // Called once the command ends or is interrupted.
