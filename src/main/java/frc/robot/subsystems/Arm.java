@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.schedulers.SequentialScheduler;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -35,11 +36,12 @@ public class Arm extends SubsystemBase {
   // This is the chain driven gear ratio of the first arm section connected to the upright section
   static final double MID_ARM_RATIO = 2.25;
   // This is the chain driven gear ration of the second arm section connected to the first arm section and grabber
+  // It's not needed as of yet, but could come into play with the feed forward loop later on
   static final double END_ARM_RATIO = 1.81818181;
   
-  //static final double ARM_RATIO = GEARBOX_RATIO * MID_ARM_RATIO * END_ARM_RATIO;
-  // This ARM_RATIO below is just for testing on the bench
-  static final double ARM_RATIO = 81;
+  static final double ARM_RATIO = GEARBOX_RATIO * MID_ARM_RATIO;
+  // This ARM_RATIO below is just for testing on the bench arm
+  //static final double ARM_RATIO = 81;
 
   // encoder pulse per revolution
   static final double ENC_PULSE_PER_REV = 2048.0;
@@ -71,8 +73,8 @@ public class Arm extends SubsystemBase {
   // Limit arm positions in degrees - degree limits in the range of 30 - 330 degrees
   // The arm zero degree mark will be when the arm is pointing directly down and the angle increases towards the pickup area and further increases to the drop off area.
   // It is important to ensure ensure the zero value of the arm position is not near either of the MIN or MAX arm position limits.
-  static final double MIN_MID_ARM_POS_DEG = 30;
-  static final double MAX_MID_ARM_POS_DEG = 180;
+  static final double MIN_MID_ARM_POS_DEG = 80;
+  static final double MAX_MID_ARM_POS_DEG = 220;
   
   // create CANCoder sensor objects
   private CANCoder m_ArmCanCoder;
@@ -110,7 +112,7 @@ public class Arm extends SubsystemBase {
 
     // create CANCoder objects - set absolute range of +/-180deg
     m_ArmCanCoder = new CANCoder(RobotMap.CANID.ARM_CANCODER);
-    m_ArmCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+    m_ArmCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     
     // create motors and initalize to factory default
     m_ArmMotor = new TalonFX(RobotMap.CANID.ARM_MOTOR);
@@ -129,9 +131,8 @@ public class Arm extends SubsystemBase {
     // create subsystem shuffle board page
     initializeShuffleboard();
 
-    // This is simply here for arm testing, can be removed later on
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.2);
-
+    // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
+        m_ArmMotor.configClosedLoopPeakOutput(0,0.2);
   }
 
   
@@ -139,14 +140,13 @@ public class Arm extends SubsystemBase {
   public void ResetArmEncoders() {
     
     // Add this in once the robot is built with an appropriate value
-    // m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(-158.99)) * DEG_TO_ENCODERPULSE, 0, 0);
-    // for testing on the bench unit, simply set it to zero because we don't have a cancoder
-    m_ArmMotor.setSelectedSensorPosition(90 * DEG_TO_ENCODERPULSE,0,0);
 
-    // Add this in once the robot is built with an appropriate value
-    //m_ArmCanCoderOffsetDeg = m_ArmCanCoder.getAbsolutePosition();
     // for testing on the bench unit, simply set it to zero because we don't have a cancoder
-    m_ArmCanCoderOffsetDeg = 0.0;
+    //m_ArmCanCoderOffsetDeg = 0.0;
+    m_ArmCanCoderOffsetDeg = -49;
+
+    m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg)) * DEG_TO_ENCODERPULSE, 0, 0);
+
   }
 
   private int updateCounter=0;
@@ -165,42 +165,12 @@ public class Arm extends SubsystemBase {
 
   
   // Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
- 
   public void ArmSpeed(double speed) {
   
     // limit arm speed
     double TargetSpeed = speed;
     if (TargetSpeed > MAX_VELOCITY_DEG_PER_SECOND) {TargetSpeed = MAX_VELOCITY_DEG_PER_SECOND;}
 
-    // Just come code from swerve... Comments to be deleted when finished
-    /*
-    // ---------- Angle Determination for LF Swerve
-    
-    // adder used to determine angle depending on direction of swerve drive
-    double adder1=0.0;
-
-    // get LF motor's current drive direction. If currently in reverse:
-    // a) consider its angle to be 180deg more than its sensor shows; and
-    // b) set direction flag to reverse
-    if (m_LFDriveMotor.getClosedLoopTarget()<0.0)
-      { adder1 = 180.0; LFDriveDir = -1.0; }
-    
-    // get current angle of swerve (in deg)
-    double LFCurrentAngleDeg = m_LFSteerMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_DEG;
-    
-    // determine smallest angle to turn swerve to get to desired angle
-    double LFAngleDiff = Utils.AngleDifference(LFCurrentAngleDeg%360.0, adder1+m_states[0].angle.getDegrees());
-    
-    // to minimize turning, it may be easier to reverse drive, and turn by smaller angle
-    if (LFAngleDiff<-90.0)
-      { LFDriveDir *= -1.0; LFAngleDiff+=180.0; }
-    else if (LFAngleDiff>90)
-      { LFDriveDir *= -1.0; LFAngleDiff-=180.0; }
-    
-    // set angle of swerve drive
-    m_LFSteerMotor.set(ControlMode.Position, (LFCurrentAngleDeg + LFAngleDiff)*DEG_TO_ENCODERPULSE);
-    */
-    
     // This code will set the speed of the arm to zero as soon as the arm angle goes out of the valid range but only if the target speed is still
     // driving it out of range. If the target speed is telling the arm to go back to the valid range, then it will allow the arm to move that way.
     // Note:  The location of zero degrees is what identifies which way the arm is allowed to move outside of the invalid range of motion.
@@ -218,11 +188,20 @@ public class Arm extends SubsystemBase {
   }
 
 
+// Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
+// This is done by converting the speed input to a position setpoint for the arm.
+public boolean ArmSpeed_PosCtrl(double speed) {
+  // arm position delta = arm speed in deg/second * time delta
+  // arm position target = current arm position + (arm speed in deg/second * time delta)
+  double TargetPosition = m_MidArmPositionDeg + (speed * 0.02);
+  return SetArmPosition(TargetPosition);
+}
+
+
 // Set Arm Position deg
    public boolean SetArmPosition(double PosDeg) {
 
     // Add code to limit or cancel if an invalid arm position is selected.
-
     if ((PosDeg > MIN_MID_ARM_POS_DEG) && (PosDeg < MAX_MID_ARM_POS_DEG)) {
       m_ArmMotor.set(ControlMode.Position, PosDeg*DEG_TO_ENCODERPULSE, DemandType.ArbitraryFeedForward, 0.0);
       return true;
@@ -298,7 +277,7 @@ private void GetArmPositions() {
   /** Update subsystem shuffle board page with current Gyro values */
   private void updateShuffleboard() {
     // update CANCoder position values (degrees)
-    m_ArmCanCoderPos.setDouble((m_ArmCanCoder.getAbsolutePosition()+m_ArmCanCoderOffsetDeg)%360);
+    m_ArmCanCoderPos.setDouble((m_ArmCanCoder.getAbsolutePosition()-m_ArmCanCoderOffsetDeg)%360);
 
     // update arm motor position values (degrees)
     m_ArmMotorPosDeg.setDouble(m_MidArmPositionDeg);
