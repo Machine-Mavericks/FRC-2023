@@ -118,12 +118,16 @@ public class Arm extends SubsystemBase {
     m_ArmMotor = new TalonFX(RobotMap.CANID.ARM_MOTOR);
     m_ArmMotor.configFactoryDefault();
     m_ArmMotor.configNeutralDeadband(0.001);
-    m_ArmMotor.setNeutralMode(NeutralMode.Coast);
+    //m_ArmMotor.setNeutralMode(NeutralMode.Coast);
+    m_ArmMotor.setNeutralMode(NeutralMode.Brake);
     
     // set steering motor closed loop control gains
     m_ArmMotor.config_kP(0, 0.1, 0);
     m_ArmMotor.config_kI(0, 0.000, 0);
     m_ArmMotor.config_kD(0, 0.05, 0);
+    // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.2);
+    m_ArmMotor.configClosedloopRamp(0.5);
 
     // initialize encoders of each steer motor according to CANCoder positions
     ResetArmEncoders();
@@ -131,16 +135,12 @@ public class Arm extends SubsystemBase {
     // create subsystem shuffle board page
     initializeShuffleboard();
 
-    // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
-        m_ArmMotor.configClosedLoopPeakOutput(0,0.2);
   }
 
   
-  // seed the encoder value of the arm motor based on CANcoder and alignment position
-  public void ResetArmEncoders() {
+  // seed the encoder value of the arm motor based on CANcoder and alignment position.
+    public void ResetArmEncoders() {
     
-    // Add this in once the robot is built with an appropriate value
-
     // for testing on the bench unit, simply set it to zero because we don't have a cancoder
     //m_ArmCanCoderOffsetDeg = 0.0;
     m_ArmCanCoderOffsetDeg = -49;
@@ -164,28 +164,28 @@ public class Arm extends SubsystemBase {
   }
 
   
-  // Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
-  public void ArmSpeed(double speed) {
+// Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
+public void ArmSpeed(double speed) {
   
-    // limit arm speed
-    double TargetSpeed = speed;
-    if (TargetSpeed > MAX_VELOCITY_DEG_PER_SECOND) {TargetSpeed = MAX_VELOCITY_DEG_PER_SECOND;}
+  // limit arm speed
+  double TargetSpeed = speed;
+  if (TargetSpeed > MAX_VELOCITY_DEG_PER_SECOND) {TargetSpeed = MAX_VELOCITY_DEG_PER_SECOND;}
 
-    // This code will set the speed of the arm to zero as soon as the arm angle goes out of the valid range but only if the target speed is still
-    // driving it out of range. If the target speed is telling the arm to go back to the valid range, then it will allow the arm to move that way.
-    // Note:  The location of zero degrees is what identifies which way the arm is allowed to move outside of the invalid range of motion.
-    if ((m_MidArmPositionDeg <= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0)){
-      m_ArmMotor.set(ControlMode.Velocity, 0.0);
-    } else if ((m_MidArmPositionDeg >= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0)){
-      m_ArmMotor.set(ControlMode.Velocity, 0.0);
-    } else {
-      // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
-      // The FeedForward is not added in yet, but we could do this and populate it below instead of 0.0 hardcoded
-      m_ArmMotor.set(ControlMode.Velocity, TargetSpeed*DEG_TO_ENCODERPULSE*0.1, DemandType.ArbitraryFeedForward, 0.0);
-    }
-    //Just some test code to set the arm speed
-    //m_ArmMotor.set(ControlMode.Velocity, -9220, DemandType.ArbitraryFeedForward,0.0);
+  // This code will set the speed of the arm to zero as soon as the arm angle goes out of the valid range but only if the target speed is still
+  // driving it out of range. If the target speed is telling the arm to go back to the valid range, then it will allow the arm to move that way.
+  // Note:  The location of zero degrees is what identifies which way the arm is allowed to move outside of the invalid range of motion.
+  if ((m_MidArmPositionDeg <= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0)){
+    m_ArmMotor.set(ControlMode.Velocity, 0.0);
+  } else if ((m_MidArmPositionDeg >= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0)){
+    m_ArmMotor.set(ControlMode.Velocity, 0.0);
+  } else {
+    // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
+    // The FeedForward is not added in yet, but we could do this and populate it below instead of 0.0 hardcoded
+    m_ArmMotor.set(ControlMode.Velocity, TargetSpeed*DEG_TO_ENCODERPULSE*0.1, DemandType.ArbitraryFeedForward, 0.0);
   }
+  //Just some test code to set the arm speed
+  //m_ArmMotor.set(ControlMode.Velocity, -9220, DemandType.ArbitraryFeedForward,0.0);
+}
 
 
 // Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
@@ -194,6 +194,8 @@ public boolean ArmSpeed_PosCtrl(double speed) {
   // arm position delta = arm speed in deg/second * time delta
   // arm position target = current arm position + (arm speed in deg/second * time delta)
   double TargetPosition = m_MidArmPositionDeg + (speed * 0.02);
+  if (TargetPosition < MIN_MID_ARM_POS_DEG) {TargetPosition = MIN_MID_ARM_POS_DEG;}
+  if (TargetPosition > MAX_MID_ARM_POS_DEG) {TargetPosition = MAX_MID_ARM_POS_DEG;}
   return SetArmPosition(TargetPosition);
 }
 
@@ -201,12 +203,12 @@ public boolean ArmSpeed_PosCtrl(double speed) {
 // Set Arm Position deg
    public boolean SetArmPosition(double PosDeg) {
 
-    // Add code to limit or cancel if an invalid arm position is selected.
+    // Do not set the arm position if an invalid arm position is selected.
     if ((PosDeg > MIN_MID_ARM_POS_DEG) && (PosDeg < MAX_MID_ARM_POS_DEG)) {
       m_ArmMotor.set(ControlMode.Position, PosDeg*DEG_TO_ENCODERPULSE, DemandType.ArbitraryFeedForward, 0.0);
       return true;
     } else {
-    return false;
+      return false;
     }
   }
 
