@@ -54,6 +54,7 @@ public class RobotMap {
 //LED's
     public static class PWMPorts {
         /** PWM Port for led strip */
+        //public static final int LED_STRIP1 = 0;
         public static final int LED_BLINKIN = 3;
     } 
 

@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
@@ -19,12 +20,26 @@ public class LEDBlinkin extends SubsystemBase {
       //led = new Victor(RobotMap.PWMPorts.LED_BLINKIN);
       led = new PWM(RobotMap.PWMPorts.LED_BLINKIN);
       
-      setPattern(LED_PATTERN.DISCO);
+      setPattern(LED_PATTERN.HUB);
     }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //Since LED comand dont like working we are doing it here
+
+
+    //Low power-owerr-werrr-errrr-rrrrr
+    //if( !(RobotContainer.panel.getVoltage() <11.0))
+   // {
+    //  RobotContainer.LEDStrip.setPattern(LED_PATTERN.LOWBATTERY);
+   // }
+
+   //Working????
+    System.out.println("************************LED COMAND************************************************************");
+
+    RobotContainer.LEDStrip.setPattern(LED_PATTERN.DISCO);
+    // If yes YAY if no heh have fun fixing
   }
 
   public enum LED_PATTERN {
