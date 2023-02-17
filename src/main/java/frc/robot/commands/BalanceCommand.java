@@ -43,9 +43,8 @@ public class BalanceCommand extends CommandBase {
   @Override
   public void execute() {
     pid = new PIDController(gyro.getP(), gyro.getI(), gyro.getD());
-    double driveSpeed = gyro.getPitch() < 7 && gyro.getPitch() > -7 ? 0 : (pid.calculate(gyro.getPitch(), 0.0));
+    double driveSpeed = gyro.getPitch() < 2.5 && gyro.getPitch() > -2.5 ? 0 : (pid.calculate(gyro.getPitch(), 0.0));
     swervedrive.drive(MathUtil.clamp(driveSpeed, -gyro.getMaxBalanceSpeed(), gyro.getMaxBalanceSpeed()), 0, 0, false);
-    System.out.println(driveSpeed);
   }
 
   // Called once the command ends or is interrupted.
