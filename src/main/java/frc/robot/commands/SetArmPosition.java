@@ -16,7 +16,7 @@ public class SetArmPosition extends CommandBase {
   private boolean m_CommandError = false;
   // m_ElapsedTime and m_Timeout are values in ms
   private int m_ElapsedTime = 0;
-  private int m_Timeout = 2000;
+  private int m_Timeout = 100;
 
   /** Creates a new SetArmPosition. */
   public SetArmPosition(double SetPosition) {
