@@ -3,11 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+import java.util.Map;
+
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -21,6 +25,16 @@ private GenericEntry m_gyroYaw;
 private GenericEntry m_gyroRoll;
 private GenericEntry m_xAcceleration;
 private GenericEntry m_yAcceleration;
+private GenericEntry m_pSlider;
+private GenericEntry m_iSlider;
+private GenericEntry m_dSlider;
+private GenericEntry m_maxBalanceSpeedSlider;
+private GenericEntry m_calculatedSpeed;
+private double kP = 0.00027;
+private double kI = 0.0;
+private double kD = 200;
+private double maxBalanceSpeed = 5;
+
 
 // make our gyro object
 private AHRS gyro;
@@ -59,7 +73,6 @@ public NavX() {
     gyro.reset();
   }
 
-
   /** Accumulated yaw
    * @return accumulated angle in degrees */
   public double continuousYaw() {
@@ -84,6 +97,23 @@ public NavX() {
     return gyro.getRawAccelY();
   }
 
+  public double getP() {
+    return kP;
+  }
+  public double getI() {
+    return kI;
+  }
+  public double getD() {
+    return kD;
+  }
+  public double getCalcSpeed() {
+    PIDController pid = new PIDController(kP, kI, kD);
+    return pid.calculate(getPitch(), 0.0);
+  }
+  public double getMaxBalanceSpeed() {
+    return maxBalanceSpeed;
+  }
+
   /** Gyro Shuffleboard */
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
@@ -102,6 +132,31 @@ public NavX() {
     m_gyroRoll = l1.add("Roll (deg)", 0.0).getEntry();
     m_xAcceleration = l1.add("X Acceleration", 0.0).getEntry();
     m_yAcceleration = l1.add("Y Acceleration", 0.0).getEntry();
+    m_calculatedSpeed = l1.add("PID Controlled Speed", 0.0).getEntry();
+    m_pSlider = Tab.add("P", kP)
+    // .withWidget(BuiltInWidgets.kNumberSlider)
+    .withPosition(2, 0)
+    .withSize(4, 1)
+    .withProperties(Map.of("min", -1, "max", 1))
+    .getEntry();
+    m_iSlider = Tab.add("I", kI)
+    // .withWidget(BuiltInWidgets.kNumberSlider)
+    .withPosition(2, 1)
+    .withSize(4, 1)
+    .withProperties(Map.of("min", -1, "max", 1))
+    .getEntry();
+    m_dSlider = Tab.add("D", kD)
+    // .withWidget(BuiltInWidgets.kNumberSlider)
+    .withPosition(2, 2)
+    .withSize(4, 1)
+    .withProperties(Map.of("min", -1, "max", 1))
+    .getEntry();
+    m_maxBalanceSpeedSlider = Tab.add("Max Speed for Balancing", maxBalanceSpeed)
+    // .withWidget(BuiltInWidgets.kNumberSlider)
+    .withPosition(2, 3)
+    .withSize(4, 1)
+    .withProperties(Map.of("min", -5, "max", 5))
+    .getEntry();
   }
 
   /** Update subsystem shuffle board page with current Gyro values */
@@ -112,7 +167,10 @@ public NavX() {
     m_gyroRoll.setDouble(getRoll());
     m_xAcceleration.setDouble(getXAcceleration());
     m_yAcceleration.setDouble(getYAcceleration());
+    m_calculatedSpeed.setDouble(getCalcSpeed());
+    kP = m_pSlider.getDouble(0.4);
+    kI = m_pSlider.getDouble(0.0);
+    kD = m_pSlider.getDouble(0.15);
+    maxBalanceSpeed = m_maxBalanceSpeedSlider.getDouble(0.2);
   }
-
-
 }

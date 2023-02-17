@@ -27,11 +27,12 @@ public class OI {
     private static class DriverButtons {
         /** Button to perform precision robot move */
         static final Button ROBOT_PRECISION_MOVE = XboxController.Button.kA;
+        private static final Button BALANCE_BUTTON = XboxController.Button.kRightBumper;
     }
 
     /** Buttons on the operator controller */
     private static class OperatorButtons {
-        private static final Button BALANCE_BUTTON = XboxController.Button.kY;
+        
         private static final Button RESET_BUTTON = XboxController.Button.kA;
         /** Button used as example */
         //private static final Button EXAMPLE = XboxController.Button.kA;
@@ -49,7 +50,7 @@ public class OI {
     private static final XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
     /** Controller used by driver, mapped to {@link #OPERATOR_CONTROLLER_PORT} */
     private static final XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
-    public static final JoystickButton balanceButton = new JoystickButton(operatorController, OperatorButtons.BALANCE_BUTTON.value);
+    public static final JoystickButton balanceButton = new JoystickButton(driverController, DriverButtons.BALANCE_BUTTON.value);
     public static final JoystickButton resetButton = new JoystickButton(operatorController, OperatorButtons.RESET_BUTTON.value);
 
     /** button for move command. Mapped to {@link DriverButtons#ROBOT_PRECISION_MOVE} */
