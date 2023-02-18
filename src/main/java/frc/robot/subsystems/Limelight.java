@@ -22,7 +22,9 @@ public class Limelight extends SubsystemBase {
     // subsystem shuffleboard controls
     private GenericEntry m_Pipeline;
     private GenericEntry m_TargetPresent;
+
     private GenericEntry m_AprilTagID;
+
     private GenericEntry m_AngleX;
     private GenericEntry m_AngleY;
     private GenericEntry m_Skew;
@@ -37,6 +39,7 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_Pitch;
     private GenericEntry m_Yaw;
     private GenericEntry m_Roll;
+
     private GenericEntry m_Xfs;
     private GenericEntry m_Yfs;
     private GenericEntry m_Zfs;
@@ -49,6 +52,7 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_Pitchrs;
     private GenericEntry m_Yawrs;
     private GenericEntry m_Rollrs;
+
   
     /**
      * Creates a new Limelight.
@@ -65,6 +69,7 @@ public class Limelight extends SubsystemBase {
       // set camera streaming mode - primary and secondary cameras are placed
       // side-by-side
       m_table.getEntry("stream").setNumber(0);
+
 
       // set initial pipeline to 0
       setPipeline(0);
@@ -91,13 +96,17 @@ public class Limelight extends SubsystemBase {
     // ---------- Camera Control Functions ----------
   
     /** set camera's current pipeline: 0 to 9 */
+
     public void setPipeline(int num) {
+
       if (num >= 0 && num <= 9)
       m_table.getEntry("pipeline").setNumber(num);
     }
   
     /** returns camera's current pipeline: 0 to 9 */
+
     public Double getPipeline() {
+
       return m_table.getEntry("getPipe").getDouble(0);
     }
   
@@ -143,7 +152,7 @@ public class Limelight extends SubsystemBase {
         roll = 0.0;
       }
     };
-  
+
     /** get camera translation vector to target */
     CamTran getCameraTranslation() {
   
@@ -253,6 +262,8 @@ public class Limelight extends SubsystemBase {
         // return data structure
         return t6t_rs;
       }
+
+
 
     // get target detection time latency
     public double getLatencyContribution() {
@@ -409,6 +420,7 @@ public class Limelight extends SubsystemBase {
     m_Pitchrs = l5.add("Pitch", 0.0).getEntry(); 
     m_Yawrs = l5.add("Yaw", 0.0).getEntry(); 
     m_Rollrs = l5.add("Roll", 0.0).getEntry();
+
   }
 
 
@@ -417,8 +429,12 @@ public class Limelight extends SubsystemBase {
     
     // update camera pipeline and target detected indicator
     m_Pipeline.setDouble(getPipeline());
+
     m_TargetPresent.setBoolean(isTargetPresent()==1);
     m_AprilTagID.setDouble(getPrimAprilTagID());
+
+
+
     
     // update angles to center of target
     m_AngleX.setDouble(getHorizontalTargetOffsetAngle());
@@ -441,6 +457,7 @@ public class Limelight extends SubsystemBase {
     m_Yaw.setDouble(vector.yaw);
     m_Roll.setDouble(vector.roll);
 
+
     // update robot in field space vector
     t6r_fs vectorfs = gett6r_fs();
     m_Xfs.setDouble(vectorfs.xfs);
@@ -461,3 +478,4 @@ public class Limelight extends SubsystemBase {
   }
 
 } // end class LImelight
+
