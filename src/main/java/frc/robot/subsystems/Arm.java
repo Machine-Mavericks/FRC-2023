@@ -17,6 +17,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.schedulers.SequentialScheduler;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.robot.RobotMap;
 import frc.robot.Utils;
@@ -26,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import java.util.Map;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 
 public class Arm extends SubsystemBase {
@@ -54,13 +58,25 @@ public class Arm extends SubsystemBase {
   static final double MAX_VELOCITY_DEG_PER_SECOND = 110;
 
   // shuffboard entries - used to display arm data
+  private GenericEntry m_AccelLimit;
+  
+  private GenericEntry m_Arm_P;
+  private GenericEntry m_Arm_I;
+  private GenericEntry m_Arm_D;
+
   private GenericEntry m_ArmCanCoderPos;
-  private GenericEntry m_ArmMotorPosDeg;
-  private GenericEntry m_ArmMotorPos;
+
+  private GenericEntry m_ArmPositionFB;
+  private GenericEntry m_ArmMotorPosFB;
+
+  private GenericEntry m_ArmPositionSP;
+  private GenericEntry m_ArmMotorPositionSP;
+
   private GenericEntry m_ArmSpeedSP;
+
   private GenericEntry m_ArmSpeedFB;
 
-
+  
   // Arm Position in degrees for the end arm section relative to the mid arm section
   double m_EndArmPositionDeg;
 
@@ -70,11 +86,14 @@ public class Arm extends SubsystemBase {
   // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
   double m_ArmCanCoderOffsetDeg;
 
+  // Arm Position Setpoint in degrees while in position control
+  double m_ArmPositionSetpoint;
+
   // Limit arm positions in degrees - degree limits in the range of 30 - 330 degrees
   // The arm zero degree mark will be when the arm is pointing directly down and the angle increases towards the pickup area and further increases to the drop off area.
   // It is important to ensure ensure the zero value of the arm position is not near either of the MIN or MAX arm position limits.
   static final double MIN_MID_ARM_POS_DEG = 80;
-  static final double MAX_MID_ARM_POS_DEG = 220;
+  static final double MAX_MID_ARM_POS_DEG = 240;
   
   // create CANCoder sensor objects
   private CANCoder m_ArmCanCoder;
@@ -110,42 +129,58 @@ public class Arm extends SubsystemBase {
   /** Class Constuctor */
   public Arm() {
 
-    // create CANCoder objects - set absolute range of +/-180deg
+    // create subsystem shuffle board page
+    initializeShuffleboard();
+
+    // create CANCoder objects - set absolute range of 0 - 360 deg
     m_ArmCanCoder = new CANCoder(RobotMap.CANID.ARM_CANCODER);
     m_ArmCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     
     // create motors and initalize to factory default
     m_ArmMotor = new TalonFX(RobotMap.CANID.ARM_MOTOR);
+
+    InitializeArm();
+
+  }
+
+  public void InitializeArm(){
     m_ArmMotor.configFactoryDefault();
     m_ArmMotor.configNeutralDeadband(0.001);
-    m_ArmMotor.setNeutralMode(NeutralMode.Coast);
-    
+    //m_ArmMotor.setNeutralMode(NeutralMode.Coast);
+    m_ArmMotor.setNeutralMode(NeutralMode.Brake);
+      
     // set steering motor closed loop control gains
-    m_ArmMotor.config_kP(0, 0.1, 0);
-    m_ArmMotor.config_kI(0, 0.000, 0);
-    m_ArmMotor.config_kD(0, 0.05, 0);
-
-    // initialize encoders of each steer motor according to CANCoder positions
-    ResetArmEncoders();
-
-    // create subsystem shuffle board page
-    initializeShuffleboard();
-
+    m_ArmMotor.config_kP(0, getArmP(), 0);
+    m_ArmMotor.config_kI(0, getArmI(), 0);
+    m_ArmMotor.config_kD(0, getArmD(), 0);
     // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
-        m_ArmMotor.configClosedLoopPeakOutput(0,0.2);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.5);
+    m_ArmMotor.configClosedloopRamp(getMaxAcceleration());
+  
+    // The other code already is supposed to do this, but keep this as a backup
+    // Note the values are set to plus/minus 5 degrees beyond the software limits.
+    m_ArmMotor.configReverseSoftLimitThreshold((MIN_MID_ARM_POS_DEG - 5)*DEG_TO_ENCODERPULSE);
+    m_ArmMotor.configReverseSoftLimitEnable(true);
+    m_ArmMotor.configForwardSoftLimitThreshold((MAX_MID_ARM_POS_DEG + 5)*DEG_TO_ENCODERPULSE);
+    m_ArmMotor.configForwardSoftLimitEnable(true);
+    m_ArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    m_ArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+      // initialize encoders according to CANCoder positions
+    ResetArmEncoders();
   }
 
   
-  // seed the encoder value of the arm motor based on CANcoder and alignment position
-  public void ResetArmEncoders() {
+  // seed the encoder value of the arm motor based on CANcoder and alignment position.
+    public void ResetArmEncoders() {
     
-    // Add this in once the robot is built with an appropriate value
-
     // for testing on the bench unit, simply set it to zero because we don't have a cancoder
     //m_ArmCanCoderOffsetDeg = 0.0;
     m_ArmCanCoderOffsetDeg = -49;
 
     m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg)) * DEG_TO_ENCODERPULSE, 0, 0);
+
+    GetArmPositions();
+    m_ArmPositionSetpoint = m_MidArmPositionDeg;
 
   }
 
@@ -164,28 +199,28 @@ public class Arm extends SubsystemBase {
   }
 
   
-  // Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
-  public void ArmSpeed(double speed) {
+// Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
+public void ArmSpeed(double speed) {
   
-    // limit arm speed
-    double TargetSpeed = speed;
-    if (TargetSpeed > MAX_VELOCITY_DEG_PER_SECOND) {TargetSpeed = MAX_VELOCITY_DEG_PER_SECOND;}
+  // limit arm speed
+  double TargetSpeed = speed;
+  if (TargetSpeed > MAX_VELOCITY_DEG_PER_SECOND) {TargetSpeed = MAX_VELOCITY_DEG_PER_SECOND;}
 
-    // This code will set the speed of the arm to zero as soon as the arm angle goes out of the valid range but only if the target speed is still
-    // driving it out of range. If the target speed is telling the arm to go back to the valid range, then it will allow the arm to move that way.
-    // Note:  The location of zero degrees is what identifies which way the arm is allowed to move outside of the invalid range of motion.
-    if ((m_MidArmPositionDeg <= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0)){
-      m_ArmMotor.set(ControlMode.Velocity, 0.0);
-    } else if ((m_MidArmPositionDeg >= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0)){
-      m_ArmMotor.set(ControlMode.Velocity, 0.0);
-    } else {
-      // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
-      // The FeedForward is not added in yet, but we could do this and populate it below instead of 0.0 hardcoded
-      m_ArmMotor.set(ControlMode.Velocity, TargetSpeed*DEG_TO_ENCODERPULSE*0.1, DemandType.ArbitraryFeedForward, 0.0);
-    }
-    //Just some test code to set the arm speed
-    //m_ArmMotor.set(ControlMode.Velocity, -9220, DemandType.ArbitraryFeedForward,0.0);
+  // This code will set the speed of the arm to zero as soon as the arm angle goes out of the valid range but only if the target speed is still
+  // driving it out of range. If the target speed is telling the arm to go back to the valid range, then it will allow the arm to move that way.
+  // Note:  The location of zero degrees is what identifies which way the arm is allowed to move outside of the invalid range of motion.
+  if ((m_MidArmPositionDeg <= MIN_MID_ARM_POS_DEG)&&(TargetSpeed < 0.0)){
+    m_ArmMotor.set(ControlMode.Velocity, 0.0);
+  } else if ((m_MidArmPositionDeg >= MAX_MID_ARM_POS_DEG)&&(TargetSpeed > 0.0)){
+    m_ArmMotor.set(ControlMode.Velocity, 0.0);
+  } else {
+    // go ahead and set motor closed loop target speeds (in encoder pulses per 100ms)
+    // The FeedForward is not added in yet, but we could do this and populate it below instead of 0.0 hardcoded
+    m_ArmMotor.set(ControlMode.Velocity, TargetSpeed*DEG_TO_ENCODERPULSE*0.1, DemandType.ArbitraryFeedForward, 0.0);
   }
+  //Just some test code to set the arm speed
+  //m_ArmMotor.set(ControlMode.Velocity, -9220, DemandType.ArbitraryFeedForward,0.0);
+}
 
 
 // Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
@@ -193,7 +228,10 @@ public class Arm extends SubsystemBase {
 public boolean ArmSpeed_PosCtrl(double speed) {
   // arm position delta = arm speed in deg/second * time delta
   // arm position target = current arm position + (arm speed in deg/second * time delta)
-  double TargetPosition = m_MidArmPositionDeg + (speed * 0.02);
+  double TargetPosition = m_ArmPositionSetpoint + (speed * 0.02);
+  if (TargetPosition < MIN_MID_ARM_POS_DEG) {TargetPosition = MIN_MID_ARM_POS_DEG;}
+  if (TargetPosition > MAX_MID_ARM_POS_DEG) {TargetPosition = MAX_MID_ARM_POS_DEG;}
+  System.out.println("teleopPeriodic!" + (System.currentTimeMillis()) + " TargetPos " + TargetPosition + " Speed " + speed);
   return SetArmPosition(TargetPosition);
 }
 
@@ -201,12 +239,13 @@ public boolean ArmSpeed_PosCtrl(double speed) {
 // Set Arm Position deg
    public boolean SetArmPosition(double PosDeg) {
 
-    // Add code to limit or cancel if an invalid arm position is selected.
-    if ((PosDeg > MIN_MID_ARM_POS_DEG) && (PosDeg < MAX_MID_ARM_POS_DEG)) {
-      m_ArmMotor.set(ControlMode.Position, PosDeg*DEG_TO_ENCODERPULSE, DemandType.ArbitraryFeedForward, 0.0);
+    // Do not set the arm position if an invalid arm position is selected.
+    if ((PosDeg >= MIN_MID_ARM_POS_DEG) && (PosDeg <= MAX_MID_ARM_POS_DEG)) {
+      m_ArmPositionSetpoint = PosDeg;
+      m_ArmMotor.set(ControlMode.Position, m_ArmPositionSetpoint*DEG_TO_ENCODERPULSE, DemandType.ArbitraryFeedForward, 0.0);
       return true;
     } else {
-    return false;
+      return false;
     }
   }
 
@@ -262,35 +301,113 @@ private void GetArmPositions() {
     // Create arm page in shuffleboard
     ShuffleboardTab Tab = Shuffleboard.getTab("Arm");
 
+    // create slider controls
+    // note: PID's will be removed when testing is over.
+    m_AccelLimit = Tab.add("Accel Limit (sec to full)", 0.40)
+       .withPosition(0, 0)
+       .withSize(2, 1)
+       .withWidget(BuiltInWidgets.kNumberSlider)
+       .withProperties(Map.of("min", 0, "max", 4))
+       .getEntry();
+       
+    m_Arm_P = Tab.add("Arm P", 0.04)
+      .withPosition(0, 1)
+      .withSize(2, 1)
+      .withWidget(BuiltInWidgets.kNumberSlider)
+      .withProperties(Map.of("min", 0, "max", 0.2))
+      .getEntry();
+       
+    m_Arm_I = Tab.add("Arm I", 0.0)
+      .withPosition(0, 2)
+     .withSize(2, 1)
+     .withWidget(BuiltInWidgets.kNumberSlider)
+     .withProperties(Map.of("min", 0, "max", 0.01))
+     .getEntry();
+
+    m_Arm_D = Tab.add("Arm D", 0.05)
+     .withPosition(0, 3)
+     .withSize(2, 1)
+     .withWidget(BuiltInWidgets.kNumberSlider)
+     .withProperties(Map.of("min", 0, "max", 0.1))
+     .getEntry();
+
+    // create button/command to reset arm 
+    Tab.add("Arm Reset", new InstantCommand(()->{InitializeArm();}))
+    .withPosition(0,4)
+    .withSize(2, 1);
+
     // create controls to arm motor and position
-    ShuffleboardLayout l1 = Tab.getLayout("Arm Motor and Position", BuiltInLayouts.kList);
-    l1.withPosition(3, 0);
+    ShuffleboardLayout l1 = Tab.getLayout("CanCoder", BuiltInLayouts.kList);
+    l1.withPosition(2, 0);
     l1.withSize(1, 5);
     m_ArmCanCoderPos = l1.add("CanCoder Deg", 0.0).getEntry();
-    m_ArmMotorPosDeg = l1.add("Motor Pos Deg", 0.0).getEntry();
-    m_ArmMotorPos = l1.add("Motor Pos'n", 0.0).getEntry();
-    m_ArmSpeedSP = l1.add("Arm Speed SP", 0.0).getEntry();
-    m_ArmSpeedFB = l1.add("Arm Speed FB", 0.0).getEntry();
-    
+
+    ShuffleboardLayout l2 = Tab.getLayout("Position FB", BuiltInLayouts.kList);
+    l2.withPosition(3, 0);
+    l2.withSize(1, 5);
+    m_ArmPositionFB = l2.add("Arm FB Deg", 0.0).getEntry();
+    m_ArmMotorPosFB = l2.add("Motor FB Cnt", 0.0).getEntry();
+
+    ShuffleboardLayout l3 = Tab.getLayout("Position SP", BuiltInLayouts.kList);
+    l3.withPosition(4, 0);
+    l3.withSize(1, 5);
+    m_ArmPositionSP= l3.add("Arm SP Deg", 0.0).getEntry();
+    m_ArmMotorPositionSP= l3.add("Motor SP Cnt", 0.0).getEntry();
+
+    ShuffleboardLayout l4 = Tab.getLayout("Speed FB", BuiltInLayouts.kList);
+    l4.withPosition(5, 0);
+    l4.withSize(1, 5);
+    m_ArmSpeedFB= l4.add("Arm FB Deg per s", 0.0).getEntry();
+
+    ShuffleboardLayout l5 = Tab.getLayout("Speed SP", BuiltInLayouts.kList);
+    l5.withPosition(6, 0);
+    l5.withSize(1, 5);
+    m_ArmSpeedSP= l5.add("Arm SP Deg per s", 0.0).getEntry();
   }
 
-  /** Update subsystem shuffle board page with current Gyro values */
+  /** Update subsystem shuffle board page with current values */
   private void updateShuffleboard() {
     // update CANCoder position values (degrees)
     m_ArmCanCoderPos.setDouble((m_ArmCanCoder.getAbsolutePosition()-m_ArmCanCoderOffsetDeg)%360);
 
-    // update arm motor position values (degrees)
-    m_ArmMotorPosDeg.setDouble(m_MidArmPositionDeg);
+    // update arm motor position feedback values
+    m_ArmPositionFB.setDouble(m_MidArmPositionDeg);
+    m_ArmMotorPosFB.setDouble(m_ArmMotor.getSelectedSensorPosition());
 
-    // update arm motor position values (encoder pulses)
-    m_ArmMotorPos.setDouble(m_ArmMotor.getSelectedSensorPosition());
-
-    // update arm motor speed reference (Setpoint) in deg/second    The x10 is because it's the encoder pulses per 100ms
-    m_ArmSpeedSP.setDouble(m_ArmMotor.getClosedLoopTarget()*ENCODERPULSE_TO_DEG*10);
+    // update arm motor position setpoint values
+    m_ArmPositionSP.setDouble(m_ArmPositionSetpoint);
+    m_ArmMotorPositionSP.setDouble(m_ArmMotor.getClosedLoopTarget());
 
     // update arm motor speed reference (Setpoint) in deg/second    The x10 is because it's the encoder pulses per 100ms
     m_ArmSpeedFB.setDouble(m_ArmMotor.getSelectedSensorVelocity()*ENCODERPULSE_TO_DEG*10);
 
+    // update arm motor speed reference (Setpoint) in deg/second    The x10 is because it's the encoder pulses per 100ms
+    m_ArmSpeedSP.setDouble(m_ArmMotor.getClosedLoopTarget()*ENCODERPULSE_TO_DEG*10);
   }
+
+  // returns Acceleration limit in shuffleboard slider in (seconds to full throttle)
+  public double getMaxAcceleration()
+  {
+    return m_AccelLimit.getDouble(4.0);
+  }
+
+  // returns P Gain for Arm Motor
+  public double getArmP()
+  {
+    return m_Arm_P.getDouble(0.004);
+  }
+
+  // returns I Gain for Arm Motor
+  public double getArmI()
+  {
+    return m_Arm_I.getDouble(0.0);
+  }
+
+  // returns D Gain for Arm Motor
+  public double getArmD()
+  {
+    return m_Arm_D.getDouble(0.0);
+  }
+
 
 }

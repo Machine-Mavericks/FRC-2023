@@ -14,6 +14,9 @@ public class SetArmPosition extends CommandBase {
 
   private double m_TargetPposition;
   private boolean m_CommandError = false;
+  // m_ElapsedTime and m_Timeout are values in ms
+  private int m_ElapsedTime = 0;
+  private int m_Timeout = 100;
 
   /** Creates a new SetArmPosition. */
   public SetArmPosition(double SetPosition) {
@@ -31,22 +34,25 @@ public class SetArmPosition extends CommandBase {
       // Arm subsystem is not happy
       m_CommandError = true;
     }
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    // Executes every 20ms, so keep track of the time in ms.
+    m_ElapsedTime += 20;
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.arm.ArmSpeed(0.0);
+    RobotContainer.arm.ArmSpeed_PosCtrl(0.0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (m_CommandError || (Math.abs(RobotContainer.arm.GetArmPosition() - m_TargetPposition) < 1.0));
+    return (m_CommandError || (Math.abs(RobotContainer.arm.GetArmPosition() - m_TargetPposition) < 1.0)) || (m_ElapsedTime >= m_Timeout);
   }
+
 }

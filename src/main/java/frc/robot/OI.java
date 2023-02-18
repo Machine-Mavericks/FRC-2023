@@ -71,7 +71,8 @@ public class OI {
         return OI.driverController.getXButton();
     }
 
+    public static JoystickButton ArmLocation1Button = new JoystickButton(driverController, XboxController.Button.kA.value);
     public static JoystickButton ArmLocation2Button = new JoystickButton(driverController, XboxController.Button.kX.value);
-
+    public static JoystickButton ArmLocation3Button = new JoystickButton(driverController, XboxController.Button.kY.value);
 
 }
