@@ -11,6 +11,7 @@ public class RobotMap {
      */
     public static class CANID {
         
+        // Jan 30/2023:  Swerve Drive CAN IDs match between 2022 and 2023 robot base
         // CAN IDs for Swerve Cancoders
         public static final int LF_CANCODER = 12;
         public static final int RF_CANCODER = 11;
@@ -27,6 +28,12 @@ public class RobotMap {
         public static final int LR_DRIVE_MOTOR = 1;
         public static final int RR_DRIVE_MOTOR = 7;
 
+        // CAN ID for ARM
+        public static final int ARM_MOTOR = 13;
+        public static final int ARM_CANCODER = 14;
+        
+        // CAN ID for CTR Pigeon Gyro
+        public static final int PIGEON = 20;
     }
 
     /**
@@ -51,6 +58,11 @@ public class RobotMap {
         /** CAN ID of right talon 2. */
         private static final int RIGHT_CONTROLLER_2 = 3;
     }
+//LED's
+    public static class PWMPorts {
+        /** PWM Port for led strip */
+        //public static final int LED_STRIP1 = 0;
+        public static final int LED_BLINKIN = 3;
+    } 
 
-    
 }

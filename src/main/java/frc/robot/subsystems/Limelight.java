@@ -22,6 +22,9 @@ public class Limelight extends SubsystemBase {
     // subsystem shuffleboard controls
     private GenericEntry m_Pipeline;
     private GenericEntry m_TargetPresent;
+
+    private GenericEntry m_AprilTagID;
+
     private GenericEntry m_AngleX;
     private GenericEntry m_AngleY;
     private GenericEntry m_Skew;
@@ -36,7 +39,20 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_Pitch;
     private GenericEntry m_Yaw;
     private GenericEntry m_Roll;
-  
+
+    private GenericEntry m_Xfs;
+    private GenericEntry m_Yfs;
+    private GenericEntry m_Zfs;
+    private GenericEntry m_Pitchfs;
+    private GenericEntry m_Yawfs;
+    private GenericEntry m_Rollfs;
+    private GenericEntry m_Xrs;
+    private GenericEntry m_Yrs;
+    private GenericEntry m_Zrs;
+    private GenericEntry m_Pitchrs;
+    private GenericEntry m_Yawrs;
+    private GenericEntry m_Rollrs;
+
   
     /**
      * Creates a new Limelight.
@@ -44,8 +60,15 @@ public class Limelight extends SubsystemBase {
      */
     public Limelight(String name) {
   
+      // set pointer to limelight network table
       m_table = NetworkTableInstance.getDefault().getTable("limelight-"+name);
 
+      // initialize camera to use LED mode set in the current pipeline setup
+      m_table.getEntry("ledMode").setNumber(0);
+
+      // set camera streaming mode - primary and secondary cameras are placed
+      // side-by-side
+      m_table.getEntry("stream").setNumber(0);
 
 
       // set initial pipeline to 0
@@ -73,13 +96,17 @@ public class Limelight extends SubsystemBase {
     // ---------- Camera Control Functions ----------
   
     /** set camera's current pipeline: 0 to 9 */
-    void setPipeline(int num) {
+
+    public void setPipeline(int num) {
+
       if (num >= 0 && num <= 9)
       m_table.getEntry("pipeline").setNumber(num);
     }
   
     /** returns camera's current pipeline: 0 to 9 */
-    Double getPipeline() {
+
+    public Double getPipeline() {
+
       return m_table.getEntry("getPipe").getDouble(0);
     }
   
@@ -125,29 +152,6 @@ public class Limelight extends SubsystemBase {
         roll = 0.0;
       }
     };
-    
-    public class Cube {
-      public double distance;
-
-      public Cube(){
-        distance = 0;
-      }
-    };
-
-    public class Cone {
-      public double distance;
-      public boolean upright;
-
-      public Cone(){
-        distance = 0;
-        upright = true;
-      }
-    };
-  
-
-    
-
-
 
     /** get camera translation vector to target */
     CamTran getCameraTranslation() {
@@ -170,12 +174,97 @@ public class Limelight extends SubsystemBase {
       } 
   
       // return data structure
-      
       return camtran;
     }
 
-
+    /** Robot Pose in field space as computed by this fiducial (x,y,z,rx,ry,rz) definition */
+      public class t6r_fs {
+        public double xfs;
+        public double yfs;
+        public double zfs;
+        public double pitchfs;
+        public double yawfs;
+        public double rollfs;
+      
+        public t6r_fs() {
+          xfs = 0.0;
+          yfs = 0.0;
+          zfs = 0.0;
+          pitchfs = 0.0;
+          yawfs = 0.0;
+          rollfs = 0.0;
+        }
+      };
+      
+      /** get Robot pose (field space) */
+      t6r_fs gett6r_fs() {
+    
+      // set up data structure to return
+      t6r_fs t6r_fs = new t6r_fs();
+      
+      // get robot pose in field space vector from camera
+      double[] vectorfs = m_table.getEntry("botpose").getDoubleArray(new double[]{});
+         
+      // if translation vector is valid (has 6 numbers in it) go ahead and record data in structure
+      if (vectorfs.length>=6)
+      {
+        t6r_fs.xfs = vectorfs[0];
+        t6r_fs.yfs = vectorfs[1];
+        t6r_fs.zfs = vectorfs[2];
+        t6r_fs.pitchfs = vectorfs[3];
+        t6r_fs.yawfs = vectorfs[4];
+        t6r_fs.rollfs = vectorfs[5];
+      } 
+      
+      // return data structure
+      return t6r_fs;
+      }
   
+      /** Target Pose in robot space as computed by this fiducial (x,y,z,rx,ry,rz) definition */
+      public class t6t_rs {
+        public double xrs;
+        public double yrs;
+        public double zrs;
+        public double pitchrs;
+        public double yawrs;
+        public double rollrs;
+
+        public t6t_rs() {
+          xrs = 0.0;
+          yrs = 0.0;
+          zrs = 0.0;
+          pitchrs = 0.0;
+          yawrs = 0.0;
+          rollrs = 0.0;
+        }
+      };
+
+      /** get Target pose (robot space) */
+      t6t_rs gett6t_rs() {
+
+        // set up data structure to return
+        t6t_rs t6t_rs = new t6t_rs();
+
+        // get target pose in robot space from camera
+        double[] vectorrs = m_table.getEntry("botpose_targetspace").getDoubleArray(new double[]{});
+ 
+        // if translation vector is valid (has 6 numbers in it) go ahead and record data in structure
+        if (vectorrs.length>=6)
+        {
+          t6t_rs.xrs = vectorrs[0];
+          t6t_rs.yrs = vectorrs[1];
+          t6t_rs.zrs = vectorrs[2];
+          t6t_rs.pitchrs = vectorrs[3];
+          t6t_rs.yawrs = vectorrs[4];
+          t6t_rs.rollrs = vectorrs[5];
+        } 
+
+        // return data structure
+        return t6t_rs;
+      }
+
+
+
     // get target detection time latency
     public double getLatencyContribution() {
       return m_table.getEntry("tl").getDouble(0);
@@ -280,6 +369,9 @@ public class Limelight extends SubsystemBase {
     // does camera detect target
     m_TargetPresent = Tab.add("Target Present", false).withPosition(1,0).getEntry();
 
+    // april tag target id
+    m_AprilTagID = Tab.add("AprilTag Target ID", 0).withPosition(2,0).getEntry();
+
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Target", BuiltInLayouts.kList);
     l1.withPosition(2, 0);
@@ -308,6 +400,27 @@ public class Limelight extends SubsystemBase {
     m_Pitch = l3.add("Pitch", 0.0).getEntry(); 
     m_Yaw = l3.add("Yaw", 0.0).getEntry(); 
     m_Roll = l3.add("Roll", 0.0).getEntry();
+
+    ShuffleboardLayout l4 = Tab.getLayout("Robot in field space", BuiltInLayouts.kList);
+    l4.withPosition(6,0);
+    l4.withSize(1,5);
+    m_Xfs = l4.add("X", 0.0).getEntry();
+    m_Yfs = l4.add("Y", 0.0).getEntry(); 
+    m_Zfs = l4.add("Z", 0.0).getEntry(); 
+    m_Pitchfs = l4.add("Pitch", 0.0).getEntry(); 
+    m_Yawfs = l4.add("Yaw", 0.0).getEntry(); 
+    m_Rollfs = l4.add("Roll", 0.0).getEntry();
+
+    ShuffleboardLayout l5 = Tab.getLayout("Target in robot space", BuiltInLayouts.kList);
+    l5.withPosition(6,0);
+    l5.withSize(1,5);
+    m_Xrs = l5.add("X", 0.0).getEntry();
+    m_Yrs = l5.add("Y", 0.0).getEntry(); 
+    m_Zrs = l5.add("Z", 0.0).getEntry(); 
+    m_Pitchrs = l5.add("Pitch", 0.0).getEntry(); 
+    m_Yawrs = l5.add("Yaw", 0.0).getEntry(); 
+    m_Rollrs = l5.add("Roll", 0.0).getEntry();
+
   }
 
 
@@ -316,7 +429,12 @@ public class Limelight extends SubsystemBase {
     
     // update camera pipeline and target detected indicator
     m_Pipeline.setDouble(getPipeline());
-    m_TargetPresent.setDouble(isTargetPresent());
+
+    m_TargetPresent.setBoolean(isTargetPresent()==1);
+    m_AprilTagID.setDouble(getPrimAprilTagID());
+
+
+
     
     // update angles to center of target
     m_AngleX.setDouble(getHorizontalTargetOffsetAngle());
@@ -338,7 +456,26 @@ public class Limelight extends SubsystemBase {
     m_Pitch.setDouble(vector.pitch);
     m_Yaw.setDouble(vector.yaw);
     m_Roll.setDouble(vector.roll);
+
+
+    // update robot in field space vector
+    t6r_fs vectorfs = gett6r_fs();
+    m_Xfs.setDouble(vectorfs.xfs);
+    m_Yfs.setDouble(vectorfs.yfs);
+    m_Zfs.setDouble(vectorfs.zfs);
+    m_Pitchfs.setDouble(vectorfs.pitchfs);
+    m_Yawfs.setDouble(vectorfs.yawfs);
+    m_Rollfs.setDouble(vectorfs.rollfs);
+
+    // update target in robot space vector
+    t6t_rs vectorrs = gett6t_rs();
+    m_Xrs.setDouble(vectorrs.xrs);
+    m_Yrs.setDouble(vectorrs.yrs);
+    m_Zrs.setDouble(vectorrs.zrs);
+    m_Pitchrs.setDouble(vectorrs.pitchrs);
+    m_Yawrs.setDouble(vectorrs.yawrs);
+    m_Rollrs.setDouble(vectorrs.rollrs);
   }
 
 } // end class LImelight
-  
+
