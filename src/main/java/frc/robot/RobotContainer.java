@@ -21,6 +21,9 @@ import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 
+//import frc.robot.commands.LEDCommand;
+import frc.robot.subsystems.LEDBlinkin;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,6 +42,10 @@ public class RobotContainer {
   public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
 
+
+  public static final LEDBlinkin LEDStrip = new LEDBlinkin();
+  
+
   /* Constructor */
   public RobotContainer() {
     // Configure the button bindings
@@ -50,9 +57,13 @@ public class RobotContainer {
   public static void init() {
     // set swerve drive default command to manual driving mode
     swervedrive.setDefaultCommand(new ManualDriveCommand());
+
+    //LEDStrip.setDefaultCommand(new LEDCommand());
+
   
     // set default arm command to manual drive mode
     arm.setDefaultCommand(new ManualArmSpeed());
+
 
   }
 
