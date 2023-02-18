@@ -93,7 +93,7 @@ public class Arm extends SubsystemBase {
   // The arm zero degree mark will be when the arm is pointing directly down and the angle increases towards the pickup area and further increases to the drop off area.
   // It is important to ensure ensure the zero value of the arm position is not near either of the MIN or MAX arm position limits.
   static final double MIN_MID_ARM_POS_DEG = 80;
-  static final double MAX_MID_ARM_POS_DEG = 220;
+  static final double MAX_MID_ARM_POS_DEG = 240;
   
   // create CANCoder sensor objects
   private CANCoder m_ArmCanCoder;
@@ -154,14 +154,14 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.config_kI(0, getArmI(), 0);
     m_ArmMotor.config_kD(0, getArmD(), 0);
     // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.3);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.5);
     m_ArmMotor.configClosedloopRamp(getMaxAcceleration());
   
     // The other code already is supposed to do this, but keep this as a backup
-    // Note the values are set to plus/minus 10 degrees simply to test it.
-    m_ArmMotor.configReverseSoftLimitThreshold((MIN_MID_ARM_POS_DEG + 10)*DEG_TO_ENCODERPULSE);
+    // Note the values are set to plus/minus 5 degrees beyond the software limits.
+    m_ArmMotor.configReverseSoftLimitThreshold((MIN_MID_ARM_POS_DEG - 5)*DEG_TO_ENCODERPULSE);
     m_ArmMotor.configReverseSoftLimitEnable(true);
-    m_ArmMotor.configForwardSoftLimitThreshold((MAX_MID_ARM_POS_DEG - 10)*DEG_TO_ENCODERPULSE);
+    m_ArmMotor.configForwardSoftLimitThreshold((MAX_MID_ARM_POS_DEG + 5)*DEG_TO_ENCODERPULSE);
     m_ArmMotor.configForwardSoftLimitEnable(true);
     m_ArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     m_ArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
@@ -179,7 +179,7 @@ public class Arm extends SubsystemBase {
 
     m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg)) * DEG_TO_ENCODERPULSE, 0, 0);
 
-    GetArmPosition();
+    GetArmPositions();
     m_ArmPositionSetpoint = m_MidArmPositionDeg;
 
   }
@@ -303,14 +303,14 @@ private void GetArmPositions() {
 
     // create slider controls
     // note: PID's will be removed when testing is over.
-    m_AccelLimit = Tab.add("Accel Limit (sec to full)", 2.00)
+    m_AccelLimit = Tab.add("Accel Limit (sec to full)", 0.40)
        .withPosition(0, 0)
        .withSize(2, 1)
        .withWidget(BuiltInWidgets.kNumberSlider)
        .withProperties(Map.of("min", 0, "max", 4))
        .getEntry();
        
-    m_Arm_P = Tab.add("Arm P", 0.08)
+    m_Arm_P = Tab.add("Arm P", 0.04)
       .withPosition(0, 1)
       .withSize(2, 1)
       .withWidget(BuiltInWidgets.kNumberSlider)
