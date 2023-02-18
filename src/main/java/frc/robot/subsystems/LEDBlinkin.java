@@ -3,11 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+
+//import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+//import edu.wpi.first.wpilibj.DriverStation;
+//import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class LEDBlinkin extends SubsystemBase {
 
@@ -20,7 +25,7 @@ public class LEDBlinkin extends SubsystemBase {
       //led = new Victor(RobotMap.PWMPorts.LED_BLINKIN);
       led = new PWM(RobotMap.PWMPorts.LED_BLINKIN);
       
-      setPattern(LED_PATTERN.HUB);
+      setPattern(LED_PATTERN.TEST);
     }
 
   @Override
@@ -38,7 +43,7 @@ public class LEDBlinkin extends SubsystemBase {
    //Working????
     System.out.println("************************LED COMAND************************************************************");
 
-    RobotContainer.LEDStrip.setPattern(LED_PATTERN.DISCO);
+    RobotContainer.LEDStrip.setPattern(LED_PATTERN.TEST);
     // If yes YAY if no heh have fun fixing
   }
 
@@ -48,7 +53,8 @@ public class LEDBlinkin extends SubsystemBase {
     BLUEBALL,
     HUB,
     LOWBATTERY,
-    DISCO
+    DISCO,
+    TEST
   };
 
   // sets pattern of LED strip
@@ -72,6 +78,9 @@ public class LEDBlinkin extends SubsystemBase {
       break;
       case DISCO:
         led.setSpeed(-0.45);   // color wave - rainbow
+      break;
+      case TEST:
+        led.setSpeed(-0.35);
       break;
 
     }
