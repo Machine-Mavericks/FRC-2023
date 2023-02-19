@@ -65,7 +65,7 @@ public class ManualDriveCommand extends CommandBase {
 
     // command robot to drive
     // swap x, y, omega as necessary to get robot driving with desired axes
-    RobotContainer.swervedrive.drive(dX, dY, omega, true,Park);
+    RobotContainer.swervedrive.drive(dY, dX, omega, true, Park);
 
     // record our speeds for use next time
     prevdX = dX;

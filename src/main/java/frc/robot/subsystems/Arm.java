@@ -175,7 +175,7 @@ public class Arm extends SubsystemBase {
     
     // for testing on the bench unit, simply set it to zero because we don't have a cancoder
     //m_ArmCanCoderOffsetDeg = 0.0;
-    m_ArmCanCoderOffsetDeg = -49;
+    m_ArmCanCoderOffsetDeg = -35.24;
 
     m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg)) * DEG_TO_ENCODERPULSE, 0, 0);
 
