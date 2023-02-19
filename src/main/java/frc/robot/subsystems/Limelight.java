@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,6 +25,9 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_TargetPresent;
 
     private GenericEntry m_AprilTagID;
+
+    private GenericEntry m_Distance; // For cones & Cubes only
+    private DoubleArraySubscriber m_llpythonSub;
 
     private GenericEntry m_AngleX;
     private GenericEntry m_AngleY;
@@ -70,6 +74,7 @@ public class Limelight extends SubsystemBase {
       // side-by-side
       m_table.getEntry("stream").setNumber(0);
 
+      m_llpythonSub = m_table.getDoubleArrayTopic("llpython").subscribe(new double[] {});
 
       // set initial pipeline to 0
       setPipeline(0);
@@ -305,6 +310,23 @@ public class Limelight extends SubsystemBase {
       return m_table.getEntry("tid").getDouble(0);
     }
 
+
+    /** Get largest game piece distance */
+    public double getGamePieceDistance () {
+      // double[] arr = m_table.getEntry("llpython").getDoubleArray(new double[0]);
+      // System.out.println(arr.length);
+      // if (arr.length > 0) {
+      //   return arr[0];
+      // }
+
+      
+      double[] llpython = m_llpythonSub.get();
+      if (llpython.length > 0){
+        return llpython[0];
+      } 
+      return 0;
+    }
+
     // ---------- get raw target attributes ----------
   
     /** Raw Screenspace X */
@@ -372,6 +394,8 @@ public class Limelight extends SubsystemBase {
     // april tag target id
     m_AprilTagID = Tab.add("AprilTag Target ID", 0).withPosition(2,0).getEntry();
 
+    // Distance testing
+    m_Distance = Tab.add("Game Peice Distance (cm)", 0).withPosition(3, 0).getEntry();
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Target", BuiltInLayouts.kList);
     l1.withPosition(2, 0);
@@ -432,6 +456,7 @@ public class Limelight extends SubsystemBase {
 
     m_TargetPresent.setBoolean(isTargetPresent()==1);
     m_AprilTagID.setDouble(getPrimAprilTagID());
+    m_Distance.setDouble(getGamePieceDistance());
 
 
 

@@ -41,7 +41,7 @@ public class LEDBlinkin extends SubsystemBase {
    // }
 
    //Working????
-    System.out.println("************************LED COMAND************************************************************");
+    //System.out.println("************************LED COMAND************************************************************");
 
     RobotContainer.LEDStrip.setPattern(LED_PATTERN.TEST);
     // If yes YAY if no heh have fun fixing

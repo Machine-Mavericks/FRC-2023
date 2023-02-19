@@ -14,7 +14,6 @@ import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Pigeon;
 
 import frc.robot.subsystems.GamePieceTargeting;
-import frc.robot.subsystems.Gyro;
 
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
