@@ -40,9 +40,10 @@ public class SwerveDrive extends SubsystemBase {
   // encoder pulse per revolution
   static final double ENC_PULSE_PER_REV = 2048.0;
 
-  // wheel diameter (m)
+  // wheel diameter (m)  (for 2022 robot)
+  static final double WHEEL_DIAMETER_METERS = 0.1016;//*1.0181;//* 0.96248;
   // last factor adjustment is for 2023 robot base
-  static final double WHEEL_DIAMETER_METERS = 0.1016 * 0.96248 * 1.0181;
+  //static final double WHEEL_DIAMETER_METERS = 0.1016 * 0.96248 * 1.0181;
   
   // drive motor unit conversion factors
   static final double ENCODERPULSE_TO_METERS = (1.0 / ENC_PULSE_PER_REV) * (1.0 / DRIVE_RATIO) * WHEEL_DIAMETER_METERS * Math.PI;
@@ -154,21 +155,42 @@ public class SwerveDrive extends SubsystemBase {
     m_ParkAngleLF = new Rotation2d(45.0);
     m_ParkAngleRF = new Rotation2d(-45.0);
 
-    // create CANCoder objects - set absolute range of +/-180deg
-    m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER);
-    m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER);
-    m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER);
-    m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER);
+    // create CANCoder objects - for 2023, swerve drive is on Canimore canbus network
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    {
+      m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER,"Drivebase");
+      m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER,"Drivebase");
+      m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER,"Drivebase");
+      m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER,"Drivebase");
+    }
+    else
+    {
+      m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER);
+      m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER);
+      m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER);
+      m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER);
+    }
+
     m_LFCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_RFCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_LRCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_RRCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
-    // create steer motors and initalize to factory default
-    m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
-    m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
-    m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
-    m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
+    // create steeer motors - for 2023, swerve drive is on Canimore canbus network
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    {
+      m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
+      m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
+      m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
+      m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
+    }
+    else
+    {
+      m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
+      m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
+      m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
+      m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
+    }
     m_LFSteerMotor.configFactoryDefault();
     m_RFSteerMotor.configFactoryDefault();
     m_LRSteerMotor.configFactoryDefault();
@@ -191,10 +213,10 @@ public class SwerveDrive extends SubsystemBase {
     m_RFSteerMotor.config_kI(0, 0.001, 0);
     m_LRSteerMotor.config_kI(0, 0.001, 0);
     m_RRSteerMotor.config_kI(0, 0.001, 0);
-    //m_LFSteerMotor.config_kD(0, 0.05, 0);
-    //m_RFSteerMotor.config_kD(0, 0.05, 0);
-    //m_LRSteerMotor.config_kD(0, 0.05, 0);
-    //m_RRSteerMotor.config_kD(0, 0.05, 0);
+    // m_LFSteerMotor.config_kD(0, 0.05, 0);
+    // m_RFSteerMotor.config_kD(0, 0.05, 0);
+    // m_LRSteerMotor.config_kD(0, 0.05, 0);
+    // m_RRSteerMotor.config_kD(0, 0.05, 0);
 
     // accumulate error only if witin 10deg of target - experimental - leave commented out
     //m_LFSteerMotor.config_IntegralZone(0, 5.0*DEG_TO_ENCODERPULSE);
@@ -210,16 +232,26 @@ public class SwerveDrive extends SubsystemBase {
     m_RRSteerMotor.configMaxIntegralAccumulator(0, 1250.0*DEG_TO_ENCODERPULSE);
    
     // limit steer ramp rate - experimental only - leave commented out
-    //m_LFSteerMotor.configClosedloopRamp(0.5);
-    //m_RFSteerMotor.configClosedloopRamp(0.5);
-    //m_LRSteerMotor.configClosedloopRamp(0.5);
-    //m_RRSteerMotor.configClosedloopRamp(0.5);
+    // m_LFSteerMotor.configClosedloopRamp(0.5);
+    // m_RFSteerMotor.configClosedloopRamp(0.5);
+    // m_LRSteerMotor.configClosedloopRamp(0.5);
+    // m_RRSteerMotor.configClosedloopRamp(0.5);
 
-    // create drive motors and initalize to factory default
-    m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
-    m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
-    m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
-    m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
+    // create steeer motors - for 2023, swerve drive is on Canimore canbus network
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    {
+      m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
+      m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
+      m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
+      m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
+    }
+    else
+    {
+      m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
+      m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
+      m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
+      m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
+    }
     m_LFDriveMotor.configFactoryDefault();
     m_RFDriveMotor.configFactoryDefault();
     m_LRDriveMotor.configFactoryDefault();
@@ -300,7 +332,8 @@ public class SwerveDrive extends SubsystemBase {
 
   
   /** Set Robot Chassis Speed - (i.e. drive robot at selcted speeds)
-      ChassisSpeeds x,y in m/s, omega in rad/s */
+      ChassisSpeeds x,y in m/s, omega in rad/s
+      Park - places robot in park mode - other inputs are ignored */
   public void drive(double dx, double dy, double omega, boolean fieldOriented, boolean Park)
     { drive (new ChassisSpeeds(dx, dy, omega), fieldOriented, Park); }
 
@@ -437,22 +470,22 @@ public SwerveModulePosition[] GetSwerveDistances() {
             
     // populate distance(m) and angle for LF swerve
     states[0] = new SwerveModulePosition();
-    states[0].distanceMeters = m_LFDriveMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_METERS;
+    states[0].distanceMeters = -m_LFDriveMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_METERS;
     states[0].angle = Rotation2d.fromDegrees(m_LFSteerMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_DEG);
 
     // populate distance(m) and angle for RF swerve
     states[1] = new SwerveModulePosition();
-    states[1].distanceMeters = m_RFDriveMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_METERS;
+    states[1].distanceMeters = -m_RFDriveMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_METERS;
     states[1].angle = Rotation2d.fromDegrees(m_RFSteerMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_DEG);
 
     // populate distance(m) and angle for LR swerve
     states[2] = new SwerveModulePosition();
-    states[2].distanceMeters = m_LRDriveMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_METERS;
+    states[2].distanceMeters = -m_LRDriveMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_METERS;
     states[2].angle = Rotation2d.fromDegrees(m_LRSteerMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_DEG);
 
     // populate distance(m) and angle for RR swerve
     states[3] = new SwerveModulePosition();
-    states[3].distanceMeters = m_RRDriveMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_METERS;
+    states[3].distanceMeters = -m_RRDriveMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_METERS;
     states[3].angle = Rotation2d.fromDegrees(m_RRSteerMotor.getSelectedSensorPosition() * ENCODERPULSE_TO_DEG);
 
     return states;
