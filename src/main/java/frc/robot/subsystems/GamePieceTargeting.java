@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class GamePieceTargeting extends SubsystemBase {
   /** Creates a new GamePeiceTargeting. */
+  private double m_limelightOffset_X;
+  private double m_limelightOffset_Y;
+
   private Limelight m_gamepiececamera;
 
   private GenericEntry m_pose_X;
@@ -27,12 +30,15 @@ public class GamePieceTargeting extends SubsystemBase {
 
   private GamePieceData m_conePose = new GamePieceData(0, 0);
 
-  public GamePieceTargeting() {
+  public GamePieceTargeting(double limelightOffset_X, double limelightOffset_Y) {
     m_gamepiececamera = new Limelight("game");
 
     System.out.println("Limelight online??"); // Hopefully
 
     m_gamepiececamera.setPipeline(1);
+
+    m_limelightOffset_X = limelightOffset_X;
+    m_limelightOffset_Y = limelightOffset_Y;
 
     initializeShuffleboard();
   }
@@ -63,6 +69,10 @@ public class GamePieceTargeting extends SubsystemBase {
     double ll_relative_Y = Math.pow(getGamePieceDistance(), 2) - Math.pow(ll_relative_X, 2);
     ll_relative_Y = Math.sqrt(ll_relative_Y);
 
+    // TODO: Does not account for rotated limelight, need to add that
+    ll_relative_X += m_limelightOffset_X; 
+    ll_relative_Y += m_limelightOffset_Y;
+
 
     //System.out.println("AAH: " + ll_relative_X); // Really unfinished
 
@@ -91,7 +101,7 @@ public class GamePieceTargeting extends SubsystemBase {
   }
 
   /** Returns 2D pose of Cone */
-  public GamePieceData getTargetPose(){
+  public GamePieceData getTargetPose(){ //
     return m_conePose;
   }
 

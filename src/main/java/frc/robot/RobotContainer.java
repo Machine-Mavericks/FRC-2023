@@ -47,7 +47,7 @@ public class RobotContainer {
   public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
 
-  public static final GamePieceTargeting gamepiecetargeting = new GamePieceTargeting();
+  public static final GamePieceTargeting gamepiecetargeting = new GamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
 
 
   public static final LEDBlinkin LEDStrip = new LEDBlinkin();
