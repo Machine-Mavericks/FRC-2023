@@ -100,7 +100,12 @@ public class GamePieceTargeting extends SubsystemBase {
     return m_gamepiececamera.getVerticalTargetOffsetAngle();
   }
 
-  /** Returns 2D pose of Cone */
+  /**  */
+  /** Returns 2D pose of cone.
+   * About 60% done, does not dectect cubes yet, only sees one cone at a time.
+   * All coordinates are in cm and are relative to the robot's centre.
+   * @return Data is in a custom structure, use m_X and m_Y to get x & y coordinates
+   */
   public GamePieceData getTargetPose(){ //
     return m_conePose;
   }
