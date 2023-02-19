@@ -26,7 +26,7 @@ public class AutoHubDistanceCommand extends CommandBase {
 
   /** Creates a new AutoHubDistanceCommand. */
   public AutoHubDistanceCommand(double targetDistance, double tolerance) {
-    addRequirements(RobotContainer.drivetrain);
+    addRequirements(RobotContainer.swervedrive);
     this.targetDistance = targetDistance;
     this.tolerance = tolerance;
   }
@@ -38,24 +38,24 @@ public class AutoHubDistanceCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    targetPresent = targetPresentFilter.calculate(RobotContainer.hubTargeting.isTargetPresent() ? 0 : 1) <= 0.5;
+    targetPresent = targetPresentFilter.calculate(RobotContainer.aprilTagTargeting.isTargetPresent() ? 0 : 1) <= 0.5;
     if (targetPresent){
-      double angleErr = RobotContainer.hubTargeting.getHubAngle();
-      double distErr = RobotContainer.hubTargeting.EstimateDistance() - targetDistance;
-      RobotContainer.drivetrain.drive(new Translation2d(distErr * kPDist, 0), angleErr*kPAngle, false);
+      double angleErr = RobotContainer.aprilTagTargeting.getHubAngle();
+      double distErr = RobotContainer.aprilTagTargeting.EstimateDistance() - targetDistance;
+      RobotContainer.swervedrive.drive(distErr * kPDist, 0, angleErr*kPAngle, true, false);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.drivetrain.drive(new Translation2d(0,0), 0, false);
+    RobotContainer.swervedrive.drive(0,0, 0, true, false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     // Return when target not found or distance within tolerance
-    return !targetPresent || Math.abs(RobotContainer.hubTargeting.EstimateDistance() - targetDistance) < tolerance;
+    return !targetPresent || Math.abs(RobotContainer.aprilTagTargeting.EstimateDistance() - targetDistance) < tolerance;
   }
 }
