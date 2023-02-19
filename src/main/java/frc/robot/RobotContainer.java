@@ -8,9 +8,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Pigeon;
+
+import frc.robot.subsystems.GamePieceTargeting;
+
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
@@ -38,9 +42,12 @@ public class RobotContainer {
   // public static final Pigeon gyro2 = new Pigeon();
   public static final Limelight limelight1 = new Limelight("tags");
   public static final SwerveDrive swervedrive = new SwerveDrive();
+
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
   public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
+
+  public static final GamePieceTargeting gamepiecetargeting = new GamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
 
 
   public static final LEDBlinkin LEDStrip = new LEDBlinkin();
