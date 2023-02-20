@@ -70,8 +70,12 @@ public class GamePieceTargeting extends SubsystemBase {
     ll_relative_Y = Math.sqrt(ll_relative_Y);
 
     // TODO: Does not account for rotated limelight, need to add that
-    ll_relative_X += m_limelightOffset_X; 
-    ll_relative_Y += m_limelightOffset_Y;
+    if (isTarget()){
+      ll_relative_X += m_limelightOffset_X; 
+      ll_relative_Y += m_limelightOffset_Y;
+    }
+    
+    
 
 
     //System.out.println("AAH: " + ll_relative_X); // Really unfinished

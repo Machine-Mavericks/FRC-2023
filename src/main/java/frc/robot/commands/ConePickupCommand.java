@@ -22,7 +22,7 @@ public class ConePickupCommand extends CommandBase {
   
   // final position tolerance (m) / angle tolerance (deg) to consider we have arrived at destination
   private final double m_positiontolerance = 0.01;
-  private final double m_angletolerance = 0.5;
+  private final double m_angletolerance = 0.05;
 
   // max speed, rotational speed
   private double m_maxspeed;
@@ -36,7 +36,6 @@ public class ConePickupCommand extends CommandBase {
   private Pose2d m_targetpose;
 
   // cone targeting
-  private boolean m_targetAquired = false;
 
   private boolean m_canceled = false;
   
@@ -72,9 +71,14 @@ public class ConePickupCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_canceled = false;
+
+    //m_targetpose = new Pose2d(0, 0, new Rotation2d(0));
+    System.out.println("Init");
 
     if (getTarget() == null){
       m_canceled = true;
+    }else{
       updateTargetPose();
     }
 
@@ -98,6 +102,7 @@ public class ConePickupCommand extends CommandBase {
     
     if (!m_canceled){
       manageSwerve();
+      System.out.println("Swerving");
     }
     
   }
@@ -116,13 +121,15 @@ public class ConePickupCommand extends CommandBase {
 
     
 
-    System.out.println(targetAngle.getDegrees());
+    //System.out.println("TargetAngle: " + targetAngle.getDegrees());
 
     
      
     
 
     m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
+    //System.out.println("TargetAngle In Pose: " + m_targetpose.getRotation().getDegrees());
+    //System.out.println("Current Angle" + odometryPose.getRotation().getDegrees());
 
 
   }
@@ -179,6 +186,7 @@ public class ConePickupCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     // we have finished path. Stop robot
+    System.out.println("Ending");
     RobotContainer.swervedrive.drive(0.0, 0.0, 0.0, false, false);
   }
 
