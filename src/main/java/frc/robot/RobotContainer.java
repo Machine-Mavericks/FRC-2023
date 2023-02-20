@@ -87,7 +87,7 @@ public class RobotContainer {
     OI.ArmLocation2Button.onTrue(new SetArmPosition(160));
     OI.ArmLocation3Button.onTrue(new SetArmPosition(205));
 
-    OI.TrackConeButton.onTrue(new ConePickupCommand());
+    OI.TrackConeButton.whileTrue(new ConePickupCommand());
 
     // TODO: Add your button bindings here
     /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),

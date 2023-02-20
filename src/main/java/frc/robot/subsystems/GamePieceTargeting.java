@@ -45,7 +45,7 @@ public class GamePieceTargeting extends SubsystemBase {
 
   
 
-  public class GamePieceData{
+  public static class GamePieceData{
     public double m_X, m_Y;
     public GamePieceData(double X, double Y){
       m_X = X;
