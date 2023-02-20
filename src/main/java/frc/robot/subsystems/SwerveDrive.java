@@ -149,20 +149,20 @@ public class SwerveDrive extends SubsystemBase {
     
     
     // create CANCoder objects - set absolute range of +/-180deg
-    m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER);
-    m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER);
-    m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER);
-    m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER);
+    m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER, "Drivebase");
+    m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER, "Drivebase");
+    m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER, "Drivebase");
+    m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER, "Drivebase");
     m_LFCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_RFCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_LRCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_RRCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
     // create steer motors and initalize to factory default
-    m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
-    m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
-    m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
-    m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
+    m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR, "Drivebase");
+    m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR, "Drivebase");
+    m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR, "Drivebase");
+    m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR, "Drivebase");
     m_LFSteerMotor.configFactoryDefault();
     m_RFSteerMotor.configFactoryDefault();
     m_LRSteerMotor.configFactoryDefault();
@@ -210,10 +210,10 @@ public class SwerveDrive extends SubsystemBase {
     //m_RRSteerMotor.configClosedloopRamp(0.5);
 
     // create drive motors and initalize to factory default
-    m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
-    m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
-    m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
-    m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
+    m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR, "Drivebase");
+    m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR, "Drivebase");
+    m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR, "Drivebase");
+    m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR, "Drivebase");
     m_LFDriveMotor.configFactoryDefault();
     m_RFDriveMotor.configFactoryDefault();
     m_LRDriveMotor.configFactoryDefault();
