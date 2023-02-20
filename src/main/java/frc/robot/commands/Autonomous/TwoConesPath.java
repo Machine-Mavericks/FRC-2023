@@ -13,6 +13,20 @@ public class TwoConesPath extends SequentialCommandGroup {
   public TwoConesPath() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands();
+    addCommands(
+
+    /**
+     * drive forwards
+     * place cone on high (9,2)
+     * drive backwards past line
+     * pick up cone 
+     *    arm to positon low pick up
+     *    close gripper
+     *    arm to position carry cone
+     * drive forward
+     * place cone on mid (9,1)
+     */
+
+    );
   }
 }

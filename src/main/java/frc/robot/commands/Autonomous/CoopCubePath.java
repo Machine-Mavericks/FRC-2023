@@ -14,6 +14,16 @@ public class CoopCubePath extends SequentialCommandGroup {
   public CoopCubePath() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands();
+    addCommands(
+
+    /**
+     * drive forwards
+     * place cube on high (5,2)
+     * drive backwards over charging station past line
+     * drive forwards onto charging station
+     * balance/dock
+     */
+
+    );
   }
 }
