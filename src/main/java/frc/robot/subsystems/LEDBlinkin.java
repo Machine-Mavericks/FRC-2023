@@ -43,7 +43,7 @@ public class LEDBlinkin extends SubsystemBase {
    //Working????
     System.out.println("************************LED COMAND************************************************************");
 
-    RobotContainer.LEDStrip.setPattern(LED_PATTERN.TEST);
+    //RobotContainer.LEDStrip.setPattern(LED_PATTERN.TEST);
     // If yes YAY if no heh have fun fixing
   }
 
@@ -58,6 +58,10 @@ public class LEDBlinkin extends SubsystemBase {
   };
 
   // sets pattern of LED strip
+  /**
+   * SET
+   * @param pattern
+   */
   public void setPattern(LED_PATTERN pattern)
   {
     switch (pattern) {

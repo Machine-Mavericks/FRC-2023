@@ -3,7 +3,10 @@
 
 package frc.robot.commands.Autonomous;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.LEDBlinkin.LED_PATTERN;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -15,6 +18,7 @@ public class TwoConesPath extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
 
+    new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LED_PATTERN.DISCO)));
     /**
      * drive forwards
      * place cone on high (9,2)
@@ -27,6 +31,6 @@ public class TwoConesPath extends SequentialCommandGroup {
      * place cone on mid (9,1)
      */
 
-    );
+    
   }
 }
