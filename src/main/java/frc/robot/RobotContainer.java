@@ -19,6 +19,9 @@ import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
+import frc.robot.commands.Autonomous.CoopCubePath;
+import frc.robot.commands.Autonomous.RightPath;
+import frc.robot.commands.Autonomous.TwoConesPath;
 import edu.wpi.first.math.geometry.Pose2d;
 
 //import frc.robot.commands.LEDCommand;
@@ -33,6 +36,8 @@ import frc.robot.subsystems.LEDBlinkin;
  */
 public class RobotContainer {
 
+  // Create robot's shuffboard operator interface
+  public static final ShuffleboardOI shuffleboard = new ShuffleboardOI();
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
   // public static final Pigeon gyro2 = new Pigeon();
@@ -93,8 +98,15 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+  public static Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    if (RobotContainer.shuffleboard.m_selectedPath == 0)
+      return new CoopCubePath();
+    else if (RobotContainer.shuffleboard.m_selectedPath == 1)
+      return new TwoConesPath();
+    else if (RobotContainer.shuffleboard.m_selectedPath == 2)
+      return new RightPath();
+    else
+      return new CoopCubePath();
   }
 }
