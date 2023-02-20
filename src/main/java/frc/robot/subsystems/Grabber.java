@@ -12,7 +12,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
 public class Grabber extends SubsystemBase {
-  private Boolean isOpen;
+  private Boolean isOpen = false;
   private CANSparkMax grabberMotor;
   /** Creates a new Grabber. */
   public Grabber() {
