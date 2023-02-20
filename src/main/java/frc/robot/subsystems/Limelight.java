@@ -73,6 +73,7 @@ public class Limelight extends SubsystemBase {
 
     private boolean m_FiducialEnable;
 
+    private GenericEntry m_numOfRetroTargets;
   
     /**
      * Creates a new Limelight.
@@ -385,6 +386,8 @@ public class Limelight extends SubsystemBase {
       // end temp ////////
     }
 
+    m_numOfRetroTargets = Tab.add("Num Retro Targets",0).withPosition(0,3).getEntry();
+
   }
 
 
@@ -446,6 +449,22 @@ public class Limelight extends SubsystemBase {
       //LimelightResults results = GetJSONResults();
       //m_Test1.setDouble(results.targetingResults.targets_Fiducials.length);
       //m_Test2.setDouble(results.targetingResults.targets_Fiducials[0].fiducialID);
+
+    }
+
+    ShuffleboardTab Tab = Shuffleboard.getTab("Retro target info");
+
+    LimelightResults results = GetJSONResults();
+    m_numOfRetroTargets.setDouble(results.targetingResults.targets_Retro.length);
+
+    GenericEntry m_tx[] = new GenericEntry[(int) m_numOfRetroTargets.getDouble(0.0)];
+    GenericEntry m_ty[] = new GenericEntry[(int) m_numOfRetroTargets.getDouble(0.0)];
+    
+    for (int i = 0; i < m_numOfRetroTargets.getDouble(0.0); i++){
+      m_tx[i] = Tab.add("target "+i+" tx",0.0).withPosition(0,i).getEntry();
+      m_tx[i].setDouble(results.targetingResults.targets_Retro[i].tx);
+      m_ty[i] = Tab.add("target "+i+" ty",0.0).withPosition(1,i).getEntry();
+      m_ty[i].setDouble(results.targetingResults.targets_Retro[i].ty);
     }
   }
 
@@ -485,8 +504,12 @@ public static class Results {
   @JsonProperty("Fiducial")
   public LimelightTarget_Fiducial[] targets_Fiducials;
 
+  @JsonProperty("Retro")
+  public LimelightTarget_Retro[] targets_Retro;
+
   public Results() {
       targets_Fiducials = new LimelightTarget_Fiducial[0];
+      targets_Retro = new LimelightTarget_Retro[0];
   }
 }
 
@@ -563,6 +586,92 @@ public static class LimelightTarget_Fiducial {
   }
 }
 
+public static class LimelightTarget_Retro {
+
+  @JsonProperty("t6c_ts")
+  private double[] cameraPose_TargetSpace;
+
+  @JsonProperty("t6r_fs")
+  private double[] robotPose_FieldSpace;
+
+  @JsonProperty("t6r_ts")
+  private  double[] robotPose_TargetSpace;
+
+  @JsonProperty("t6t_cs")
+  private double[] targetPose_CameraSpace;
+
+  @JsonProperty("t6t_rs")
+  private double[] targetPose_RobotSpace;
+
+  //public Pose3d getCameraPose_TargetSpace()
+  //{
+  //    return toPose3D(cameraPose_TargetSpace);
+  //}
+  //public Pose3d getRobotPose_FieldSpace()
+  //{
+  //    return toPose3D(robotPose_FieldSpace);
+  //}
+  //public Pose3d getRobotPose_TargetSpace()
+  //{
+  //    return toPose3D(robotPose_TargetSpace);
+  //}
+  //public Pose3d getTargetPose_CameraSpace()
+  //{
+  //    return toPose3D(targetPose_CameraSpace);
+  //}
+  //public Pose3d getTargetPose_RobotSpace()
+  //{
+  //    return toPose3D(targetPose_RobotSpace);
+  //}
+
+  //public Pose2d getCameraPose_TargetSpace2D()
+  //{
+  //    return toPose2D(cameraPose_TargetSpace);
+  //}
+  //public Pose2d getRobotPose_FieldSpace2D()
+  //{
+  //    return toPose2D(robotPose_FieldSpace);
+  //}
+  //public Pose2d getRobotPose_TargetSpace2D()
+  //{
+  //    return toPose2D(robotPose_TargetSpace);
+  //}
+  //public Pose2d getTargetPose_CameraSpace2D()
+  //{
+  //    return toPose2D(targetPose_CameraSpace);
+  //}
+  //public Pose2d getTargetPose_RobotSpace2D()
+  //{
+  //    return toPose2D(targetPose_RobotSpace);
+  //}
+
+  @JsonProperty("ta")
+  public double ta;
+
+  @JsonProperty("tx")
+  public double tx;
+
+  @JsonProperty("txp")
+  public double tx_pixels;
+
+  @JsonProperty("ty")
+  public double ty;
+
+  @JsonProperty("typ")
+  public double ty_pixels;
+
+  @JsonProperty("ts")
+  public double ts;
+
+  public LimelightTarget_Retro() {
+      cameraPose_TargetSpace = new double[6];
+      robotPose_FieldSpace = new double[6];
+      robotPose_TargetSpace = new double[6];
+      targetPose_CameraSpace = new double[6];
+      targetPose_RobotSpace = new double[6];
+  }
+
+}
 
 } // end class LImelight
 
