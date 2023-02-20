@@ -9,8 +9,6 @@ import com.revrobotics.CANSparkMax;
 import frc.robot.RobotMap;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-
-
 public class Grabber extends SubsystemBase {
   private Boolean isOpen = false;
   private CANSparkMax grabberMotor;

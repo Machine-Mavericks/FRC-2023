@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    //new CloseGrabber().execute(); 
+    new CloseGrabber().execute(); 
     // Reset gyro - temporary - code likely to be moved later
     RobotContainer.gyro.resetGyro();
     //RobotContainer.gyro2.resetGyro();
