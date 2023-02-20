@@ -22,7 +22,7 @@ public class ConePickupCommand extends CommandBase {
   
   // final position tolerance (m) / angle tolerance (deg) to consider we have arrived at destination
   private final double m_positiontolerance = 0.01;
-  private final double m_angletolerance = 0.05;
+  private final double m_angletolerance = 0.5;
 
   // max speed, rotational speed
   private double m_maxspeed;
