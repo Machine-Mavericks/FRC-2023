@@ -76,6 +76,8 @@ public class Arm extends SubsystemBase {
 
   private GenericEntry m_ArmSpeedFB;
 
+  private GenericEntry m_ArmEnabledFB;
+
   
   // Arm Position in degrees for the end arm section relative to the mid arm section
   double m_EndArmPositionDeg;
@@ -100,6 +102,8 @@ public class Arm extends SubsystemBase {
 
   // create motor objects
   private TalonFX m_ArmMotor;
+
+  private boolean m_ArmEnabled;
 
   private final ArmFeedforward m_feedforward =
   new ArmFeedforward(0.0,0.0,0.0,0.0);
@@ -129,6 +133,7 @@ public class Arm extends SubsystemBase {
   /** Class Constuctor */
   public Arm() {
 
+    m_ArmEnabled = false;
     // create subsystem shuffle board page
     initializeShuffleboard();
 
@@ -146,6 +151,7 @@ public class Arm extends SubsystemBase {
   public void InitializeArm(){
     m_ArmMotor.configFactoryDefault();
     m_ArmMotor.configNeutralDeadband(0.001);
+
     //m_ArmMotor.setNeutralMode(NeutralMode.Coast);
     m_ArmMotor.setNeutralMode(NeutralMode.Brake);
       
@@ -163,8 +169,8 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.configReverseSoftLimitEnable(true);
     m_ArmMotor.configForwardSoftLimitThreshold((MAX_MID_ARM_POS_DEG + 5)*DEG_TO_ENCODERPULSE);
     m_ArmMotor.configForwardSoftLimitEnable(true);
-    m_ArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-    m_ArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    m_ArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+    m_ArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
       // initialize encoders according to CANCoder positions
     ResetArmEncoders();
   }
@@ -184,6 +190,17 @@ public class Arm extends SubsystemBase {
 
   }
 
+
+// Enable (or disable) Arm Movement.
+public void SetEnableArm(boolean Enable) {
+
+  m_ArmEnabled = Enable;
+  if (!m_ArmEnabled) {
+    m_ArmMotor.set(ControlMode.Disabled, 0.0);
+  }
+}
+
+
   private int updateCounter=0;
   @Override
   public void periodic() {
@@ -202,6 +219,7 @@ public class Arm extends SubsystemBase {
 // Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
 public void ArmSpeed(double speed) {
   
+  if (!m_ArmEnabled) {return;}
   // limit arm speed
   double TargetSpeed = speed;
   if (TargetSpeed > MAX_VELOCITY_DEG_PER_SECOND) {TargetSpeed = MAX_VELOCITY_DEG_PER_SECOND;}
@@ -226,6 +244,9 @@ public void ArmSpeed(double speed) {
 // Set Arm Speed in deg/s - (i.e. drive arm up or down with positive or negative speed)
 // This is done by converting the speed input to a position setpoint for the arm.
 public boolean ArmSpeed_PosCtrl(double speed) {
+
+  if (!m_ArmEnabled) {return false;}
+
   // arm position delta = arm speed in deg/second * time delta
   // arm position target = current arm position + (arm speed in deg/second * time delta)
   double TargetPosition = m_ArmPositionSetpoint + (speed * 0.02);
@@ -238,6 +259,7 @@ public boolean ArmSpeed_PosCtrl(double speed) {
 
 // Set Arm Position deg
    public boolean SetArmPosition(double PosDeg) {
+    if (!m_ArmEnabled) {return false;}
 
     // Do not set the arm position if an invalid arm position is selected.
     if ((PosDeg >= MIN_MID_ARM_POS_DEG) && (PosDeg <= MAX_MID_ARM_POS_DEG)) {
@@ -248,6 +270,12 @@ public boolean ArmSpeed_PosCtrl(double speed) {
       return false;
     }
   }
+
+// Get Arm Enabled Status
+public boolean GetArmEnabled() {
+  return m_ArmEnabled;
+}
+
 
 // Get Arm Position in degrees 
 public double GetArmPosition() {
@@ -331,9 +359,14 @@ private void GetArmPositions() {
      .withProperties(Map.of("min", 0, "max", 0.1))
      .getEntry();
 
+    // create button/command to enable/disable arm 
+    Tab.add("Arm Enable Disable", new InstantCommand(()->{SetEnableArm(!m_ArmEnabled);}))
+    .withPosition(0,4)
+    .withSize(2, 1);
+    
     // create button/command to reset arm 
     Tab.add("Arm Reset", new InstantCommand(()->{InitializeArm();}))
-    .withPosition(0,4)
+    .withPosition(0,5)
     .withSize(2, 1);
 
     // create controls to arm motor and position
@@ -363,6 +396,12 @@ private void GetArmPositions() {
     l5.withPosition(6, 0);
     l5.withSize(1, 5);
     m_ArmSpeedSP= l5.add("Arm SP Deg per s", 0.0).getEntry();
+
+    ShuffleboardLayout l6 = Tab.getLayout("Arm Enabled", BuiltInLayouts.kList);
+    l6.withPosition(7, 0);
+    l6.withSize(1, 5);
+    m_ArmEnabledFB= l6.add("Arm Enabled", false).getEntry();
+
   }
 
   /** Update subsystem shuffle board page with current values */
@@ -383,6 +422,8 @@ private void GetArmPositions() {
 
     // update arm motor speed reference (Setpoint) in deg/second    The x10 is because it's the encoder pulses per 100ms
     m_ArmSpeedSP.setDouble(m_ArmMotor.getClosedLoopTarget()*ENCODERPULSE_TO_DEG*10);
+
+    m_ArmEnabledFB.setBoolean(m_ArmEnabled);
   }
 
   // returns Acceleration limit in shuffleboard slider in (seconds to full throttle)
