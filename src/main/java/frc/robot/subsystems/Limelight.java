@@ -74,6 +74,8 @@ public class Limelight extends SubsystemBase {
     private boolean m_FiducialEnable;
 
     private GenericEntry m_numOfRetroTargets;
+    private GenericEntry m_Txs[] = new GenericEntry[4];
+    private GenericEntry m_Tys[] = new GenericEntry[4];
   
     /**
      * Creates a new Limelight.
@@ -384,6 +386,23 @@ public class Limelight extends SubsystemBase {
       // m_Test1 = Tab.add("Num Targets", 0).withPosition(0,3).getEntry();
       // m_Test2 = Tab.add("Target ID", 0).withPosition(0,4).getEntry();
       // end temp ////////
+    } else {
+      ShuffleboardLayout l6 = Tab.getLayout("target 1", BuiltInLayouts.kList).withPosition(0, 4).withSize(1, 2);
+      m_Txs[0] = l6.add("tx",0.0).getEntry();
+      m_Tys[0] = l6.add("ty",0.0).getEntry();
+
+      ShuffleboardLayout l7 = Tab.getLayout("target 2", BuiltInLayouts.kList).withPosition(0, 5).withSize(1, 2);
+      m_Txs[1] = l7.add("tx",0.0).getEntry();
+      m_Tys[1] = l7.add("ty",0.0).getEntry();
+
+      ShuffleboardLayout l8 = Tab.getLayout("target 3", BuiltInLayouts.kList).withPosition(0, 6).withSize(1, 2);
+      m_Txs[2] = l8.add("tx",0.0).getEntry();
+      m_Tys[2] = l8.add("ty",0.0).getEntry();
+
+      ShuffleboardLayout l9 = Tab.getLayout("target 4", BuiltInLayouts.kList).withPosition(0, 6).withSize(1, 2);
+      m_Txs[3] = l9.add("tx",0.0).getEntry();
+      m_Tys[3] = l9.add("ty",0.0).getEntry();
+
     }
 
     m_numOfRetroTargets = Tab.add("Num Retro Targets",0).withPosition(0,3).getEntry();
@@ -452,19 +471,25 @@ public class Limelight extends SubsystemBase {
 
     }
 
-    ShuffleboardTab Tab = Shuffleboard.getTab("Retro target info");
+    //ShuffleboardTab Tab = Shuffleboard.getTab("Retro target info");
 
     LimelightResults results = GetJSONResults();
     m_numOfRetroTargets.setDouble(results.targetingResults.targets_Retro.length);
 
-    GenericEntry m_tx[] = new GenericEntry[(int) m_numOfRetroTargets.getDouble(0.0)];
-    GenericEntry m_ty[] = new GenericEntry[(int) m_numOfRetroTargets.getDouble(0.0)];
+    //GenericEntry m_tx[] = new GenericEntry[(int) m_numOfRetroTargets.getDouble(0.0)];
+    //GenericEntry m_ty[] = new GenericEntry[(int) m_numOfRetroTargets.getDouble(0.0)];
     
-    for (int i = 0; i < m_numOfRetroTargets.getDouble(0.0); i++){
-      m_tx[i] = Tab.add("target "+i+" tx",0.0).withPosition(0,i).getEntry();
-      m_tx[i].setDouble(results.targetingResults.targets_Retro[i].tx);
-      m_ty[i] = Tab.add("target "+i+" ty",0.0).withPosition(1,i).getEntry();
-      m_ty[i].setDouble(results.targetingResults.targets_Retro[i].ty);
+    for (int i = 0; i<4; i++){
+      if (i <= m_numOfRetroTargets.getDouble(0.0)) {
+        //m_tx[i] = Tab.add("target "+i+" tx",0.0).withPosition(0,i).getEntry();
+        m_Txs[i].setDouble(results.targetingResults.targets_Retro[i].tx);
+        //m_ty[i] = Tab.add("target "+i+" ty",0.0).withPosition(1,i).getEntry();
+        m_Tys[i].setDouble(results.targetingResults.targets_Retro[i].ty);
+      } else {
+        m_Txs[i].setDouble(0.0);
+        m_Tys[i].setDouble(0.0);
+      }
+      
     }
   }
 
