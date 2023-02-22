@@ -58,7 +58,7 @@ public class ConePickupCommand extends CommandBase {
     // set up PIDs
     m_xController = new PIDController(2.5, 0.002, 0.12);
     m_yController = new PIDController(2.5, 0.002, 0.12);
-    m_rotController = new PIDController(0.1, 0.001, 0.0000);
+    m_rotController = new PIDController(0.05, 0.001, 0.0000);
 
     // record maximum speeds to use
     m_maxspeed = 0.5; //MaxSpeed;
@@ -94,7 +94,7 @@ public class ConePickupCommand extends CommandBase {
   public void execute() {
     if (!m_canceled){
       if (getTarget() != null){
-        updateTargetPose();
+        //updateTargetPose();
       }
 
       manageSwerve();
@@ -114,18 +114,20 @@ public class ConePickupCommand extends CommandBase {
       targetAngle = new Rotation2d(-Math.atan(data.m_X / data.m_Y));
     }
 
-    Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, targetAngle); // Robot relative
+    Pose2d dataPose = new Pose2d(data.m_X / 100, data.m_Y / 100, targetAngle); // Robot relative
 
-    double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
-    double distCoefficient = (distance - m_idealdistance) / distance; // Use to move point along line
-    dataPose = new Pose2d(dataPose.getX() * distCoefficient, dataPose.getY() * distCoefficient, dataPose.getRotation()); // Still robot relative
+    //double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
+    //double distCoefficient = (distance - m_idealdistance) / distance; // Use to move point along line // I know im not checking if dividing by zero, I really hope that never becomes a problem..
+    //dataPose = new Pose2d(dataPose.getX(), dataPose.getY(), dataPose.getRotation()); // Still robot relative
     
 
-    Pose2d dataPoseFieldRelative = dataPose.relativeTo(odometryPose); // Field relative
-    
+    //double X = dataPose.getX() * Math.cos(odometryPose.getRotation().getRadians()) - dataPose.getY() * Math.sin(odometryPose.getRotation().getRadians());
+    //double Y = dataPose.getY() * Math.cos(odometryPose.getRotation().getRadians()) + dataPose.getX() * Math.sin(odometryPose.getRotation().getRadians());
 
-    //m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
-    m_targetpose = new Pose2d(dataPoseFieldRelative.getX(),  dataPoseFieldRelative.getY(), dataPoseFieldRelative.getRotation());
+    //X = X / 100;
+    //Y = Y / 100;
+   // m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
+    m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY() + 1, targetAngle);
   }
 
   private GamePieceData getTarget() {
