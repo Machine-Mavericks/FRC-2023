@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -207,6 +208,32 @@ public class Limelight extends SubsystemBase {
       return m_table.getEntry("tid").getDouble(0);
     }
 
+    // for retro
+    public int getNumOfRetro () {
+      return (int) m_numOfRetroTargets.getDouble(0.0);
+    }
+
+    // for retro
+    public LimelightTarget_Retro getTargetData (int n){
+      LimelightResults results = GetJSONResults();
+      return results.targetingResults.targets_Retro[n];
+    }
+
+    // for retro
+    public void setRetroTarget(int n){
+      LimelightResults results = GetJSONResults();
+      results.targetingResults.targets_Retro[0]=results.targetingResults.targets_Retro[n];
+    }
+
+    // for retro
+    public double getTargetTx(int n){
+      return m_Txs[n].getDouble(n);
+    }
+
+    // for retro
+    public double getTargetTy(int n){
+      return m_Tys[n].getDouble(n);
+    }
 
     /** Get largest game piece distance */
     public double getGamePieceDistance () {

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
+import frc.robot.subsystems.NodeTargeting;
 import frc.robot.subsystems.Pigeon;
 
 import frc.robot.subsystems.GamePieceTargeting;
@@ -23,6 +24,7 @@ import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
+import frc.robot.commands.TargetLeftBottomNode;
 import edu.wpi.first.math.geometry.Pose2d;
 
 //import frc.robot.commands.LEDCommand;
@@ -51,6 +53,7 @@ public class RobotContainer {
 
 
   public static final LEDBlinkin LEDStrip = new LEDBlinkin();
+  public static final NodeTargeting NodeTargeting = new NodeTargeting();
   
 
   /* Constructor */
@@ -64,7 +67,7 @@ public class RobotContainer {
   public static void init() {
     // set swerve drive default command to manual driving mode
     swervedrive.setDefaultCommand(new ManualDriveCommand());
-
+    NodeTargeting.setDefaultCommand(new TargetLeftBottomNode());
     //LEDStrip.setDefaultCommand(new LEDCommand());
 
   
