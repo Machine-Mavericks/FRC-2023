@@ -36,6 +36,7 @@ public class ConePickupCommand extends CommandBase {
   private Pose2d m_targetpose;
 
   // cone targeting
+  private double m_idealdistance = 30.0;
 
   private boolean m_canceled = false;
   
@@ -57,11 +58,11 @@ public class ConePickupCommand extends CommandBase {
     // set up PIDs
     m_xController = new PIDController(2.5, 0.002, 0.12);
     m_yController = new PIDController(2.5, 0.002, 0.12);
-    m_rotController = new PIDController(0.05, 0.001, 0.0000);
+    m_rotController = new PIDController(0.1, 0.001, 0.0000);
 
     // record maximum speeds to use
     m_maxspeed = 0.5; //MaxSpeed;
-    m_maxrotspeed = 1.0; //MaxRotateSpeed;
+    m_maxrotspeed = 1.5; //MaxRotateSpeed;
 
     // create timer, and record timeout limit
     m_Timer = new Timer();
@@ -85,24 +86,18 @@ public class ConePickupCommand extends CommandBase {
     // reset and start in this command
     m_Timer.reset();
     m_Timer.start();
-
-    
-
-    
-    
   }
 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (getTarget() != null){
-      updateTargetPose();
-    }
-    
     if (!m_canceled){
+      if (getTarget() != null){
+        updateTargetPose();
+      }
+
       manageSwerve();
-      System.out.println("Swerving");
     }
     
   }
@@ -111,12 +106,22 @@ public class ConePickupCommand extends CommandBase {
     GamePieceData data = RobotContainer.gamepiecetargeting.getTargetPose(); // Robot relative
     Pose2d odometryPose = RobotContainer.swerveodometry.getPose2d(); // Field relative
     
+    
     Rotation2d targetAngle;
     if (data.m_Y == 0){
       targetAngle = new Rotation2d(0);
     }else{
-      targetAngle = new Rotation2d(Math.atan(data.m_X / data.m_Y));
+      targetAngle = new Rotation2d(-Math.atan(data.m_X / data.m_Y));
     }
+
+    Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, targetAngle); // Robot relative
+
+    double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
+    double distCoefficient = m_idealdistance / distance; // use to move point along line
+    dataPose = new Pose2d(dataPose.getX() * distCoefficient, dataPose.getY() * distCoefficient, dataPose.getRotation()); // Still robot relative
+    
+
+    Pose2d dataPoseFieldRelative = dataPose.relativeTo(odometryPose); // Field relative
 
 
     
@@ -127,7 +132,9 @@ public class ConePickupCommand extends CommandBase {
      
     
 
-    m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
+    //m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
+    m_targetpose = new Pose2d(dataPoseFieldRelative.getX(),  dataPoseFieldRelative.getY(), dataPoseFieldRelative.getRotation());
+
     //System.out.println("TargetAngle In Pose: " + m_targetpose.getRotation().getDegrees());
     //System.out.println("Current Angle" + odometryPose.getRotation().getDegrees());
 

@@ -44,7 +44,7 @@ public NavX() {
    * @return current yaw value (-180 to 180) */
   public double getYaw() {
     // Flip angle since gyro is mounted upside down
-    return gyro.getYaw(); 
+    return -gyro.getYaw(); 
   }
 
   /** Gets the pitch of the robot
