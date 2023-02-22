@@ -117,28 +117,15 @@ public class ConePickupCommand extends CommandBase {
     Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, targetAngle); // Robot relative
 
     double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
-    double distCoefficient = m_idealdistance / distance; // use to move point along line
+    double distCoefficient = (distance - m_idealdistance) / distance; // Use to move point along line
     dataPose = new Pose2d(dataPose.getX() * distCoefficient, dataPose.getY() * distCoefficient, dataPose.getRotation()); // Still robot relative
     
 
     Pose2d dataPoseFieldRelative = dataPose.relativeTo(odometryPose); // Field relative
-
-
-    
-
-    //System.out.println("TargetAngle: " + targetAngle.getDegrees());
-
-    
-     
     
 
     //m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
     m_targetpose = new Pose2d(dataPoseFieldRelative.getX(),  dataPoseFieldRelative.getY(), dataPoseFieldRelative.getRotation());
-
-    //System.out.println("TargetAngle In Pose: " + m_targetpose.getRotation().getDegrees());
-    //System.out.println("Current Angle" + odometryPose.getRotation().getDegrees());
-
-
   }
 
   private GamePieceData getTarget() {
