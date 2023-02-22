@@ -147,4 +147,23 @@ public class NodeTargeting extends SubsystemBase {
       m_nodeTargetCamera.setRetroTarget(tempi);
     }
   }
+
+  /**
+   * set target to n 
+   * n = 0 --> left bottom target
+   * n = 1 --> left top target
+   * n = 2 --> right bottom target
+   * n = 3 --> right top target
+   */
+  public void setTarget(int n) {
+    if (n==0){
+      setLeftBottomTarget();
+    } else if (n==1){
+      setLeftTopTarget();
+    } else if (n==2){
+      setRightBottomTarget();
+    } else {
+      setRightTopTarget();
+    }
+  }
 }
