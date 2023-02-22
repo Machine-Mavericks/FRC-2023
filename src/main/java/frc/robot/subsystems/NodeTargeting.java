@@ -156,14 +156,16 @@ public class NodeTargeting extends SubsystemBase {
    * n = 3 --> right top target
    */
   public void setTarget(int n) {
-    if (n==0){
-      setLeftBottomTarget();
-    } else if (n==1){
-      setLeftTopTarget();
-    } else if (n==2){
-      setRightBottomTarget();
-    } else {
-      setRightTopTarget();
+    if (m_nodeTargetCamera.getNumOfRetro()!=1){
+      if (n==0){
+        setLeftBottomTarget();
+      } else if (n==1){
+        setLeftTopTarget();
+      } else if (n==2){
+        setRightBottomTarget();
+      } else {
+        setRightTopTarget();
+      }
     }
   }
 }
