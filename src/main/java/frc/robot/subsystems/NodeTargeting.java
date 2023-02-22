@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public class NodeTargeting extends SubsystemBase {
   Limelight m_nodeTargetCamera;
@@ -14,7 +15,7 @@ public class NodeTargeting extends SubsystemBase {
 
   /** Creates a new NodeTargeting. */
   public NodeTargeting() {
-    m_nodeTargetCamera = RobotContainer.limelight1; // name TBD
+    m_nodeTargetCamera = new Limelight("tags"); // name TBD
     m_nodeTargetCamera.setPipeline(1); // pipeline name TBD
     m_numOfRetroTargets = m_nodeTargetCamera.getNumOfRetro();
   }
@@ -24,9 +25,9 @@ public class NodeTargeting extends SubsystemBase {
     double[] Txs = new double[m_nodeTargetCamera.getNumOfRetro()];
     double[] Tys = new double[m_nodeTargetCamera.getNumOfRetro()];
     // This method will be called once per scheduler run
-    for (int i = 0; i < m_nodeTargetCamera.getNumOfRetro(); i++){
+    for (int i = 0; i < m_nodeTargetCamera.getNumOfRetro() && i<4; i++){
       Txs[i] = m_nodeTargetCamera.getTargetTx(i);
-      Tys[i] = m_nodeTargetCamera.getTargetTx(i);
+      Tys[i] = m_nodeTargetCamera.getTargetTy(i);
       this.Txs = Txs;
       this.Tys = Tys;
     }

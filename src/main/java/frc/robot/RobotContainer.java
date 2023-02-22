@@ -41,7 +41,7 @@ public class RobotContainer {
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
   // public static final Pigeon gyro2 = new Pigeon();
-  public static final Limelight limelight1 = new Limelight("tags");
+  //public static final Limelight limelight1 = new Limelight("tags");
   public static final SwerveDrive swervedrive = new SwerveDrive();
 
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
