@@ -19,8 +19,7 @@ import frc.robot.commands.ManualArmSpeed;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
-  private int index;
-
+  
 
   /** This is where to select which swerve robot base is being used
      * Subsystems refer to this to set their constants or etc. */
@@ -111,18 +110,11 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-    this.index = 0;
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    this.index ++;
-    if (this.index == 10){
-      RobotContainer.NodeTargeting.setLeftBottomTarget();
-      this.index = 0;
-    }
   }
 
   @Override

@@ -53,7 +53,7 @@ public class NodeTargeting extends SubsystemBase {
       for (int i = 1; i < m_nodeTargetCamera.getNumOfRetro(); i++){
         if (Txs[i]<tempx2){
           templast = tempi;
-          tempx = Txs[i];
+          tempx2 = Txs[i];
           tempi = i;
         }
       }
@@ -77,11 +77,12 @@ public class NodeTargeting extends SubsystemBase {
       }
     }
     if (tempi == 0){
+      tempi = 1;
       double tempx2 = this.Txs[1];
       for (int i = 1; i < m_nodeTargetCamera.getNumOfRetro(); i++){
         if (Txs[i]<tempx2){
           templast = tempi;
-          tempx = Txs[i];
+          tempx2 = Txs[i];
           tempi = i;
         }
       }
@@ -109,7 +110,7 @@ public class NodeTargeting extends SubsystemBase {
       for (int i = 1; i > m_nodeTargetCamera.getNumOfRetro(); i++){
         if (Txs[i]<tempx2){
           templast = tempi;
-          tempx = Txs[i];
+          tempx2 = Txs[i];
           tempi = i;
         }
       }
@@ -137,7 +138,7 @@ public class NodeTargeting extends SubsystemBase {
       for (int i = 1; i > m_nodeTargetCamera.getNumOfRetro(); i++){
         if (Txs[i]<tempx2){
           templast = tempi;
-          tempx = Txs[i];
+          tempx2 = Txs[i];
           tempi = i;
         }
       }
