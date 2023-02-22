@@ -24,7 +24,7 @@ import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
-import frc.robot.commands.TargetLeftBottomNode;
+import frc.robot.commands.TargetRightTopNode;
 import edu.wpi.first.math.geometry.Pose2d;
 
 //import frc.robot.commands.LEDCommand;
@@ -67,7 +67,7 @@ public class RobotContainer {
   public static void init() {
     // set swerve drive default command to manual driving mode
     swervedrive.setDefaultCommand(new ManualDriveCommand());
-    NodeTargeting.setDefaultCommand(new TargetLeftBottomNode());
+    NodeTargeting.setDefaultCommand(new TargetRightTopNode());
     //LEDStrip.setDefaultCommand(new LEDCommand());
 
   
