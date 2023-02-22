@@ -14,7 +14,7 @@ public class NodeTargeting extends SubsystemBase {
 
   /** Creates a new NodeTargeting. */
   public NodeTargeting() {
-    m_nodeTargetCamera = new Limelight("game"); // name TBD
+    m_nodeTargetCamera = RobotContainer.limelight1; // name TBD
     m_nodeTargetCamera.setPipeline(1); // pipeline name TBD
     m_numOfRetroTargets = m_nodeTargetCamera.getNumOfRetro();
   }
