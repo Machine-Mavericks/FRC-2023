@@ -41,6 +41,8 @@ public class ConePickupCommand extends CommandBase {
   private boolean m_canceled = false;
   
 
+// IMPORTANT, ODOMETRY NEEDS TO BE RECALIBRATED - ASK KEN
+
   public static double AngleDifference(double angle1, double angle2)
   {
     double diff = ( angle2 - angle1 + 180 ) % 360 - 180;
@@ -62,7 +64,7 @@ public class ConePickupCommand extends CommandBase {
 
     // record maximum speeds to use
     m_maxspeed = 0.5; //MaxSpeed;
-    m_maxrotspeed = 1.; //MaxRotateSpeed;
+    m_maxrotspeed = 1.0; //MaxRotateSpeed;
 
     // create timer, and record timeout limit
     m_Timer = new Timer();
@@ -114,20 +116,23 @@ public class ConePickupCommand extends CommandBase {
       targetAngle = new Rotation2d(-Math.atan(data.m_X / data.m_Y));
     }
 
-    Pose2d dataPose = new Pose2d(data.m_X / 100, data.m_Y / 100, targetAngle); // Robot relative
+    Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, targetAngle); // Robot relative
 
-    //double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
-    //double distCoefficient = (distance - m_idealdistance) / distance; // Use to move point along line // I know im not checking if dividing by zero, I really hope that never becomes a problem..
+    double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
+    double distCoefficient = (distance - m_idealdistance) / distance; // Use to move point along line // I know im not checking if dividing by zero, I really hope that never becomes a problem..
     //dataPose = new Pose2d(dataPose.getX(), dataPose.getY(), dataPose.getRotation()); // Still robot relative
+  
     
 
-    //double X = dataPose.getX() * Math.cos(odometryPose.getRotation().getRadians()) - dataPose.getY() * Math.sin(odometryPose.getRotation().getRadians());
-    //double Y = dataPose.getY() * Math.cos(odometryPose.getRotation().getRadians()) + dataPose.getX() * Math.sin(odometryPose.getRotation().getRadians());
+    double X = dataPose.getX() * Math.cos(odometryPose.getRotation().getRadians()) - dataPose.getY() * Math.sin(odometryPose.getRotation().getRadians());
+    double Y = dataPose.getY() * Math.cos(odometryPose.getRotation().getRadians()) + dataPose.getX() * Math.sin(odometryPose.getRotation().getRadians());
 
-    //X = X / 100;
-    //Y = Y / 100;
+    X = X / 100;
+    Y = Y / 100;
+
+    System.out.println(X);
    // m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
-    m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), new Rotation2d(0));
+    m_targetpose = new Pose2d(odometryPose.getX() + Y,  odometryPose.getY() - X, targetAngle.rotateBy(odometryPose.getRotation()));
   }
 
   private GamePieceData getTarget() {
@@ -156,8 +161,9 @@ public class ConePickupCommand extends CommandBase {
       m_rotController.setI(0.0);
 
     // execute PIDs
-    double xSpeed = m_xController.calculate(m_targetpose.getX() - CurrentPosition.getX() );
+    double xSpeed = m_xController.calculate(-m_targetpose.getX() + CurrentPosition.getX() );
     double ySpeed = m_yController.calculate( m_targetpose.getY() - CurrentPosition.getY());
+    
     double rotSpeed = m_rotController.calculate(AngleDifference(m_targetpose.getRotation().getDegrees(),CurrentPosition.getRotation().getDegrees()));
 
     // limit speeds to allowable
