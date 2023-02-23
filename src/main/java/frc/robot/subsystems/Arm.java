@@ -96,6 +96,8 @@ public class Arm extends SubsystemBase {
   // It is important to ensure ensure the zero value of the arm position is not near either of the MIN or MAX arm position limits.
   static final double MIN_MID_ARM_POS_DEG = 80;
   static final double MAX_MID_ARM_POS_DEG = 240;
+  public static final double HIGH_SCORE_ARM_POS_DEG = 200;
+  public static final double RESTING_POS_DEG = 90;
   
   // create CANCoder sensor objects
   private CANCoder m_ArmCanCoder;
