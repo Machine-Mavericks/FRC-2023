@@ -21,7 +21,6 @@ public class CoopCubePath extends SequentialCommandGroup {
     new AutoDelayCommand(),
     new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LED_PATTERN.BLUEBALL)));
     /**
-     * drive forwards
      * place cube on high (5,2)
      * drive backwards over charging station past line
      * drive forwards onto charging station
