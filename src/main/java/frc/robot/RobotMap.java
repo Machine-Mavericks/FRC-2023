@@ -11,8 +11,8 @@ public class RobotMap {
      * Inner class to hold limelight physical position offsets
      */
     public static class LimelightOffsets {
-        public static final double FLOOR_LIMELIGHT_OFFSET_X = 0;
-        public static final double FLOOR_LIMELIGHT_OFFSET_Y = 0;
+        public static final double FLOOR_LIMELIGHT_OFFSET_X = 22.75;
+        public static final double FLOOR_LIMELIGHT_OFFSET_Y = 22.0;
     }
     /**
      * Inner class to hold CAN ID constants.

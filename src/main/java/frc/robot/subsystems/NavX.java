@@ -50,6 +50,7 @@ public NavX() {
       return -gyro.getYaw();
     else
       return gyro.getYaw(); 
+
   }
 
   /** Gets the pitch of the robot

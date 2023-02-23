@@ -22,6 +22,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.OpenGrabber;
 import frc.robot.commands.CloseGrabber;
+import frc.robot.commands.ConePickupCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
@@ -88,6 +89,8 @@ public class RobotContainer {
     OI.ArmLocation1Button.onTrue(new SetArmPosition(95));
     OI.ArmLocation2Button.onTrue(new SetArmPosition(160));
     OI.ArmLocation3Button.onTrue(new SetArmPosition(205));
+
+    OI.TrackConeButton.whileTrue(new ConePickupCommand());
     OI.grabberButton.onTrue(RobotContainer.grabber.isOpen() ? new CloseGrabber() : new OpenGrabber());
 
     // TODO: Add your button bindings here
