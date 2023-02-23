@@ -31,7 +31,7 @@ public class GamePieceTargeting extends SubsystemBase {
   private GamePieceData m_conePose = new GamePieceData(0, 0);
 
   public GamePieceTargeting(double limelightOffset_X, double limelightOffset_Y) {
-    m_gamepiececamera = new Limelight("game");
+    m_gamepiececamera = new Limelight("conepy");
 
     System.out.println("Limelight online??"); // Hopefully
 
@@ -45,7 +45,7 @@ public class GamePieceTargeting extends SubsystemBase {
 
   
 
-  class GamePieceData{
+  public static class GamePieceData{
     public double m_X, m_Y;
     public GamePieceData(double X, double Y){
       m_X = X;
@@ -70,8 +70,12 @@ public class GamePieceTargeting extends SubsystemBase {
     ll_relative_Y = Math.sqrt(ll_relative_Y);
 
     // TODO: Does not account for rotated limelight, need to add that
-    ll_relative_X += m_limelightOffset_X; 
-    ll_relative_Y += m_limelightOffset_Y;
+    if (isTarget()){
+      ll_relative_X += m_limelightOffset_X; 
+      ll_relative_Y += m_limelightOffset_Y;
+    }
+    
+    
 
 
     //System.out.println("AAH: " + ll_relative_X); // Really unfinished

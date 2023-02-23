@@ -252,7 +252,7 @@ public boolean ArmSpeed_PosCtrl(double speed) {
   double TargetPosition = m_ArmPositionSetpoint + (speed * 0.02);
   if (TargetPosition < MIN_MID_ARM_POS_DEG) {TargetPosition = MIN_MID_ARM_POS_DEG;}
   if (TargetPosition > MAX_MID_ARM_POS_DEG) {TargetPosition = MAX_MID_ARM_POS_DEG;}
-  System.out.println("teleopPeriodic!" + (System.currentTimeMillis()) + " TargetPos " + TargetPosition + " Speed " + speed);
+  //System.out.println("teleopPeriodic!" + (System.currentTimeMillis()) + " TargetPos " + TargetPosition + " Speed " + speed);
   return SetArmPosition(TargetPosition);
 }
 

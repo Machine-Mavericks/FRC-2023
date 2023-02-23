@@ -33,12 +33,11 @@ def runPipeline(image, llrobot):
     cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     if len(contours) > 0:
-        largestContour = max(contours, key=cv2.contourArea)
-
         cv2.drawContours(image, contours, -1, 255, 2)
         for i, cont in enumerate(contours):
             area = cv2.contourArea(cont)
             if area > min_gamepeice_area:
+                largestContour = max(contours, key=cv2.contourArea)
                 
                 rect = cv2.minAreaRect(cont)
                 box = cv2.boxPoints(rect)
