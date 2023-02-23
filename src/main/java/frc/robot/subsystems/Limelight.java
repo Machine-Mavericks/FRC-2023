@@ -214,18 +214,6 @@ public class Limelight extends SubsystemBase {
     }
 
     // for retro
-    public LimelightTarget_Retro getTargetData (int n){
-      LimelightResults results = GetJSONResults();
-      return results.targetingResults.targets_Retro[n];
-    }
-
-    // for retro
-    public void setRetroTarget(int n){
-      LimelightResults results = GetJSONResults();
-      results.targetingResults.targets_Retro[0]=results.targetingResults.targets_Retro[n];
-    }
-
-    // for retro
     public double getTargetTx(int n){
       if (m_Txs[0].exists()){
         return m_Txs[n].getDouble(n);

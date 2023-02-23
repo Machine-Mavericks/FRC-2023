@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 
 public class NodeTargeting extends SubsystemBase {
   Limelight m_nodeTargetCamera;
@@ -37,7 +36,7 @@ public class NodeTargeting extends SubsystemBase {
     return m_nodeTargetCamera.isTargetPresent()==1;
   }
 
-  public void setLeftBottomTarget(){
+  public double setLeftBottomTarget(){
     double tempx = this.Txs[0];
     int tempi = 0;
     int templast = 0;
@@ -53,19 +52,19 @@ public class NodeTargeting extends SubsystemBase {
       for (int i = 1; i < m_nodeTargetCamera.getNumOfRetro(); i++){
         if (Txs[i]<tempx2){
           templast = tempi;
-          tempx2 = Txs[i];
+          tempx2 = this.Txs[i];
           tempi = i;
         }
       }
     }
     if (this.Tys[templast]<this.Tys[tempi]){
-      m_nodeTargetCamera.setRetroTarget(templast);
+      return this.Txs[templast];
     } else {
-      m_nodeTargetCamera.setRetroTarget(tempi);
+      return this.Txs[tempi];
     }
   }
 
-  public void setLeftTopTarget(){
+  public double setLeftTopTarget(){
     double tempx = this.Txs[0];
     int tempi = 0;
     int templast = 0;
@@ -88,13 +87,13 @@ public class NodeTargeting extends SubsystemBase {
       }
     }
     if (this.Tys[templast]>this.Tys[tempi]){
-      m_nodeTargetCamera.setRetroTarget(templast);
+      return this.Txs[templast];
     } else {
-      m_nodeTargetCamera.setRetroTarget(tempi);
+      return this.Txs[tempi];
     }
   }
 
-  public void setRightBottomTarget(){
+  public double setRightBottomTarget(){
     double tempx = this.Txs[0];
     int tempi = 0;
     int templast = 0;
@@ -116,13 +115,13 @@ public class NodeTargeting extends SubsystemBase {
       }
     }
     if (this.Tys[templast]<this.Tys[tempi]){
-      m_nodeTargetCamera.setRetroTarget(templast);
+      return this.Txs[templast];
     } else {
-      m_nodeTargetCamera.setRetroTarget(tempi);
+      return this.Txs[tempi];
     }
   }
 
-  public void setRightTopTarget(){
+  public double setRightTopTarget(){
     double tempx = this.Txs[0];
     int tempi = 0;
     int templast = 0;
@@ -144,9 +143,9 @@ public class NodeTargeting extends SubsystemBase {
       }
     }
     if (this.Tys[templast]>this.Tys[tempi]){
-      m_nodeTargetCamera.setRetroTarget(templast);
+      return this.Txs[templast];
     } else {
-      m_nodeTargetCamera.setRetroTarget(tempi);
+      return this.Txs[tempi];
     }
   }
 
