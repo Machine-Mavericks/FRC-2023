@@ -213,7 +213,11 @@ public class Limelight extends SubsystemBase {
       return (int) m_numOfRetroTargets.getDouble(0.0);
     }
 
-    // for retro
+    /**
+     * Returns the tx of the nth target where n is from 0-3
+     * @param n (int) -1<n<3
+     * @return tx of nth target
+     */
     public double getTargetTx(int n){
       if (m_Txs[0].exists()){
         return m_Txs[n].getDouble(n);
@@ -222,7 +226,11 @@ public class Limelight extends SubsystemBase {
       }
     }
 
-    // for retro
+    /**
+     * Returns the ty of the nth target where n is from 0-3
+     * @param n (int) -1<n<3
+     * @return ty of nth target
+     */
     public double getTargetTy(int n){
       if (m_Tys[0].exists()){
         return m_Tys[n].getDouble(n);
@@ -354,6 +362,9 @@ public class Limelight extends SubsystemBase {
     // Distance testing
     m_Distance = Tab.add("Game Peice Distance (cm)", 0).withPosition(3, 0).getEntry();
 
+    // Retroflective number of targets
+    m_numOfRetroTargets = Tab.add("Num Retro Targets",0).withPosition(0,3).getEntry();
+
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Target", BuiltInLayouts.kList);
     l1.withPosition(2, 0);
@@ -410,26 +421,25 @@ public class Limelight extends SubsystemBase {
       // m_Test2 = Tab.add("Target ID", 0).withPosition(0,4).getEntry();
       // end temp ////////
     } else {
-      ShuffleboardLayout l6 = Tab.getLayout("target 1", BuiltInLayouts.kList).withPosition(0, 4).withSize(1, 2);
+      // retro targets tx and tys
+
+      ShuffleboardLayout l6 = Tab.getLayout("target 1", BuiltInLayouts.kList).withPosition(4, 0).withSize(1, 2);
       m_Txs[0] = l6.add("tx",0.0).getEntry();
       m_Tys[0] = l6.add("ty",0.0).getEntry();
 
-      ShuffleboardLayout l7 = Tab.getLayout("target 2", BuiltInLayouts.kList).withPosition(0, 5).withSize(1, 2);
+      ShuffleboardLayout l7 = Tab.getLayout("target 2", BuiltInLayouts.kList).withPosition(4, 2).withSize(1, 2);
       m_Txs[1] = l7.add("tx",0.0).getEntry();
       m_Tys[1] = l7.add("ty",0.0).getEntry();
 
-      ShuffleboardLayout l8 = Tab.getLayout("target 3", BuiltInLayouts.kList).withPosition(0, 6).withSize(1, 2);
+      ShuffleboardLayout l8 = Tab.getLayout("target 3", BuiltInLayouts.kList).withPosition(5, 0).withSize(1, 2);
       m_Txs[2] = l8.add("tx",0.0).getEntry();
       m_Tys[2] = l8.add("ty",0.0).getEntry();
 
-      ShuffleboardLayout l9 = Tab.getLayout("target 4", BuiltInLayouts.kList).withPosition(0, 6).withSize(1, 2);
+      ShuffleboardLayout l9 = Tab.getLayout("target 4", BuiltInLayouts.kList).withPosition(5, 2).withSize(1, 2);
       m_Txs[3] = l9.add("tx",0.0).getEntry();
       m_Tys[3] = l9.add("ty",0.0).getEntry();
 
     }
-
-    m_numOfRetroTargets = Tab.add("Num Retro Targets",0).withPosition(0,3).getEntry();
-
   }
 
 

@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
     RobotContainer.swervedrive.ResetSteerEncoders();
 
     // set AprilTags camera pipeline to 0
-    //RobotContainer.limelight1.setPipeline(0);
+    RobotContainer.limelight1.setPipeline(0);
     
     // Reset odometry
     RobotContainer.swerveodometry.InitializetoZero();

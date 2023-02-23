@@ -7,23 +7,30 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class NodeTargeting extends SubsystemBase {
-  Limelight m_nodeTargetCamera;
-  int m_numOfRetroTargets;
-  double[] Txs;
-  double[] Tys;
+  Limelight m_nodeTargetCamera; // instance camera
+  int m_numOfRetroTargets; // num of visible targets
+  double[] Txs; // instance array of target txs
+  double[] Tys; // instance array of target tys
 
   /** Creates a new NodeTargeting. */
   public NodeTargeting() {
-    m_nodeTargetCamera = new Limelight("tags"); // name TBD
+    // initializes camera object
+    m_nodeTargetCamera = new Limelight("retro"); // name TBD
+    // sets the pipeline to retroreflective
     m_nodeTargetCamera.setPipeline(1); // pipeline name TBD
-    m_numOfRetroTargets = m_nodeTargetCamera.getNumOfRetro();
+    // initializes private variable 
+    this.m_numOfRetroTargets = m_nodeTargetCamera.getNumOfRetro();
   }
 
   @Override
   public void periodic() {
+    // This method will be called once per scheduler run
+
+    // initializes Txs and Tys
     double[] Txs = new double[m_nodeTargetCamera.getNumOfRetro()];
     double[] Tys = new double[m_nodeTargetCamera.getNumOfRetro()];
-    // This method will be called once per scheduler run
+
+    // populates instance arrays
     for (int i = 0; i < m_nodeTargetCamera.getNumOfRetro() && i<4; i++){
       Txs[i] = m_nodeTargetCamera.getTargetTx(i);
       Tys[i] = m_nodeTargetCamera.getTargetTy(i);
@@ -32,14 +39,23 @@ public class NodeTargeting extends SubsystemBase {
     }
   }
 
+  /**
+   * returns true if there is a retro/node target
+   * @return boolean
+   */
   public boolean IsTarget() {
     return m_nodeTargetCamera.isTargetPresent()==1;
   }
 
-  public double setLeftBottomTarget(){
+  /**
+   * chooses the left and bottom most target
+   * @return tx of target
+   */
+  public double txLeftBottomTarget(){
     double tempx = this.Txs[0];
     int tempi = 0;
     int templast = 0;
+    // looks for left and second leftmost target
     for (int i = 1; i < m_nodeTargetCamera.getNumOfRetro(); i++){
       if (Txs[i]<tempx){
         templast = tempi;
@@ -47,6 +63,7 @@ public class NodeTargeting extends SubsystemBase {
         tempi = i;
       }
     }
+    // if second leftmost is never populated, populate using remaining targets
     if (tempi == 0){
       double tempx2 = this.Txs[1];
       for (int i = 1; i < m_nodeTargetCamera.getNumOfRetro(); i++){
@@ -57,6 +74,7 @@ public class NodeTargeting extends SubsystemBase {
         }
       }
     }
+    // return tx of the bottom most of the two left most targets
     if (this.Tys[templast]<this.Tys[tempi]){
       return this.Txs[templast];
     } else {
@@ -64,7 +82,11 @@ public class NodeTargeting extends SubsystemBase {
     }
   }
 
-  public double setLeftTopTarget(){
+  /**
+   * chooses the left and top most target
+   * @return tx of target
+   */
+  public double txLeftTopTarget(){
     double tempx = this.Txs[0];
     int tempi = 0;
     int templast = 0;
@@ -93,7 +115,11 @@ public class NodeTargeting extends SubsystemBase {
     }
   }
 
-  public double setRightBottomTarget(){
+  /**
+   * chooses the right and bottom most target
+   * @return tx of target
+   */
+  public double txRightBottomTarget(){
     double tempx = this.Txs[0];
     int tempi = 0;
     int templast = 0;
@@ -121,7 +147,11 @@ public class NodeTargeting extends SubsystemBase {
     }
   }
 
-  public double setRightTopTarget(){
+  /**
+   * chooses the right and top most target
+   * @return tx of target
+   */
+  public double txRightTopTarget(){
     double tempx = this.Txs[0];
     int tempi = 0;
     int templast = 0;
@@ -146,27 +176,6 @@ public class NodeTargeting extends SubsystemBase {
       return this.Txs[templast];
     } else {
       return this.Txs[tempi];
-    }
-  }
-
-  /**
-   * set target to n 
-   * n = 0 --> left bottom target
-   * n = 1 --> left top target
-   * n = 2 --> right bottom target
-   * n = 3 --> right top target
-   */
-  public void setTarget(int n) {
-    if (m_nodeTargetCamera.getNumOfRetro()!=1){
-      if (n==0){
-        setLeftBottomTarget();
-      } else if (n==1){
-        setLeftTopTarget();
-      } else if (n==2){
-        setRightBottomTarget();
-      } else {
-        setRightTopTarget();
-      }
     }
   }
 }
