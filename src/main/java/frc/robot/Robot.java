@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
+import frc.robot.commands.CloseGrabber;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,7 +28,7 @@ public class Robot extends TimedRobot {
       SwerveBase2022,
       SwerveBase2023
   }
-  public static final RobotBaseType robotBase = RobotBaseType.SwerveBase2022;
+  public static final RobotBaseType robotBase = RobotBaseType.SwerveBase2023;
 
 
   /**
@@ -81,7 +82,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    
+    new CloseGrabber().execute(); 
     // Reset gyro - temporary - code likely to be moved later
     RobotContainer.gyro.resetGyro();
     //RobotContainer.gyro2.resetGyro();

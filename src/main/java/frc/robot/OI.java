@@ -26,6 +26,7 @@ public class OI {
 
     /** Buttons on the operator controller */
     private static class OperatorButtons {
+        private static final Button GRABBER_BUTTON = XboxController.Button.kRightBumper;
         
         /** Button used as example */
         //private static final Button EXAMPLE = XboxController.Button.kA;
@@ -43,6 +44,8 @@ public class OI {
     private static final XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
     /** Controller used by driver, mapped to {@link #OPERATOR_CONTROLLER_PORT} */
     private static final XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
+    public static final JoystickButton grabberButton = new JoystickButton(operatorController, OperatorButtons.GRABBER_BUTTON.value);
+    
 
     
     // The sticks/controllers are kept private so that if we want to switch them later, this is the only place needing changes

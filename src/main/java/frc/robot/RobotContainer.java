@@ -14,12 +14,14 @@ import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Pigeon;
 
 import frc.robot.subsystems.GamePieceTargeting;
-
+import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
 import frc.robot.subsystems.Arm;
 import frc.robot.commands.ManualDriveCommand;
+import frc.robot.commands.OpenGrabber;
+import frc.robot.commands.CloseGrabber;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
@@ -39,6 +41,7 @@ public class RobotContainer {
 
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
+  public static final Grabber grabber = new Grabber();
   // public static final Pigeon gyro2 = new Pigeon();
   public static final Limelight limelight1 = new Limelight("tags");
   public static final SwerveDrive swervedrive = new SwerveDrive();
@@ -85,6 +88,7 @@ public class RobotContainer {
     OI.ArmLocation1Button.onTrue(new SetArmPosition(95));
     OI.ArmLocation2Button.onTrue(new SetArmPosition(160));
     OI.ArmLocation3Button.onTrue(new SetArmPosition(205));
+    OI.grabberButton.onTrue(RobotContainer.grabber.isOpen() ? new CloseGrabber() : new OpenGrabber());
 
     // TODO: Add your button bindings here
     /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
