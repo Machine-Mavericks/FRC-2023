@@ -62,7 +62,7 @@ public class ConePickupCommand extends CommandBase {
 
     // record maximum speeds to use
     m_maxspeed = 0.5; //MaxSpeed;
-    m_maxrotspeed = 1.5; //MaxRotateSpeed;
+    m_maxrotspeed = 1.; //MaxRotateSpeed;
 
     // create timer, and record timeout limit
     m_Timer = new Timer();
@@ -127,7 +127,7 @@ public class ConePickupCommand extends CommandBase {
     //X = X / 100;
     //Y = Y / 100;
    // m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
-    m_targetpose = new Pose2d(odometryPose.getX() + 1,  odometryPose.getY() + 1, new Rotation2d(0));
+    m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), new Rotation2d(0));
   }
 
   private GamePieceData getTarget() {
