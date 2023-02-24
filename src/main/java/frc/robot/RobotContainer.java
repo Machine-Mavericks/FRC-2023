@@ -8,15 +8,24 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Pigeon;
+import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.KenPoseEstimator;
+import frc.robot.subsystems.TargetSelect;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
+import frc.robot.subsystems.Arm;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.PrecisionDriveToPose;
+import frc.robot.commands.PrecisionDriveToTarget;
+import frc.robot.commands.AutoDriveToTarget;
 import edu.wpi.first.math.geometry.Pose2d;
+
+import frc.robot.subsystems.LEDBlinkin;
 
 
 /**
@@ -29,14 +38,20 @@ public class RobotContainer {
 
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
-  // public static final Pigeon gyro2 = new Pigeon();
-  public static final Limelight limelight1 = new Limelight("tags");
+  //public static final Pigeon gyro2 = new Pigeon();
+  public static final Limelight limelight1 = new Limelight("tags", true);
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
-  public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
-  
+  //public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
+  public static final KenPoseEstimator estimator = new KenPoseEstimator();
+  public static final TargetSelect targetselector = new TargetSelect();
+  //public static final Grabber grabber = new Grabber();
+  public static final LEDBlinkin LEDStrip = new LEDBlinkin();
+  public static final Arm arm = new Arm();
+
 
   /* Constructor */
+
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
@@ -63,9 +78,15 @@ public class RobotContainer {
     /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
                                                             false,
                                                             1.0, 3.0, 30.0)
-    
     ); */
-       
+    
+    
+    OI.ArmPickupButton.whileTrue(new InstantCommand(()-> arm.SetArmPosition(Arm.ArmPosition.Pickup)));
+    OI.ArmStowButton.whileTrue(new InstantCommand(()-> arm.SetArmPosition(Arm.ArmPosition.Stow)));
+    OI.ArmDropOffButton.whileTrue(new InstantCommand(()-> arm.SetArmPosition(Arm.ArmPosition.Dropoff)));
+
+    //OI.PrecisionMoveButton.whileTrue(new PrecisionDriveToTarget());
+    //OI.PrecisionMoveButton.whileTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
   }
 
   /**
