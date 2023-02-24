@@ -44,7 +44,7 @@ public class OI {
     /** Controller used by driver, mapped to {@link #OPERATOR_CONTROLLER_PORT} */
     private static final XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
 
-
+    
     // The sticks/controllers are kept private so that if we want to switch them later, this is the only place needing changes
     // Use buttons and DoubleSuppliers to expose any inputs you want elsewhere
     public static double getXDriveInput(){
@@ -62,5 +62,17 @@ public class OI {
     public static boolean getParkButton(){
         return OI.driverController.getLeftBumper();
     }
+
+    public static double getArmSpeed(){
+        return OI.driverController.getRightY()*-1.0;
+    }
+
+    public static boolean getArmLocation2Button(){
+        return OI.driverController.getXButton();
+    }
+
+    public static JoystickButton ArmLocation1Button = new JoystickButton(driverController, XboxController.Button.kA.value);
+    public static JoystickButton ArmLocation2Button = new JoystickButton(driverController, XboxController.Button.kX.value);
+    public static JoystickButton ArmLocation3Button = new JoystickButton(driverController, XboxController.Button.kY.value);
 
 }

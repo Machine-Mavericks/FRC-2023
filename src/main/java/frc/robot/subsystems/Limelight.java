@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -30,7 +31,12 @@ public class Limelight extends SubsystemBase {
     // subsystem shuffleboard controls
     private GenericEntry m_Pipeline;
     private GenericEntry m_TargetPresent;
+
     private GenericEntry m_AprilTagID;
+
+    private GenericEntry m_Distance; // For cones & Cubes only
+    private DoubleArraySubscriber m_llpythonSub;
+
     private GenericEntry m_AngleX;
     private GenericEntry m_AngleY;
     private GenericEntry m_Skew;
@@ -39,6 +45,26 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_Long;
     private GenericEntry m_Hor;
     private GenericEntry m_Vert;
+    private GenericEntry m_X;
+    private GenericEntry m_Y;
+    private GenericEntry m_Z;
+    private GenericEntry m_Pitch;
+    private GenericEntry m_Yaw;
+    private GenericEntry m_Roll;
+
+    private GenericEntry m_Xfs;
+    private GenericEntry m_Yfs;
+    private GenericEntry m_Zfs;
+    private GenericEntry m_Pitchfs;
+    private GenericEntry m_Yawfs;
+    private GenericEntry m_Rollfs;
+    private GenericEntry m_Xrs;
+    private GenericEntry m_Yrs;
+    private GenericEntry m_Zrs;
+    private GenericEntry m_Pitchrs;
+    private GenericEntry m_Yawrs;
+    private GenericEntry m_Rollrs;
+
     private GenericEntry m_BotPose[] = new GenericEntry[6];
     private GenericEntry m_BotPoseRed[] = new GenericEntry[6];
     private GenericEntry m_BotPoseBlue[] = new GenericEntry[6];
@@ -46,7 +72,7 @@ public class Limelight extends SubsystemBase {
     // private GenericEntry m_Test2;
 
     private boolean m_FiducialEnable;
-    
+
   
     /**
      * Creates a new Limelight.
@@ -74,6 +100,8 @@ public class Limelight extends SubsystemBase {
       // side-by-side
       m_table.getEntry("stream").setNumber(0);
 
+      m_llpythonSub = m_table.getDoubleArrayTopic("llpython").subscribe(new double[] {});
+
       // set initial pipeline to 0
       setPipeline(0);
   
@@ -98,13 +126,17 @@ public class Limelight extends SubsystemBase {
     // ---------- Camera Control Functions ----------
   
     /** set camera's current pipeline: 0 to 9 */
+
     public void setPipeline(int num) {
+
       if (num >= 0 && num <= 9)
       m_table.getEntry("pipeline").setNumber(num);
     }
   
     /** returns camera's current pipeline: 0 to 9 */
+
     public Double getPipeline() {
+
       return m_table.getEntry("getPipe").getDouble(0);
     }
   
@@ -132,7 +164,6 @@ public class Limelight extends SubsystemBase {
       return m_table.getEntry("ts").getFloat(0);
     }
   
-   
     // get target detection time latency
     public double getLatencyContribution() {
       return m_table.getEntry("tl").getDouble(0);
@@ -171,6 +202,23 @@ public class Limelight extends SubsystemBase {
     /** Get primary april tag id */
     public double getPrimAprilTagID () {
       return m_table.getEntry("tid").getDouble(0);
+    }
+
+
+    /** Get largest game piece distance */
+    public double getGamePieceDistance () {
+      // double[] arr = m_table.getEntry("llpython").getDoubleArray(new double[0]);
+      // System.out.println(arr.length);
+      // if (arr.length > 0) {
+      //   return arr[0];
+      // }
+
+      
+      double[] llpython = m_llpythonSub.get();
+      if (llpython.length > 0){
+        return llpython[0];
+      } 
+      return 0;
     }
 
     // ---------- get raw target attributes ----------
@@ -277,7 +325,9 @@ public class Limelight extends SubsystemBase {
     // april tag target id
     m_AprilTagID = Tab.add("AprilTag Target ID", 0).withPosition(0,2).getEntry();
 
-  
+    // Distance testing
+    m_Distance = Tab.add("Game Peice Distance (cm)", 0).withPosition(3, 0).getEntry();
+
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Target", BuiltInLayouts.kList);
     l1.withPosition(2, 0);
@@ -343,8 +393,13 @@ public class Limelight extends SubsystemBase {
     
     // update camera pipeline and target detected indicator
     m_Pipeline.setDouble(getPipeline());
+
     m_TargetPresent.setBoolean(isTargetPresent()==1);
     m_AprilTagID.setDouble(getPrimAprilTagID());
+    m_Distance.setDouble(getGamePieceDistance());
+
+
+
     
     // update angles to center of target
     m_AngleX.setDouble(getHorizontalTargetOffsetAngle());
