@@ -14,7 +14,6 @@ import frc.robot.commands.ManualArmSpeed;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 /**
@@ -48,7 +47,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    m_US = new AnalogInput(0);
+    m_US = new AnalogInput(3);
   }
 
   /**
@@ -132,7 +131,7 @@ public class Robot extends TimedRobot {
     final double scaleFactor = 1/(5./1024.); //scale converting voltage to distance
     double distance = 5*sensorValue*scaleFactor; //convert the voltage to distance
     m_distance.setDouble(distance); //write the value to the LabVIEW DriverStation
-  
+    System.out.println(sensorValue);
   }
 
   @Override
