@@ -72,11 +72,16 @@ public class Arm extends SubsystemBase {
   private GenericEntry m_ArmPositionSP;
   private GenericEntry m_ArmMotorPositionSP;
 
+  private GenericEntry m_SetSelMP;
+  private GenericEntry m_GetSelMP;
+
   private GenericEntry m_ArmSpeedSP;
 
   private GenericEntry m_ArmSpeedFB;
 
   private GenericEntry m_ArmEnabledFB;
+  private GenericEntry m_ArmForwardLimit;
+  private GenericEntry m_ArmReverseLimit;
 
   
   // Arm Position in degrees for the end arm section relative to the mid arm section
@@ -86,7 +91,9 @@ public class Arm extends SubsystemBase {
   double m_MidArmPositionDeg;
 
   // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
-  double m_ArmCanCoderOffsetDeg;
+  // for testing on the bench unit, simply set it to zero because we don't have a cancoder
+ double m_ArmCanCoderOffsetDeg = - 55.24;
+
 
   // Arm Position Setpoint in degrees while in position control
   double m_ArmPositionSetpoint;
@@ -94,8 +101,8 @@ public class Arm extends SubsystemBase {
   // Limit arm positions in degrees - degree limits in the range of 30 - 330 degrees
   // The arm zero degree mark will be when the arm is pointing directly down and the angle increases towards the pickup area and further increases to the drop off area.
   // It is important to ensure ensure the zero value of the arm position is not near either of the MIN or MAX arm position limits.
-  static final double MIN_MID_ARM_POS_DEG = 80;
-  static final double MAX_MID_ARM_POS_DEG = 240;
+  static final double MIN_MID_ARM_POS_DEG = 70;
+  static final double MAX_MID_ARM_POS_DEG = 250;
   
   // create CANCoder sensor objects
   private CANCoder m_ArmCanCoder;
@@ -104,6 +111,11 @@ public class Arm extends SubsystemBase {
   private TalonFX m_ArmMotor;
 
   private boolean m_ArmEnabled;
+
+
+  private double m_setselectedmotorposition = 0.0;
+  private double m_getselectedmotorposition = 0.0;
+
 
   private final ArmFeedforward m_feedforward =
   new ArmFeedforward(0.0,0.0,0.0,0.0);
@@ -160,7 +172,7 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.config_kI(0, getArmI(), 0);
     m_ArmMotor.config_kD(0, getArmD(), 0);
     // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.5);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.15);
     m_ArmMotor.configClosedloopRamp(getMaxAcceleration());
   
     // The other code already is supposed to do this, but keep this as a backup
@@ -171,7 +183,8 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.configForwardSoftLimitEnable(true);
     m_ArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
     m_ArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-      // initialize encoders according to CANCoder positions
+
+    // initialize encoders according to CANCoder positions
     ResetArmEncoders();
   }
 
@@ -179,14 +192,18 @@ public class Arm extends SubsystemBase {
   // seed the encoder value of the arm motor based on CANcoder and alignment position.
     public void ResetArmEncoders() {
     
-    // for testing on the bench unit, simply set it to zero because we don't have a cancoder
-    //m_ArmCanCoderOffsetDeg = 0.0;
-    m_ArmCanCoderOffsetDeg = -35.24;
+
 
     m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg)) * DEG_TO_ENCODERPULSE, 0, 0);
+    if (m_setselectedmotorposition == 0.0) {m_setselectedmotorposition = (m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg));}
+    if (m_getselectedmotorposition == 0.0) {m_getselectedmotorposition = (m_ArmMotor.getSelectedSensorPosition()*ENCODERPULSE_TO_DEG)%360;}
+ 
 
     GetArmPositions();
-    m_ArmPositionSetpoint = m_MidArmPositionDeg;
+    //m_ArmPositionSetpoint = m_MidArmPositionDeg;
+
+    m_ArmPositionSetpoint = (m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg));
+
 
   }
 
@@ -220,6 +237,9 @@ public void SetEnableArm(boolean Enable) {
 public void ArmSpeed(double speed) {
   
   if (!m_ArmEnabled) {return;}
+  if (m_ArmMotor.getSensorCollection().isFwdLimitSwitchClosed() == 0.0) {return;}
+  if (m_ArmMotor.getSensorCollection().isRevLimitSwitchClosed() == 0.0) {return;}
+
   // limit arm speed
   double TargetSpeed = speed;
   if (TargetSpeed > MAX_VELOCITY_DEG_PER_SECOND) {TargetSpeed = MAX_VELOCITY_DEG_PER_SECOND;}
@@ -246,25 +266,38 @@ public void ArmSpeed(double speed) {
 public boolean ArmSpeed_PosCtrl(double speed) {
 
   if (!m_ArmEnabled) {return false;}
+  if (m_ArmMotor.getSensorCollection().isFwdLimitSwitchClosed() == 0.0) {return false;}
+  if (m_ArmMotor.getSensorCollection().isRevLimitSwitchClosed() == 0.0) {return false;}
 
   // arm position delta = arm speed in deg/second * time delta
   // arm position target = current arm position + (arm speed in deg/second * time delta)
   double TargetPosition = m_ArmPositionSetpoint + (speed * 0.02);
-  if (TargetPosition < MIN_MID_ARM_POS_DEG) {TargetPosition = MIN_MID_ARM_POS_DEG;}
-  if (TargetPosition > MAX_MID_ARM_POS_DEG) {TargetPosition = MAX_MID_ARM_POS_DEG;}
+
+  //  This will move the arm to within a valid range if it is outside of it's valid range.
+  //  if (TargetPosition < MIN_MID_ARM_POS_DEG) {TargetPosition = MIN_MID_ARM_POS_DEG;}
+  //  if (TargetPosition > MAX_MID_ARM_POS_DEG) {TargetPosition = MAX_MID_ARM_POS_DEG;}
+
+  // This will not allow the arm to move further outside of it's range but allow it to move towards it's valid range.
+  if ((TargetPosition < MIN_MID_ARM_POS_DEG) & (TargetPosition < m_ArmPositionSetpoint)) {TargetPosition = m_ArmPositionSetpoint;}
+  if ((TargetPosition > MAX_MID_ARM_POS_DEG) & (TargetPosition > m_ArmPositionSetpoint)) {TargetPosition = m_ArmPositionSetpoint;}
+  
   System.out.println("teleopPeriodic!" + (System.currentTimeMillis()) + " TargetPos " + TargetPosition + " Speed " + speed);
   return SetArmPosition(TargetPosition);
+
 }
 
 
 // Set Arm Position deg
    public boolean SetArmPosition(double PosDeg) {
     if (!m_ArmEnabled) {return false;}
+    if (m_ArmMotor.getSensorCollection().isFwdLimitSwitchClosed() == 0.0) {return false;}
+    if (m_ArmMotor.getSensorCollection().isRevLimitSwitchClosed() == 0.0) {return false;}
 
     // Do not set the arm position if an invalid arm position is selected.
     if ((PosDeg >= MIN_MID_ARM_POS_DEG) && (PosDeg <= MAX_MID_ARM_POS_DEG)) {
       m_ArmPositionSetpoint = PosDeg;
       m_ArmMotor.set(ControlMode.Position, m_ArmPositionSetpoint*DEG_TO_ENCODERPULSE, DemandType.ArbitraryFeedForward, 0.0);
+
       return true;
     } else {
       return false;
@@ -280,6 +313,7 @@ public boolean GetArmEnabled() {
 // Get Arm Position in degrees 
 public double GetArmPosition() {
   //GetArmPositions();  // This was moved to periodic
+  //Do we need to add info to get arm position in here?
   return m_MidArmPositionDeg;
 }
 
@@ -386,6 +420,8 @@ private void GetArmPositions() {
     l3.withSize(1, 5);
     m_ArmPositionSP= l3.add("Arm SP Deg", 0.0).getEntry();
     m_ArmMotorPositionSP= l3.add("Motor SP Cnt", 0.0).getEntry();
+    m_SetSelMP= l3.add("Motor Set Sel MP", 0.0).getEntry();
+    m_GetSelMP= l3.add("Motor Get Sel MP", 0.0).getEntry();
 
     ShuffleboardLayout l4 = Tab.getLayout("Speed FB", BuiltInLayouts.kList);
     l4.withPosition(5, 0);
@@ -401,6 +437,8 @@ private void GetArmPositions() {
     l6.withPosition(7, 0);
     l6.withSize(1, 5);
     m_ArmEnabledFB= l6.add("Arm Enabled", false).getEntry();
+    m_ArmForwardLimit= l6.add("Forward Limit OK", false).getEntry();    
+    m_ArmReverseLimit= l6.add("Reverse Limit OK", false).getEntry();
 
   }
 
@@ -416,6 +454,8 @@ private void GetArmPositions() {
     // update arm motor position setpoint values
     m_ArmPositionSP.setDouble(m_ArmPositionSetpoint);
     m_ArmMotorPositionSP.setDouble(m_ArmMotor.getClosedLoopTarget());
+    m_SetSelMP.setDouble(m_setselectedmotorposition);
+    m_GetSelMP.setDouble(m_getselectedmotorposition);
 
     // update arm motor speed reference (Setpoint) in deg/second    The x10 is because it's the encoder pulses per 100ms
     m_ArmSpeedFB.setDouble(m_ArmMotor.getSelectedSensorVelocity()*ENCODERPULSE_TO_DEG*10);
@@ -424,6 +464,9 @@ private void GetArmPositions() {
     m_ArmSpeedSP.setDouble(m_ArmMotor.getClosedLoopTarget()*ENCODERPULSE_TO_DEG*10);
 
     m_ArmEnabledFB.setBoolean(m_ArmEnabled);
+
+    m_ArmForwardLimit.setBoolean(m_ArmMotor.getSensorCollection().isFwdLimitSwitchClosed() == 1.0);
+    m_ArmReverseLimit.setBoolean(m_ArmMotor.getSensorCollection().isRevLimitSwitchClosed() == 1.0);
   }
 
   // returns Acceleration limit in shuffleboard slider in (seconds to full throttle)

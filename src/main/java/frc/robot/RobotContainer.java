@@ -83,9 +83,12 @@ public class RobotContainer {
    */
   private static void configureButtonBindings() {
 
-    OI.ArmLocation1Button.onTrue(new SetArmPosition(95));
-    OI.ArmLocation2Button.onTrue(new SetArmPosition(160));
-    OI.ArmLocation3Button.onTrue(new SetArmPosition(205));
+    OI.ArmLocation1Button.onTrue(new SetArmPosition(92));
+    OI.ArmLocation2Button.onTrue(new SetArmPosition(195));
+    OI.ArmLocation3Button.onTrue(new SetArmPosition(240));
+//stow 135
+//jeff 107
+
 
     // TODO: Add your button bindings here
     /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
