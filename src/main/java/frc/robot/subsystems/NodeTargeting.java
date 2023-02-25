@@ -15,7 +15,7 @@ public class NodeTargeting extends SubsystemBase {
   /** Creates a new NodeTargeting. */
   public NodeTargeting() {
     // initializes camera object
-    m_nodeTargetCamera = new Limelight("retro"); // name TBD
+    m_nodeTargetCamera = new Limelight("game"); // name TBD
     // sets the pipeline to retroreflective
     m_nodeTargetCamera.setPipeline(1); // pipeline name TBD
     // initializes private variable 

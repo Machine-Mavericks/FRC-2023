@@ -31,7 +31,7 @@ public class GamePieceTargeting extends SubsystemBase {
   private GamePieceData m_conePose = new GamePieceData(0, 0);
 
   public GamePieceTargeting(double limelightOffset_X, double limelightOffset_Y) {
-    m_gamepiececamera = new Limelight("game");
+    m_gamepiececamera = new Limelight("tagslow");
 
     System.out.println("Limelight online??"); // Hopefully
 
