@@ -36,7 +36,7 @@ public class ConePickupCommand extends CommandBase {
   private Pose2d m_targetpose;
 
   // cone targeting
-  private double m_idealdistance = 40.0;
+  private double m_idealdistance = 48.0;
 
   private boolean m_canceled = false;
   private boolean m_notFirstLoop = false;
@@ -158,7 +158,7 @@ public class ConePickupCommand extends CommandBase {
       m_aquiredValid = true;
     }
 
-    // Messy logic to avoid 
+    // Messy logic to avoid issues
     if (m_aquiredValid & pieceValidThisFrame){
       // Add rotated pose to current position
       m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X, targetAngle.rotateBy(odometryPose.getRotation()));
@@ -168,7 +168,11 @@ public class ConePickupCommand extends CommandBase {
       }
     }else{
       if (m_notFirstLoop){
-        m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), targetAngle.rotateBy(odometryPose.getRotation())); 
+        if (m_aquiredValid & !pieceValidThisFrame){
+          // Do nothing to target pose
+        }else{
+          m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), targetAngle.rotateBy(odometryPose.getRotation())); 
+        }
       }else{
         m_targetpose = new Pose2d(odometryPose.getX(), odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
       }
