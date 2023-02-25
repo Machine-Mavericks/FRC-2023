@@ -21,6 +21,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ConePickupCommand;
+import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
@@ -85,7 +86,8 @@ public class RobotContainer {
     OI.ArmLocation4Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
 
     // buttons for arm position presets
-    OI.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
+    //OI.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
+    OI.GrabberButton.onTrue(new GrabGamePiece());
 
     // TODO: Add your button bindings here
     /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
