@@ -71,9 +71,14 @@ public class OI {
         return OI.driverController.getXButton();
     }
 
+    // arm and grabber buttons
     public static JoystickButton ArmLocation1Button = new JoystickButton(driverController, XboxController.Button.kA.value);
     public static JoystickButton ArmLocation2Button = new JoystickButton(driverController, XboxController.Button.kX.value);
     public static JoystickButton ArmLocation3Button = new JoystickButton(driverController, XboxController.Button.kY.value);
-    public static JoystickButton TrackConeButton = new JoystickButton(driverController, XboxController.Button.kB.value);
+
+    public static JoystickButton TrackConeButton = new JoystickButton(driverController, XboxController.Button.kLeftBumper.value);
+
+    public static JoystickButton ArmLocation4Button = new JoystickButton(driverController, XboxController.Button.kB.value);
+    public static JoystickButton GrabberButton = new JoystickButton(driverController, XboxController.Button.kRightBumper.value);
 
 }

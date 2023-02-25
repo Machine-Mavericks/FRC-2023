@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -43,8 +44,12 @@ public NavX() {
   /** Gets the yaw of the robot
    * @return current yaw value (-180 to 180) */
   public double getYaw() {
-    // Flip angle since gyro is mounted upside down
-    return -gyro.getYaw(); 
+    
+    // return -ve or +ve dending on robot base being used - i.e. gyro orientation
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+      return -gyro.getYaw();
+    else
+      return gyro.getYaw(); 
   }
 
   /** Gets the pitch of the robot
