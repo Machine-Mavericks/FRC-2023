@@ -38,6 +38,9 @@ def runPipeline(image, llrobot):
             area = cv2.contourArea(cont)
             if area > min_gamepeice_area:
                 largestContour = max(contours, key=cv2.contourArea)
+
+                if (cont != largestContour):
+                    pass
                 
                 rect = cv2.minAreaRect(cont)
                 box = cv2.boxPoints(rect)
@@ -75,7 +78,11 @@ def runPipeline(image, llrobot):
 
                 llpython.append(distance)
 
-
+                if (x == 0 or y == 0 or y + h >= 720 or x + w >= 960):
+                    llpython.append(0)
+                else:
+                    llpython.append(1)
+                    
 
 
 

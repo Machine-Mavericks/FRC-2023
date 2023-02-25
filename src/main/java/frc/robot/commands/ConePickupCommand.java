@@ -36,12 +36,14 @@ public class ConePickupCommand extends CommandBase {
   private Pose2d m_targetpose;
 
   // cone targeting
-  private double m_idealdistance = 30.0;
+  private double m_idealdistance = 40.0;
 
   private boolean m_canceled = false;
+  private boolean m_notFirstLoop = false;
+  private boolean m_aquiredValid = false;
   
 
-// IMPORTANT, ODOMETRY NEEDS TO BE RECALIBRATED - ASK KEN
+// Gyro is mounted backwards compared to last year, if robot is acting erratically, it's probably that
 
   public static double AngleDifference(double angle1, double angle2)
   {
@@ -64,7 +66,7 @@ public class ConePickupCommand extends CommandBase {
 
     // record maximum speeds to use
     m_maxspeed = 0.5; //MaxSpeed;
-    m_maxrotspeed = 1.0; //MaxRotateSpeed;
+    m_maxrotspeed = 1.5; //MaxRotateSpeed;
 
     // create timer, and record timeout limit
     m_Timer = new Timer();
@@ -83,6 +85,7 @@ public class ConePickupCommand extends CommandBase {
       m_canceled = true;
     }else{
       updateTargetPose();
+      m_notFirstLoop = true;
     }
 
     // reset and start in this command
@@ -96,18 +99,29 @@ public class ConePickupCommand extends CommandBase {
   public void execute() {
     if (!m_canceled){
       if (getTarget() != null){
-        //updateTargetPose();
+        updateTargetPose();
       }
-
       manageSwerve();
+
+      evaluateIfTargetReached();
     }
-    
+  }
+
+  private void evaluateIfTargetReached(){
+    Pose2d CurrentPosition = RobotContainer.swerveodometry.getPose2d();
+
+    if ((((Math.abs(m_targetpose.getX() - CurrentPosition.getX()) <  m_positiontolerance) &&
+    (Math.abs(m_targetpose.getY() - CurrentPosition.getY()) <  m_positiontolerance) &&
+    (Math.abs(m_targetpose.getRotation().getDegrees() - CurrentPosition.getRotation().getDegrees()) < m_angletolerance)) ||
+    (m_Timer.hasElapsed(m_timeout)))){
+      m_canceled = true;
+    }
   }
 
   private void updateTargetPose(){
     GamePieceData data = RobotContainer.gamepiecetargeting.getTargetPose(); // Robot relative
     Pose2d odometryPose = RobotContainer.swerveodometry.getPose2d(); // Field relative
-    
+    boolean pieceValidThisFrame = RobotContainer.gamepiecetargeting.getGamePieceValid();
     
     Rotation2d targetAngle;
     if (data.m_Y == 0){
@@ -119,20 +133,47 @@ public class ConePickupCommand extends CommandBase {
     Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, targetAngle); // Robot relative
 
     double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
-    double distCoefficient = (distance - m_idealdistance) / distance; // Use to move point along line // I know im not checking if dividing by zero, I really hope that never becomes a problem..
-    //dataPose = new Pose2d(dataPose.getX() * distCoefficient, dataPose.getY() * distCoefficient, dataPose.getRotation()); // Still robot relative
-  
-    
 
+    double distCoefficient; // Use to move point along line
+    if (distance == 0){ // This should REALLY never happen, but would crash the robot
+      distCoefficient = 0; 
+    } else{
+      distCoefficient = (distance - m_idealdistance) / distance; 
+    }
+   
+    dataPose = new Pose2d(dataPose.getX() * distCoefficient, dataPose.getY() * distCoefficient, dataPose.getRotation()); // Still robot relative
+  
+    // Rotate pose around robot angle
     double X = dataPose.getX() * Math.cos(odometryPose.getRotation().getRadians()) - dataPose.getY() * Math.sin(odometryPose.getRotation().getRadians());
     double Y = dataPose.getY() * Math.cos(odometryPose.getRotation().getRadians()) + dataPose.getX() * Math.sin(odometryPose.getRotation().getRadians());
 
-    X = X / 100;
+    // Convert cm to meters
+    X = X / 100; 
     Y = Y / 100;
 
-    System.out.println(X);
-   // m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
-    m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X, targetAngle.rotateBy(odometryPose.getRotation()));
+    // Store last pose
+    Pose2d previousPose = m_targetpose;
+
+    if (pieceValidThisFrame){
+      m_aquiredValid = true;
+    }
+
+    // Messy logic to avoid 
+    if (m_aquiredValid & pieceValidThisFrame){
+      // Add rotated pose to current position
+      m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X, targetAngle.rotateBy(odometryPose.getRotation()));
+
+      if (m_notFirstLoop){ // Average last two pose estimations
+        m_targetpose = new Pose2d((m_targetpose.getX() + previousPose.getX()) / 2, (m_targetpose.getY() + previousPose.getY()) / 2, m_targetpose.getRotation()); 
+      }
+    }else{
+      if (m_notFirstLoop){
+        m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), targetAngle.rotateBy(odometryPose.getRotation())); 
+      }else{
+        m_targetpose = new Pose2d(odometryPose.getX(), odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
+      }
+      
+    }
   }
 
   private GamePieceData getTarget() {
@@ -142,6 +183,7 @@ public class ConePickupCommand extends CommandBase {
     }
     return null; // If no target, return null
   }
+
   private void manageSwerve(){
     // get our current position from swerve odometry
     Pose2d CurrentPosition = RobotContainer.swerveodometry.getPose2d();
@@ -184,6 +226,7 @@ public class ConePickupCommand extends CommandBase {
     RobotContainer.swervedrive.drive(xSpeed, ySpeed, rotSpeed, true, false);  
 
   }
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
@@ -195,17 +238,13 @@ public class ConePickupCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    Pose2d CurrentPosition = RobotContainer.swerveodometry.getPose2d();
-
-    if (m_canceled){
-      return true;
-    }
+    return m_canceled;
 
     // we are finished if we are within erorr of target or command had timeed out
-    return (((Math.abs(m_targetpose.getX() - CurrentPosition.getX()) <  m_positiontolerance) &&
-          (Math.abs(m_targetpose.getY() - CurrentPosition.getY()) <  m_positiontolerance) &&
-          (Math.abs(m_targetpose.getRotation().getDegrees() - CurrentPosition.getRotation().getDegrees()) < m_angletolerance)) ||
-          (m_Timer.hasElapsed(m_timeout)));
+    // return (((Math.abs(m_targetpose.getX() - CurrentPosition.getX()) <  m_positiontolerance) &&
+    //       (Math.abs(m_targetpose.getY() - CurrentPosition.getY()) <  m_positiontolerance) &&
+    //       (Math.abs(m_targetpose.getRotation().getDegrees() - CurrentPosition.getRotation().getDegrees()) < m_angletolerance)) ||
+    //       (m_Timer.hasElapsed(m_timeout)));
 
   }
 }

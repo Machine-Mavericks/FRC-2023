@@ -99,6 +99,9 @@ public class GamePieceTargeting extends SubsystemBase {
     return m_gamepiececamera.getGamePieceDistance();
   }
   
+  public boolean getGamePieceValid(){
+    return m_gamepiececamera.getGamePieceValid();
+  }
   /** Returns vertical angle of target (deg)*/
   public double getTargetVertAngle() {
     return m_gamepiececamera.getVerticalTargetOffsetAngle();
