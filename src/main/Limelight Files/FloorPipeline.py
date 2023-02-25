@@ -52,7 +52,7 @@ def runPipeline(image, llrobot):
                 cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,255),5)
 
                 #Calculate distance
-                distance = 16452*pow(area, -0.516)
+                distance = 17259*pow(area, -0.504)
 
                 #print("Dist " + str(distance) + " H: " + str(h))
 

@@ -120,7 +120,7 @@ public class ConePickupCommand extends CommandBase {
 
     double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
     double distCoefficient = (distance - m_idealdistance) / distance; // Use to move point along line // I know im not checking if dividing by zero, I really hope that never becomes a problem..
-    //dataPose = new Pose2d(dataPose.getX(), dataPose.getY(), dataPose.getRotation()); // Still robot relative
+    //dataPose = new Pose2d(dataPose.getX() * distCoefficient, dataPose.getY() * distCoefficient, dataPose.getRotation()); // Still robot relative
   
     
 
@@ -132,7 +132,7 @@ public class ConePickupCommand extends CommandBase {
 
     System.out.println(X);
    // m_targetpose = new Pose2d(odometryPose.getX(),  odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
-    m_targetpose = new Pose2d(odometryPose.getX() + Y,  odometryPose.getY() - X, targetAngle.rotateBy(odometryPose.getRotation()));
+    m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X, targetAngle.rotateBy(odometryPose.getRotation()));
   }
 
   private GamePieceData getTarget() {
