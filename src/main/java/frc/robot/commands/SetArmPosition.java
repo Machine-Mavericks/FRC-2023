@@ -52,7 +52,8 @@ public class SetArmPosition extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (m_CommandError || (Math.abs(RobotContainer.arm.GetArmPosition() - m_TargetPposition) < 1.0) || (m_ElapsedTime >= m_Timeout));
+    return true;
+    //return (m_CommandError || (Math.abs(RobotContainer.arm.GetArmPosition() - m_TargetPposition) < 1.0) || (m_ElapsedTime >= m_Timeout));
   }
 
 }
