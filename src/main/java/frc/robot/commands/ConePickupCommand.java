@@ -96,9 +96,8 @@ public class ConePickupCommand extends CommandBase {
   public void execute() {
     if (!m_canceled){
       if (getTarget() != null){
-        //updateTargetPose();
+        updateTargetPose();
       }
-
       manageSwerve();
     }
     

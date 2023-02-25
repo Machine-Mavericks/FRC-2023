@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
@@ -18,8 +19,10 @@ public class GrabGamePiece extends SequentialCommandGroup {
   public GrabGamePiece() {
     // Add your commands in the addCommands() call, e.g.
     Grabber grabber = RobotContainer.grabber;
+    Arm arm = RobotContainer.arm;
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      new InstantCommand(()-> arm.SetEnableArm(true)),
       new InstantCommand(() -> grabber.setPosition(Grabber.GrabberPos.Close)),
       new SetArmPosition(Arm.STOW_DEG),
       new InstantCommand(() -> grabber.setAlternatePosition()),
