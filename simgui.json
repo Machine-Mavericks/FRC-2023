@@ -2,6 +2,8 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Arm/Arm Enable Disable": "Command",
+      "/Shuffleboard/Arm/Arm Reset": "Command",
       "/Shuffleboard/Arm/Reset Arm Encoder": "Command",
       "/Shuffleboard/SwerveDrive/Reset Swerve": "Command"
     }
