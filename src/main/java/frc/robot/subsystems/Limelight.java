@@ -513,7 +513,7 @@ public class Limelight extends SubsystemBase {
     //GenericEntry m_ty[] = new GenericEntry[(int) m_numOfRetroTargets.getDouble(0.0)];
     
     for (int i = 0; i<4 && m_numOfRetroTargets.getDouble(0.0)>0; i++){
-      if (i <= m_numOfRetroTargets.getDouble(0.0)) {
+      if (i < m_numOfRetroTargets.getDouble(0.0)) {
         //m_tx[i] = Tab.add("target "+i+" tx",0.0).withPosition(0,i).getEntry();
         m_Txs[i].setDouble(results.targetingResults.targets_Retro[i].tx);
         //m_ty[i] = Tab.add("target "+i+" ty",0.0).withPosition(1,i).getEntry();
