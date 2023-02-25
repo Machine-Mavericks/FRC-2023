@@ -41,10 +41,11 @@ public class CenterOnNode extends CommandBase {
   }
 
   public void driveCompensate() {
+    updateTx();
     if (this.tx<0){
-      swerveDrive.drive(1.0, 0.0, 0.0, true, false);
+      swerveDrive.drive(0.0, -0.05, 0.0, false, false);
     } else {
-      swerveDrive.drive(-1.0, 0.0, 0.0, true, false);
+      swerveDrive.drive(0.0, 0.05, 0.0, false, false);
     }
   }
 
@@ -58,11 +59,15 @@ public class CenterOnNode extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    driveCompensate();
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    swerveDrive.drive(0.0, 0.0, 0.0, false, true);
+  }
 
   // Returns true when the command should end.
   @Override

@@ -15,7 +15,7 @@ public class NodeTargeting extends SubsystemBase {
   /** Creates a new NodeTargeting. */
   public NodeTargeting() {
     // initializes camera object
-    m_nodeTargetCamera = new Limelight("game"); // name TBD
+    m_nodeTargetCamera = new Limelight("tags"); // name TBD
     // sets the pipeline to retroreflective
     m_nodeTargetCamera.setPipeline(1); // pipeline name TBD
     // initializes private variable 
@@ -56,7 +56,7 @@ public class NodeTargeting extends SubsystemBase {
     int tempi = 0;
     int templast = 0;
     // looks for left and second leftmost target
-    for (int i = 1; i < m_nodeTargetCamera.getNumOfRetro(); i++){
+    for (int i = 0; i < m_nodeTargetCamera.getNumOfRetro(); i++){
       if (Txs[i]<tempx){
         templast = tempi;
         tempx = Txs[i];

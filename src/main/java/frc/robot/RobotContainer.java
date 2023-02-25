@@ -88,7 +88,7 @@ public class RobotContainer {
     OI.ArmLocation4Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
 
     // buttons for arm position presets
-    OI.GrabberButton.onTrue(new InstantCommand(()-> new CenterOnNode(0)));
+    OI.GrabberButton.onTrue(new CenterOnNode(0));
 
     // TODO: Add your button bindings here
     /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
