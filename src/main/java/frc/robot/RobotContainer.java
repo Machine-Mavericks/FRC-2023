@@ -78,13 +78,10 @@ public class RobotContainer {
    */
   private static void configureButtonBindings() {
 
-    // buttons for arm position presets
-    OI.ArmLocation1Button.onTrue(new SetArmPosition(92));
-    OI.ArmLocation2Button.onTrue(new SetArmPosition(195));
-    OI.ArmLocation3Button.onTrue(new SetArmPosition(240));
-    OI.ArmLocation4Button.onTrue(new SetArmPosition(132));
-    //stow 135
-    //jeff 107
+    OI.ArmLocation1Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
+    OI.ArmLocation2Button.onTrue(new SetArmPosition(Arm.MID_DEG));
+    OI.ArmLocation3Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
+    OI.ArmLocation4Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
 
     // buttons for arm position presets
     OI.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));

@@ -65,6 +65,7 @@ public class Arm extends SubsystemBase {
   private GenericEntry m_Arm_D;
 
   private GenericEntry m_ArmCanCoderPos;
+  private GenericEntry m_ArmCanCoderRawPos;
 
   private GenericEntry m_ArmPositionFB;
   private GenericEntry m_ArmMotorPosFB;
@@ -90,11 +91,6 @@ public class Arm extends SubsystemBase {
   // Arm Position in degrees for the mid arm section relative to the fixed arm upright
   double m_MidArmPositionDeg;
 
-  // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
-  // for testing on the bench unit, simply set it to zero because we don't have a cancoder
- double m_ArmCanCoderOffsetDeg = - 55.24;
-
-
   // Arm Position Setpoint in degrees while in position control
   double m_ArmPositionSetpoint;
 
@@ -103,7 +99,19 @@ public class Arm extends SubsystemBase {
   // It is important to ensure ensure the zero value of the arm position is not near either of the MIN or MAX arm position limits.
   static final double MIN_MID_ARM_POS_DEG = 70;
   static final double MAX_MID_ARM_POS_DEG = 250;
-  
+
+  public static final double PICKUP_DEG = 92;
+  public static final double LOW_DEG = 107;
+  public static final double STOW_DEG = 135;
+  public static final double MID_DEG = 195;
+  public static final double PICKUP_SHELF_DEG = 220;
+  public static final double HIGH_DEG = 240;
+
+
+  // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
+  // for testing on the bench unit, simply set it to zero because we don't have a cancoder
+  double m_ArmCanCoderOffsetDeg = - 55.24;
+
   // create CANCoder sensor objects
   private CANCoder m_ArmCanCoder;
 
@@ -112,7 +120,7 @@ public class Arm extends SubsystemBase {
 
   private boolean m_ArmEnabled;
 
-
+  // These variables were added as part of troubleshooting
   private double m_setselectedmotorposition = 0.0;
   private double m_getselectedmotorposition = 0.0;
 
@@ -120,7 +128,7 @@ public class Arm extends SubsystemBase {
   private final ArmFeedforward m_feedforward =
   new ArmFeedforward(0.0,0.0,0.0,0.0);
   //  ArmConstants.kVVoltSecondPerRad, ArmConstants.kAVoltSecondSquaredPerRad);
-//new ArmFeedforward(
+  //new ArmFeedforward(
   //   ArmConstants.kSVolts, ArmConstants.kGVolts,
   //  ArmConstants.kVVoltSecondPerRad, ArmConstants.kAVoltSecondSquaredPerRad);
 
@@ -191,25 +199,28 @@ public class Arm extends SubsystemBase {
   
   // seed the encoder value of the arm motor based on CANcoder and alignment position.
     public void ResetArmEncoders() {
-    
-
 
     m_ArmMotor.setSelectedSensorPosition((m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg)) * DEG_TO_ENCODERPULSE, 0, 0);
     if (m_setselectedmotorposition == 0.0) {m_setselectedmotorposition = (m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg));}
     if (m_getselectedmotorposition == 0.0) {m_getselectedmotorposition = (m_ArmMotor.getSelectedSensorPosition()*ENCODERPULSE_TO_DEG)%360;}
  
-
     GetArmPositions();
+    // Do not enable this next line of code (The previous lines show in testing that the getselectedmotorposition will not always return the previous setselectedmotorposition)
     //m_ArmPositionSetpoint = m_MidArmPositionDeg;
 
     m_ArmPositionSetpoint = (m_ArmCanCoder.getAbsolutePosition()-(m_ArmCanCoderOffsetDeg));
-
 
   }
 
 
 // Enable (or disable) Arm Movement.
 public void SetEnableArm(boolean Enable) {
+
+  // if the Arm Cancoder is not responding, do not allow the arm to enable.
+  if ((Enable) && (m_ArmCanCoder.getAbsolutePosition() == 0.0)) {return;}
+  
+  // Re Initialize on Enable
+  if (Enable) {InitializeArm();}
 
   m_ArmEnabled = Enable;
   if (!m_ArmEnabled) {
@@ -278,10 +289,12 @@ public boolean ArmSpeed_PosCtrl(double speed) {
   //  if (TargetPosition > MAX_MID_ARM_POS_DEG) {TargetPosition = MAX_MID_ARM_POS_DEG;}
 
   // This will not allow the arm to move further outside of it's range but allow it to move towards it's valid range.
-  if ((TargetPosition < MIN_MID_ARM_POS_DEG) & (TargetPosition < m_ArmPositionSetpoint)) {TargetPosition = m_ArmPositionSetpoint;}
-  if ((TargetPosition > MAX_MID_ARM_POS_DEG) & (TargetPosition > m_ArmPositionSetpoint)) {TargetPosition = m_ArmPositionSetpoint;}
+  if ((TargetPosition < MIN_MID_ARM_POS_DEG) && (TargetPosition < m_ArmPositionSetpoint)) {TargetPosition = m_ArmPositionSetpoint;}
+  if ((TargetPosition > MAX_MID_ARM_POS_DEG) && (TargetPosition > m_ArmPositionSetpoint)) {TargetPosition = m_ArmPositionSetpoint;}
   
-  System.out.println("teleopPeriodic!" + (System.currentTimeMillis()) + " TargetPos " + TargetPosition + " Speed " + speed);
+
+  //troubleshooting print
+  //System.out.println("teleopPeriodic!" + (System.currentTimeMillis()) + " TargetPos " + TargetPosition + " Speed " + speed);
 
   return SetArmPosition(TargetPosition);
 
@@ -328,34 +341,6 @@ private void GetArmPositions() {
     m_MidArmPositionDeg = MidArmPositionDeg;
   }
 }
-
-
-  // Add in code here to determine the end arm position if needed....
-
-  // Possibly add in code here to hard stop the arm and not let it start back up again if it goes too far beyond
-  // an allowable range so the robot does not beat itslef up.
-
-
-  /**
-
-  @Override
-  public void useOutput(double output, TrapezoidProfile.State setpoint) {
-    // Calculate the feedforward from the sepoint
-    double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-    // Add the feedforward to the PID output to get the motor output
-    
-    //m_motor.setVoltage(output + feedforward);
-  }
-
-  @Override
-  public double getMeasurement() {
-//    return m_encoder.getDistance() + ArmConstants.kArmOffsetRads;
-    return 0.0;
-  }
-
- */
-
-
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
 
@@ -409,6 +394,7 @@ private void GetArmPositions() {
     l1.withPosition(2, 0);
     l1.withSize(1, 5);
     m_ArmCanCoderPos = l1.add("CanCoder Deg", 0.0).getEntry();
+    m_ArmCanCoderRawPos = l1.add("CanCoder Raw Deg", 0.0).getEntry();
 
     ShuffleboardLayout l2 = Tab.getLayout("Position FB", BuiltInLayouts.kList);
     l2.withPosition(3, 0);
@@ -447,6 +433,7 @@ private void GetArmPositions() {
   private void updateShuffleboard() {
     // update CANCoder position values (degrees)
     m_ArmCanCoderPos.setDouble((m_ArmCanCoder.getAbsolutePosition()-m_ArmCanCoderOffsetDeg)%360);
+    m_ArmCanCoderRawPos.setDouble(m_ArmCanCoder.getAbsolutePosition());
 
     // update arm motor position feedback values
     m_ArmPositionFB.setDouble(m_MidArmPositionDeg);
