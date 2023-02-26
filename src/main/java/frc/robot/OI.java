@@ -71,6 +71,9 @@ public class OI {
         return OI.driverController.getXButton();
     }
 
+    // reset gyro button
+    public static JoystickButton zeroButton = new JoystickButton(driverController, XboxController.Button.kBack.value);
+
     // arm and grabber buttons
     public static JoystickButton ArmLocation1Button = new JoystickButton(driverController, XboxController.Button.kA.value);
     public static JoystickButton ArmLocation2Button = new JoystickButton(driverController, XboxController.Button.kX.value);
