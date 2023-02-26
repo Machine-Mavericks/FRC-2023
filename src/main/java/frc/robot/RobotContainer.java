@@ -77,6 +77,9 @@ public class RobotContainer {
    */
   private static void configureButtonBindings() {
 
+    // reset gyro button
+    OI.zeroButton.onTrue(new InstantCommand(()-> gyro.resetGyro()));
+    
     OI.ArmLocation1Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
     OI.ArmLocation2Button.onTrue(new SetArmPosition(Arm.MID_DEG));
     OI.ArmLocation3Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
@@ -85,12 +88,6 @@ public class RobotContainer {
     // buttons for arm position presets
     OI.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
 
-    // TODO: Add your button bindings here
-    /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
-                                                            false,
-                                                            1.0, 3.0, 30.0)
-    
-    ); */
        
   }
 
