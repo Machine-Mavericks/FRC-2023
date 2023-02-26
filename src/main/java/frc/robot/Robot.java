@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
       SwerveBase2022,
       SwerveBase2023
   }
-  public static final RobotBaseType robotBase = RobotBaseType.SwerveBase2022;
+  public static final RobotBaseType robotBase = RobotBaseType.SwerveBase2023;
 
 
   /**

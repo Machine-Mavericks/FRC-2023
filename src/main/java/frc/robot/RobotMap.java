@@ -6,6 +6,14 @@ package frc.robot;
  */
 public class RobotMap {
     
+
+    /**
+     * Inner class to hold limelight physical position offsets
+     */
+    public static class LimelightOffsets {
+        public static final double FLOOR_LIMELIGHT_OFFSET_X = 0;
+        public static final double FLOOR_LIMELIGHT_OFFSET_Y = 0;
+    }
     /**
      * Inner class to hold CAN ID constants.
      */
@@ -27,11 +35,11 @@ public class RobotMap {
         public static final int RF_DRIVE_MOTOR = 5;
         public static final int LR_DRIVE_MOTOR = 1;
         public static final int RR_DRIVE_MOTOR = 7;
-
         // CAN ID for ARM
         public static final int ARM_MOTOR = 13;
         public static final int ARM_CANCODER = 14;
-        
+        // CAN ID for Grabber
+        public static final int GRABBER_MOTOR = 15;
         // CAN ID for CTR Pigeon Gyro
         public static final int PIGEON = 20;
     }
