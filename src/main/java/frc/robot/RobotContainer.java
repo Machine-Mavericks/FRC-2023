@@ -17,6 +17,7 @@ import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
@@ -51,6 +52,7 @@ public class RobotContainer {
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
   public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
+  public static final Grabber grabber = new Grabber();
   public static final GamePieceTargeting gamepiecetargeting = new GamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
   public static final LEDBlinkin LEDStrip = new LEDBlinkin();
   
@@ -90,7 +92,7 @@ public class RobotContainer {
     OI.ArmLocation4Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
 
     // buttons for arm position presets
-    //OI.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
+    OI.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
 
        
   }
