@@ -4,9 +4,7 @@
 // This module contains code for making and maintaining main shuffleboard page
 // Other pages made by the individual subsystems as req'd
 
-package frc.robot;
-
-
+package frc.robot.subsystems;
 import java.util.Map;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Timer;
@@ -17,7 +15,7 @@ import edu.wpi.first.networktables.GenericEntry;
 
 /** Contains shuffleboard setup for generic main page not belonging to any subsubsystem
  * Typically used to have robot-level settings and command functions */
-public class ShuffleboardOI extends SubsystemBase {
+public class AutoPathSelect extends SubsystemBase {
 
     // example autonomous path shuffleboard selection boxes
     // true if selected, false if not
@@ -27,11 +25,11 @@ public class ShuffleboardOI extends SubsystemBase {
 
     // other controls on main page
     private GenericEntry m_timeLeft;
-    public Integer m_selectedPath;
+    private Integer m_selectedPath;
 
     /** Initializes the Shuffleboard
      * Creates the subsystem pages */
-    public ShuffleboardOI() {
+    public AutoPathSelect() {
 
         // add autonomous commands to shuffleboard
         initializeMainShuffleboardPage();
@@ -85,7 +83,12 @@ public class ShuffleboardOI extends SubsystemBase {
 
     // returns position of autonomous commands on shuffleboard
     // typically called by Robot AutonomousInit to select auto path to be followed
-    // returns true if selected, false if not
+    public int GetSelectedPath()
+    {
+        return m_selectedPath;
+    }
+    
+
 
 
 } // end class ShuffleboardOI

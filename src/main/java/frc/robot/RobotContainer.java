@@ -15,6 +15,7 @@ import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.AutoPathSelect;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.PrecisionDriveToPose;
@@ -37,7 +38,7 @@ import frc.robot.subsystems.LEDBlinkin;
 public class RobotContainer {
 
   // Create robot's shuffboard operator interface
-  public static final ShuffleboardOI shuffleboard = new ShuffleboardOI();
+  public static final AutoPathSelect autopathselect = new AutoPathSelect();
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
   // public static final Pigeon gyro2 = new Pigeon();
@@ -99,12 +100,16 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public static Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    if (RobotContainer.shuffleboard.m_selectedPath == 0)
+   
+    // get autonomous path to run
+    int index = RobotContainer.autopathselect.GetSelectedPath();
+    
+    // return autonomous command to be run
+    if (index == 0)
       return new CoopCubePath();
-    else if (RobotContainer.shuffleboard.m_selectedPath == 1)
+    else if (index == 1)
       return new TwoConesPath();
-    else if (RobotContainer.shuffleboard.m_selectedPath == 2)
+    else if (index == 2)
       return new RightPath();
     else
       return new CoopCubePath();

@@ -29,7 +29,7 @@ public class AutoDelayCommand extends CommandBase {
     m_Timer.start();
     
     // get time to delay from shuffleboard OI
-    m_delayTime = RobotContainer.shuffleboard.getAutoDelay();
+    m_delayTime = RobotContainer.autopathselect.getAutoDelay();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
