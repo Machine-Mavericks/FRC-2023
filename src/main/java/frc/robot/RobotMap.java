@@ -14,8 +14,8 @@ public class RobotMap {
         public static final double FLOOR_LIMELIGHT_OFFSET_X = 22.75;
         public static final double FLOOR_LIMELIGHT_OFFSET_Y = 22.0;
 
-        public static final double HUMPLAY_LIMELIGHT_OFFSET_X = 21.5;
-        public static final double HUMPLAY_LIMELIGHT_OFFSET_Y = -17.75;
+        public static final double SHELF_LIMELIGHT_OFFSET_X = -21.5;
+        public static final double SHELF_LIMELIGHT_OFFSET_Y = 17.75;
     }
     /**
      * Inner class to hold CAN ID constants.

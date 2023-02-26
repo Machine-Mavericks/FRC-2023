@@ -6,14 +6,15 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.GamePieceTargeting;
-import frc.robot.subsystems.GamePieceTargeting.GamePieceData;
+import frc.robot.subsystems.FloorGamePieceTargeting;
+import frc.robot.Utils;
+import frc.robot.Utils.GamePieceData;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 
-public class ConePickupCommand extends CommandBase {
+public class ConePickupCommandShelf extends CommandBase {
   
   // x, y, rotation PID controllers to get us to the intended destination
   private PIDController m_xController; 
@@ -36,7 +37,7 @@ public class ConePickupCommand extends CommandBase {
   private Pose2d m_targetpose;
 
   // cone targeting
-  private double m_idealdistance = 48.0;
+  private double m_idealdistance = 80.0;
 
   private boolean m_canceled = false;
   private boolean m_notFirstLoop = false;
@@ -52,7 +53,7 @@ public class ConePickupCommand extends CommandBase {
   }
   
   /** Creates a new PrecisionDriveToTargetRelative. */
-  public ConePickupCommand()// double MaxSpeed,
+  public ConePickupCommandShelf()// double MaxSpeed,
                                   //double MaxRotateSpeed,
                                   //double timeout)
     {
@@ -119,9 +120,9 @@ public class ConePickupCommand extends CommandBase {
   }
 
   private void updateTargetPose(){
-    GamePieceData data = RobotContainer.gamepiecetargeting.getTargetPose(); // Robot relative
+    GamePieceData data = RobotContainer.shelfgamepiecetargeting.getTargetPose(); // Robot relative
     Pose2d odometryPose = RobotContainer.swerveodometry.getPose2d(); // Field relative
-    boolean pieceValidThisFrame = RobotContainer.gamepiecetargeting.getGamePieceValid();
+    boolean pieceValidThisFrame = RobotContainer.shelfgamepiecetargeting.getGamePieceValid();
     
     Rotation2d targetAngle;
     if (data.m_Y == 0){
@@ -130,26 +131,35 @@ public class ConePickupCommand extends CommandBase {
       targetAngle = new Rotation2d(-Math.atan(data.m_X / data.m_Y));
     }
 
+
     Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, targetAngle); // Robot relative
 
-    double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
+    //double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
 
-    double distCoefficient; // Use to move point along line
-    if (distance == 0){ // This should REALLY never happen, but would crash the robot
-      distCoefficient = 0; 
-    } else{
-      distCoefficient = (distance - m_idealdistance) / distance; 
-    }
-   
-    dataPose = new Pose2d(dataPose.getX() * distCoefficient, dataPose.getY() * distCoefficient, dataPose.getRotation()); // Still robot relative
+    //double distCoefficient; // Use to move point along line
+    //if (distance == 0){ // This should REALLY never happen, but would crash the robot
+    //  distCoefficient = 0; 
+    //} else{
+    //  distCoefficient = (distance - m_idealdistance) / distance; 
+    //}
+    
   
     // Rotate pose around robot angle
     double X = dataPose.getX() * Math.cos(odometryPose.getRotation().getRadians()) - dataPose.getY() * Math.sin(odometryPose.getRotation().getRadians());
     double Y = dataPose.getY() * Math.cos(odometryPose.getRotation().getRadians()) + dataPose.getX() * Math.sin(odometryPose.getRotation().getRadians());
 
+    // Move back target pose by ideal distance
+    Y -= m_idealdistance;
+
     // Convert cm to meters
     X = X / 100; 
     Y = Y / 100;
+
+    // Account for camera on rear of robot
+    X = -X;
+    Y = -Y;
+
+    //System.out.println(Y);
 
     // Store last pose
     Pose2d previousPose = m_targetpose;
@@ -161,7 +171,7 @@ public class ConePickupCommand extends CommandBase {
     // Messy logic to avoid issues
     if (m_aquiredValid & pieceValidThisFrame){
       // Add rotated pose to current position
-      m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X, targetAngle.rotateBy(odometryPose.getRotation()));
+      m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X, new Rotation2d(Math.toRadians(0)));
 
       if (m_notFirstLoop){ // Average last two pose estimations
         m_targetpose = new Pose2d((m_targetpose.getX() + previousPose.getX()) / 2, (m_targetpose.getY() + previousPose.getY()) / 2, m_targetpose.getRotation()); 
@@ -171,19 +181,19 @@ public class ConePickupCommand extends CommandBase {
         if (m_aquiredValid & !pieceValidThisFrame){
           // Do nothing to target pose
         }else{
-          m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), targetAngle.rotateBy(odometryPose.getRotation())); 
+          m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), new Rotation2d(Math.toRadians(0))); 
         }
       }else{
-        m_targetpose = new Pose2d(odometryPose.getX(), odometryPose.getY(), targetAngle.rotateBy(odometryPose.getRotation()));
+        m_targetpose = new Pose2d(odometryPose.getX(), odometryPose.getY(), new Rotation2d(Math.toRadians(0)));
       }
       
     }
   }
 
   private GamePieceData getTarget() {
-    if (RobotContainer.gamepiecetargeting.isTarget())
+    if (RobotContainer.shelfgamepiecetargeting.isTarget())
     {
-      return RobotContainer.gamepiecetargeting.getTargetPose();
+      return RobotContainer.shelfgamepiecetargeting.getTargetPose();
     }
     return null; // If no target, return null
   }
