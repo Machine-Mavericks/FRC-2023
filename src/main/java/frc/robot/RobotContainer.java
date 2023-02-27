@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Pigeon;
@@ -21,12 +19,10 @@ import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
-import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.Autonomous.CoopCubePath;
 import frc.robot.commands.Autonomous.RightPath;
 import frc.robot.commands.Autonomous.TwoConesPath;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 //import frc.robot.commands.LEDCommand;
@@ -84,17 +80,17 @@ public class RobotContainer {
   private static void configureButtonBindings() {
 
     // reset gyro button
-    OI.zeroButton.onTrue(new InstantCommand(()-> gyro.resetGyro()));
+    OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro.resetGyro()));
     
-    OI.ArmLocation1Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
-    OI.ArmLocation2Button.onTrue(new SetArmPosition(Arm.MID_DEG));
-    OI.ArmLocation3Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
-    OI.ArmLocation4Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
+    // arrm movement buttons
+    OI.OperatorButtons.ground_Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
+    OI.OperatorButtons.mid_Button.onTrue(new SetArmPosition(Arm.MID_DEG));
+    OI.OperatorButtons.high_Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
+    OI.OperatorButtons.stow_Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
 
-    // buttons for arm position presets
-    OI.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
+    // grabber open/close
+    OI.OperatorButtons.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
 
-       
   }
 
   /**

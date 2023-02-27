@@ -47,11 +47,19 @@ public class ManualDriveCommand extends CommandBase {
     double MaxChange = 0.02*maxAccel;
 
     // get joystick drive inputs - use methods in OI module to get inputs
+    
+    // get go fast/slow speed factor from joystick trigger
+    double speedfactor = OI.getGoFast();
+    if (speedfactor < 0.5)
+      speedfactor = 0.5;
+    else if (speedfactor >0.5)
+      speedfactor = 1.0;
 
-    double inputdX = OI.getXDriveInput();
-    double inputdY = OI.getYDriveInput();
-    double inputomega = OI.getRotateDriveInput();
-    boolean Park = OI.getParkButton();
+
+    double inputdX = OI.getXDriveInput()*speedfactor;
+    double inputdY = OI.getYDriveInput()*speedfactor;;
+    double inputomega = OI.getRotateDriveInput()*0.5*speedfactor;;
+    boolean Park = OI.DriverButtons.park_Button.getAsBoolean();
     
     // implement dead-zoning of joystick inputs
     inputdX = Math.abs(inputdX) > 0.05 ? inputdX : 0;
@@ -65,7 +73,7 @@ public class ManualDriveCommand extends CommandBase {
 
     
     // --------- Correct robot angle for gyro angle wander --------
-    if(omega == 0.0 && !OI.zeroButton.getAsBoolean())
+    if(omega == 0.0 && !OI.DriverButtons.gyro_reset_Button.getAsBoolean())
     {
       if (m_pidDelay > 0)
         m_pidDelay --;
