@@ -77,8 +77,7 @@ public class OI {
     }
 
     public static double getArmSpeed(){
-        // note: intended to use -ve of joystick input
-        return -OI.operatorController.getRightY();
+        return OI.operatorController.getRightY();
     }
     public static double getGoFast (){
         return OI.driverController.getRightTriggerAxis();

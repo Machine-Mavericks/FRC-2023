@@ -25,8 +25,8 @@ public class ManualArmSpeed extends CommandBase {
   public void execute() {
 
     // get joystick drive inputs - use methods in OI module to get inputs
-    
-    double InputSpeed = OI.getArmSpeed()*0.25;
+    // note: intended to use -ve of joystick input
+    double InputSpeed = -OI.getArmSpeed()*0.25;
         
     // implement dead-zoning of joystick inputs
     InputSpeed = Math.abs(InputSpeed) > 0.05 ? InputSpeed : 0;
