@@ -9,6 +9,7 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.FloorGamePieceTargeting;
 import frc.robot.Utils;
 import frc.robot.Utils.GamePieceData;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -63,10 +64,10 @@ public class ConePickupCommandShelf extends CommandBase {
     // set up PIDs
     m_xController = new PIDController(2.5, 0.002, 0.12);
     m_yController = new PIDController(2.5, 0.002, 0.12);
-    m_rotController = new PIDController(0.05, 0.001, 0.0000);
+    m_rotController = new PIDController(0.08, 0.001, 0.0000);
 
     // record maximum speeds to use
-    m_maxspeed = 0.5; //MaxSpeed;
+    m_maxspeed = 1; //MaxSpeed;
     m_maxrotspeed = 1.5; //MaxRotateSpeed;
 
     // create timer, and record timeout limit
@@ -124,25 +125,21 @@ public class ConePickupCommandShelf extends CommandBase {
     Pose2d odometryPose = RobotContainer.swerveodometry.getPose2d(); // Field relative
     boolean pieceValidThisFrame = RobotContainer.shelfgamepiecetargeting.getGamePieceValid();
     
-    Rotation2d targetAngle;
-    if (data.m_Y == 0){
-      targetAngle = new Rotation2d(0);
-    }else{
-      targetAngle = new Rotation2d(-Math.atan(data.m_X / data.m_Y));
-    }
-
-
-    Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, targetAngle); // Robot relative
-
+    // Rotation2d targetAngle;
+    // if (data.m_Y == 0){
+    //   targetAngle = new Rotation2d(0);
+    // }else{
+    //   targetAngle = new Rotation2d(-Math.atan(data.m_X / data.m_Y));
+    // }
     //double distance = Math.sqrt(Math.pow(dataPose.getX(), 2) + Math.pow(dataPose.getY(), 2)); // Robot relative
-
     //double distCoefficient; // Use to move point along line
     //if (distance == 0){ // This should REALLY never happen, but would crash the robot
     //  distCoefficient = 0; 
     //} else{
     //  distCoefficient = (distance - m_idealdistance) / distance; 
     //}
-    
+
+    Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, new Rotation2d(Math.toRadians(0))); // Robot relative
   
     // Rotate pose around robot angle
     double X = dataPose.getX() * Math.cos(odometryPose.getRotation().getRadians()) - dataPose.getY() * Math.sin(odometryPose.getRotation().getRadians());
@@ -152,14 +149,12 @@ public class ConePickupCommandShelf extends CommandBase {
     Y -= m_idealdistance;
 
     // Convert cm to meters
-    X = X / 100; 
+    X = X / 100;
     Y = Y / 100;
 
     // Account for camera on rear of robot
     X = -X;
     Y = -Y;
-
-    //System.out.println(Y);
 
     // Store last pose
     Pose2d previousPose = m_targetpose;
@@ -171,20 +166,20 @@ public class ConePickupCommandShelf extends CommandBase {
     // Messy logic to avoid issues
     if (m_aquiredValid & pieceValidThisFrame){
       // Add rotated pose to current position
-      m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X, new Rotation2d(Math.toRadians(0)));
+      m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X,  m_targetpose.getRotation()); 
 
       if (m_notFirstLoop){ // Average last two pose estimations
-        m_targetpose = new Pose2d((m_targetpose.getX() + previousPose.getX()) / 2, (m_targetpose.getY() + previousPose.getY()) / 2, m_targetpose.getRotation()); 
+        m_targetpose = new Pose2d((m_targetpose.getX() + previousPose.getX()) / 2, (m_targetpose.getY() + previousPose.getY()) / 2, m_targetpose.getRotation());  
       }
     }else{
       if (m_notFirstLoop){
         if (m_aquiredValid & !pieceValidThisFrame){
           // Do nothing to target pose
         }else{
-          m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), new Rotation2d(Math.toRadians(0))); 
+          m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), m_targetpose.getRotation()); 
         }
       }else{
-        m_targetpose = new Pose2d(odometryPose.getX(), odometryPose.getY(), new Rotation2d(Math.toRadians(0)));
+        m_targetpose = new Pose2d(odometryPose.getX(), odometryPose.getY(), m_targetpose.getRotation()); 
       }
       
     }
