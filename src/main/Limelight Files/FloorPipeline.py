@@ -33,12 +33,14 @@ def runPipeline(image, llrobot):
     cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     if len(contours) > 0:
-        largestContour = max(contours, key=cv2.contourArea)
-
         cv2.drawContours(image, contours, -1, 255, 2)
         for i, cont in enumerate(contours):
             area = cv2.contourArea(cont)
             if area > min_gamepeice_area:
+                largestContour = max(contours, key=cv2.contourArea)
+
+                if (cont != largestContour):
+                    pass
                 
                 rect = cv2.minAreaRect(cont)
                 box = cv2.boxPoints(rect)
@@ -53,7 +55,7 @@ def runPipeline(image, llrobot):
                 cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,255),5)
 
                 #Calculate distance
-                distance = 16452*pow(area, -0.516)
+                distance = 17259*pow(area, -0.504)
 
                 #print("Dist " + str(distance) + " H: " + str(h))
 
@@ -76,7 +78,11 @@ def runPipeline(image, llrobot):
 
                 llpython.append(distance)
 
-
+                if (x == 0 or y == 0 or y + h >= 720 or x + w >= 960):
+                    llpython.append(0)
+                else:
+                    llpython.append(1)
+                    
 
 
 

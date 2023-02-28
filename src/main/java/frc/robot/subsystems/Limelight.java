@@ -35,6 +35,7 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_AprilTagID;
 
     private GenericEntry m_Distance; // For cones & Cubes only
+    private GenericEntry m_TargetValid;
     private DoubleArraySubscriber m_llpythonSub;
 
     private GenericEntry m_AngleX;
@@ -206,7 +207,7 @@ public class Limelight extends SubsystemBase {
 
 
     /** Get largest game piece distance */
-    public double getGamePieceDistance () {
+    public double getGamePieceDistance() {
       // double[] arr = m_table.getEntry("llpython").getDoubleArray(new double[0]);
       // System.out.println(arr.length);
       // if (arr.length > 0) {
@@ -219,6 +220,19 @@ public class Limelight extends SubsystemBase {
         return llpython[0];
       } 
       return 0;
+    }
+
+    /** Get largest game piece validity */
+    public boolean getGamePieceValid() {
+      double[] llpython = m_llpythonSub.get();
+      if (llpython.length > 0){
+        if (llpython[1] == 1){
+          return true;
+        }else{
+          return false;
+        }
+      } 
+      return false;
     }
 
     // ---------- get raw target attributes ----------
@@ -326,7 +340,10 @@ public class Limelight extends SubsystemBase {
     m_AprilTagID = Tab.add("AprilTag Target ID", 0).withPosition(0,2).getEntry();
 
     // Distance testing
-    m_Distance = Tab.add("Game Peice Distance (cm)", 0).withPosition(3, 0).getEntry();
+    m_Distance = Tab.add("Game Peice Distance (cm)", 0).withPosition(4, 0).getEntry();
+
+    // Target Validity
+    m_TargetValid = Tab.add("Target Valid", false).withPosition(5, 0).getEntry();
 
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Target", BuiltInLayouts.kList);
@@ -397,6 +414,7 @@ public class Limelight extends SubsystemBase {
     m_TargetPresent.setBoolean(isTargetPresent()==1);
     m_AprilTagID.setDouble(getPrimAprilTagID());
     m_Distance.setDouble(getGamePieceDistance());
+    m_TargetValid.setBoolean(getGamePieceValid());
 
 
 

@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Pigeon;
-import frc.robot.subsystems.GamePieceTargeting;
+import frc.robot.subsystems.ShelfGamePieceTargeting;
+import frc.robot.subsystems.FloorGamePieceTargeting;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
@@ -21,7 +22,10 @@ import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
 import frc.robot.subsystems.TargetSelect;
 import frc.robot.commands.ManualDriveCommand;
-import frc.robot.commands.DrivetoRelativePose;
+
+import frc.robot.commands.ConePickupCommandFloor;
+import frc.robot.commands.ConePickupCommandShelf;
+
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.Autonomous.CoopCubePath;
@@ -55,7 +59,8 @@ public class RobotContainer {
   public static final SwervePoseEstimator poseestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
   public static final Grabber grabber = new Grabber();
-  public static final GamePieceTargeting gamepiecetargeting = new GamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
+  public static final FloorGamePieceTargeting floorgamepiecetargeting = new FloorGamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
+  public static final ShelfGamePieceTargeting shelfgamepiecetargeting = new ShelfGamePieceTargeting(RobotMap.LimelightOffsets.SHELF_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.SHELF_LIMELIGHT_OFFSET_Y);
   public static final LEDBlinkin LEDStrip = new LEDBlinkin();
   
 
@@ -101,6 +106,9 @@ public class RobotContainer {
 
     // grabber open/close
     OI.OperatorButtons.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
+
+    OI.TrackConeButton.whileTrue(new ConePickupCommandShelf());
+
 
   }
 

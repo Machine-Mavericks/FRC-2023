@@ -15,4 +15,13 @@ public class Utils {
         double diff = ( angle2 - angle1 + 180 ) % 360 - 180;
         return diff < -180 ? diff + 360 : diff;
     }
+
+    public static class GamePieceData{
+        public double m_X, m_Y;
+        public GamePieceData(double X, double Y){
+          m_X = X;
+          m_Y = Y;
+        }
+    }
+
 }

@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Utils.GamePieceData;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 
 
-public class GamePieceTargeting extends SubsystemBase {
+public class ShelfGamePieceTargeting extends SubsystemBase {
   /** Creates a new GamePeiceTargeting. */
   private double m_limelightOffset_X;
   private double m_limelightOffset_Y;
@@ -30,10 +30,10 @@ public class GamePieceTargeting extends SubsystemBase {
 
   private GamePieceData m_conePose = new GamePieceData(0, 0);
 
-  public GamePieceTargeting(double limelightOffset_X, double limelightOffset_Y) {
-    m_gamepiececamera = new Limelight("game");
+  public ShelfGamePieceTargeting(double limelightOffset_X, double limelightOffset_Y) {
+    m_gamepiececamera = new Limelight("humplay");
 
-    System.out.println("Limelight online??"); // Hopefully
+    System.out.println("Shelf Limelight online??"); // Hopefully
 
     m_gamepiececamera.setPipeline(1);
 
@@ -45,13 +45,7 @@ public class GamePieceTargeting extends SubsystemBase {
 
   
 
-  class GamePieceData{
-    public double m_X, m_Y;
-    public GamePieceData(double X, double Y){
-      m_X = X;
-      m_Y = Y;
-    }
-  }
+  
 
   @Override
   public void periodic() {
@@ -70,8 +64,12 @@ public class GamePieceTargeting extends SubsystemBase {
     ll_relative_Y = Math.sqrt(ll_relative_Y);
 
     // TODO: Does not account for rotated limelight, need to add that
-    ll_relative_X += m_limelightOffset_X; 
-    ll_relative_Y += m_limelightOffset_Y;
+    if (isTarget()){
+      ll_relative_X += m_limelightOffset_X; 
+      ll_relative_Y += m_limelightOffset_Y;
+    }
+    
+    
 
 
     //System.out.println("AAH: " + ll_relative_X); // Really unfinished
@@ -95,6 +93,9 @@ public class GamePieceTargeting extends SubsystemBase {
     return m_gamepiececamera.getGamePieceDistance();
   }
   
+  public boolean getGamePieceValid(){
+    return m_gamepiececamera.getGamePieceValid();
+  }
   /** Returns vertical angle of target (deg)*/
   public double getTargetVertAngle() {
     return m_gamepiececamera.getVerticalTargetOffsetAngle();
@@ -115,7 +116,7 @@ public class GamePieceTargeting extends SubsystemBase {
   /** Initialize subsystem shuffleboard page and controls */
   private void initializeShuffleboard() {
     // Create arm page in shuffleboard
-    ShuffleboardTab Tab = Shuffleboard.getTab("GamePeiceTargeting");
+    ShuffleboardTab Tab = Shuffleboard.getTab("Shelf GamePeiceTargeting");
 
     m_pose_X = Tab.add("Estimated X Pose", 0.0).getEntry();
     m_pose_Y = Tab.add("Estimated Y Pose", 0.0).getEntry();
