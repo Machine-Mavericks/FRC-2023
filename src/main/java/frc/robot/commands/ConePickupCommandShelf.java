@@ -67,8 +67,8 @@ public class ConePickupCommandShelf extends CommandBase {
     m_rotController = new PIDController(0.08, 0.001, 0.0000);
 
     // record maximum speeds to use
-    m_maxspeed = 1; //MaxSpeed;
-    m_maxrotspeed = 1.5; //MaxRotateSpeed;
+    m_maxspeed = 0.5; //MaxSpeed;
+    m_maxrotspeed = 1.0; //MaxRotateSpeed;
 
     // create timer, and record timeout limit
     m_Timer = new Timer();
@@ -166,20 +166,20 @@ public class ConePickupCommandShelf extends CommandBase {
     // Messy logic to avoid issues
     if (m_aquiredValid & pieceValidThisFrame){
       // Add rotated pose to current position
-      m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X,  m_targetpose.getRotation()); 
+      m_targetpose = new Pose2d(odometryPose.getX() - Y,  odometryPose.getY() - X,  dataPose.getRotation()); 
 
       if (m_notFirstLoop){ // Average last two pose estimations
-        m_targetpose = new Pose2d((m_targetpose.getX() + previousPose.getX()) / 2, (m_targetpose.getY() + previousPose.getY()) / 2, m_targetpose.getRotation());  
+        m_targetpose = new Pose2d((m_targetpose.getX() + previousPose.getX()) / 2, (m_targetpose.getY() + previousPose.getY()) / 2, dataPose.getRotation());  
       }
     }else{
       if (m_notFirstLoop){
         if (m_aquiredValid & !pieceValidThisFrame){
           // Do nothing to target pose
         }else{
-          m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), m_targetpose.getRotation()); 
+          m_targetpose = new Pose2d(m_targetpose.getX(), m_targetpose.getY(), dataPose.getRotation()); 
         }
       }else{
-        m_targetpose = new Pose2d(odometryPose.getX(), odometryPose.getY(), m_targetpose.getRotation()); 
+        m_targetpose = new Pose2d(odometryPose.getX(), odometryPose.getY(), dataPose.getRotation()); 
       }
       
     }
