@@ -98,14 +98,14 @@ public class Arm extends SubsystemBase {
   // The arm zero degree mark will be when the arm is pointing directly down and the angle increases towards the pickup area and further increases to the drop off area.
   // It is important to ensure ensure the zero value of the arm position is not near either of the MIN or MAX arm position limits.
   static final double MIN_MID_ARM_POS_DEG = 70;
-  static final double MAX_MID_ARM_POS_DEG = 250;
+  static final double MAX_MID_ARM_POS_DEG = 260;
 
   public static final double PICKUP_DEG = 92;
   public static final double LOW_DEG = 107;
-  public static final double STOW_DEG = 135;
+  public static final double STOW_DEG = 120;
   public static final double MID_DEG = 195;
   public static final double PICKUP_SHELF_DEG = 220;
-  public static final double HIGH_DEG = 240;
+  public static final double HIGH_DEG = 248;
 
 
   // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
@@ -180,7 +180,7 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.config_kI(0, getArmI(), 0);
     m_ArmMotor.config_kD(0, getArmD(), 0);
     // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.15);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.50);
     m_ArmMotor.configClosedloopRamp(getMaxAcceleration());
   
     // The other code already is supposed to do this, but keep this as a backup

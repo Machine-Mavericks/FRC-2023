@@ -4,11 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Pigeon;
@@ -19,13 +19,19 @@ import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.SwervePoseEstimator;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.AutoPathSelect;
+import frc.robot.subsystems.TargetSelect;
 import frc.robot.commands.ManualDriveCommand;
+
 import frc.robot.commands.ConePickupCommandFloor;
 import frc.robot.commands.ConePickupCommandShelf;
+
 import frc.robot.commands.ManualArmSpeed;
-import frc.robot.commands.PrecisionDriveToPose;
 import frc.robot.commands.SetArmPosition;
-import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.commands.Autonomous.CoopCubePath;
+import frc.robot.commands.Autonomous.RightPath;
+import frc.robot.commands.Autonomous.TwoConesPath;
+import frc.robot.commands.SemiAutonomous.DrivetoPickupTarget;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 //import frc.robot.commands.LEDCommand;
@@ -40,14 +46,17 @@ import frc.robot.subsystems.LEDBlinkin;
  */
 public class RobotContainer {
 
+  // Create robot's shuffboard operator interface
+  public static final AutoPathSelect autopathselect = new AutoPathSelect();
+  public static final TargetSelect targetselector = new TargetSelect();
+  
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
   // public static final Pigeon gyro2 = new Pigeon();
-  public static final Limelight limelight1 = new Limelight("tags");
+  public static final Limelight limelight_tags_main = new Limelight("tagslow", true);
   public static final SwerveDrive swervedrive = new SwerveDrive();
-
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
-  public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
+  public static final SwervePoseEstimator poseestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
   public static final Grabber grabber = new Grabber();
   public static final FloorGamePieceTargeting floorgamepiecetargeting = new FloorGamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
@@ -81,23 +90,26 @@ public class RobotContainer {
    */
   private static void configureButtonBindings() {
 
-    OI.ArmLocation1Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
-    OI.ArmLocation2Button.onTrue(new SetArmPosition(Arm.MID_DEG));
-    OI.ArmLocation3Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
-    OI.ArmLocation4Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
+    // reset gyro button
+    OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro.resetGyro()));
+    
+    // shelf pickup semi-auto routine
+    //OI.DriverButtons.shelf_Button.whileTrue(new CoopCubePath());
+    //OI.DriverButtons.shelf_Button.whileTrue(new AutoBalance());
+    
 
-    // buttons for arm position presets
-    OI.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
+    // arrm movement buttons
+    OI.OperatorButtons.ground_Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
+    OI.OperatorButtons.mid_Button.onTrue(new SetArmPosition(Arm.MID_DEG));
+    OI.OperatorButtons.high_Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
+    OI.OperatorButtons.stow_Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
+
+    // grabber open/close
+    OI.OperatorButtons.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
 
     OI.TrackConeButton.whileTrue(new ConePickupCommandShelf());
 
-    // TODO: Add your button bindings here
-    /*OI.PrecisionMoveButton.onTrue(new PrecisionDriveToPose(new Pose2d(1.0, 1.0, new Rotation2d(3.1415/2.0)),
-                                                            false,
-                                                            1.0, 3.0, 30.0)
-    
-    ); */
-       
+
   }
 
   /**
@@ -105,8 +117,19 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return null;
+  public static Command getAutonomousCommand() {
+   
+    // get autonomous path to run
+    int index = RobotContainer.autopathselect.GetSelectedPath();
+    
+    // return autonomous command to be run
+    if (index == 0)
+      return new CoopCubePath();
+    else if (index == 1)
+      return new TwoConesPath();
+    else if (index == 2)
+      return new RightPath();
+    else
+      return new CoopCubePath(); 
   }
 }

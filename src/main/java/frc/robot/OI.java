@@ -1,8 +1,5 @@
 package frc.robot;
-
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -18,21 +15,41 @@ public class OI {
         private static final int RIGHT_STICK = 1;
         /** Driving controller */
         private static final int DRIVER_CONTROLLER = 2;
-        
         /** Operator controller */
         private static final int OPERATOR_CONTROLLER = 3;
     }
 
+ 
+    /** Buttons on the driver controller */
+    public static class DriverButtons {
+
+        // gyro reset
+        public static JoystickButton gyro_reset_Button = new JoystickButton(driverController, XboxController.Button.kBack.value);
+       
+        // semi-auto pickup/drop off buttons
+        public static JoystickButton Dropoff_Button = new JoystickButton(driverController, XboxController.Button.kX.value);
+        public static JoystickButton shelf_Button = new JoystickButton(driverController, XboxController.Button.kY.value);
+        public static JoystickButton auto_balance_Button = new JoystickButton(driverController, XboxController.Button.kB.value);
+        public static JoystickButton floor_pickup_Button = new JoystickButton(driverController, XboxController.Button.kA.value);
+        
+        // park button
+        public static JoystickButton park_Button = new JoystickButton(driverController, XboxController.Button.kLeftBumper.value);
+    }
+
 
     /** Buttons on the operator controller */
-    private static class OperatorButtons {
-        
-        /** Button used as example */
-        //private static final Button EXAMPLE = XboxController.Button.kA;
+    public static class OperatorButtons {
+    
+        // arm and grabber buttons
+        public static JoystickButton ground_Button = new JoystickButton(operatorController, XboxController.Button.kA.value);
+        public static JoystickButton mid_Button = new JoystickButton(operatorController, XboxController.Button.kX.value);
+        public static JoystickButton high_Button = new JoystickButton(operatorController, XboxController.Button.kY.value);
+        public static JoystickButton stow_Button = new JoystickButton(operatorController, XboxController.Button.kRightBumper.value);
+        public static JoystickButton shelf_pickup_Button = new JoystickButton(operatorController, XboxController.Button.kB.value);
+        public static JoystickButton GrabberButton = new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value);
     }
 
     // This contains objects for both joystick and controller driving
-    // You will uncomment code below to select the drive type you want
 
     /** Port for controller used by driver */
     private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -48,27 +65,22 @@ public class OI {
     // The sticks/controllers are kept private so that if we want to switch them later, this is the only place needing changes
     // Use buttons and DoubleSuppliers to expose any inputs you want elsewhere
     public static double getXDriveInput(){
-        return OI.driverController.getLeftX()*0.5;
+        return OI.driverController.getLeftX();
     }
 
     public static double getYDriveInput(){
-        return OI.driverController.getLeftY()*0.5;
+        return OI.driverController.getLeftY();
     }
 
     public static double getRotateDriveInput(){
-        return OI.driverController.getRightX()*0.5;
-    }
-
-    public static boolean getParkButton(){
-        return OI.driverController.getLeftBumper();
+        return OI.driverController.getRightX();
     }
 
     public static double getArmSpeed(){
-        return OI.driverController.getRightY()*-1.0;
+        return OI.operatorController.getRightY();
     }
-
-    public static boolean getArmLocation2Button(){
-        return OI.driverController.getXButton();
+    public static double getGoFast (){
+        return OI.driverController.getRightTriggerAxis();
     }
 
     // arm and grabber buttons
@@ -80,5 +92,6 @@ public class OI {
 
     public static JoystickButton ArmLocation4Button = new JoystickButton(driverController, XboxController.Button.kB.value);
     public static JoystickButton GrabberButton = new JoystickButton(driverController, XboxController.Button.kRightBumper.value);
+
 
 }
