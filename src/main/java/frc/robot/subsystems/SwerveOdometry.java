@@ -30,7 +30,6 @@ public class SwerveOdometry extends SubsystemBase {
   private GenericEntry m_robotX;
   private GenericEntry m_robotY;
   private GenericEntry m_robotAngle;
-  private GenericEntry m_gyroAngle;
 
   private GenericEntry m_initialX;
   private GenericEntry m_initialY;
@@ -105,23 +104,8 @@ public class SwerveOdometry extends SubsystemBase {
 
   /** return robot's current position vector Pose2d */
   public Pose2d getPose2d() {
-    return new Pose2d(getX(), getY(), new Rotation2d(getAngle() * DEGtoRAD));
-  }
-
-  /** Return current odometry x displacement (in m) */
-  // set x to negative for x-axis correction
-  public double getX() {
-    return -m_odometry.getPoseMeters().getX();
-  }
-
-  /** Return current odometry y displacement (in m) */
-  public double getY() {
-    return m_odometry.getPoseMeters().getY();
-  }
-
-  // return current odometry angle (in deg)
-  public double getAngle() {
-    return m_odometry.getPoseMeters().getRotation().getDegrees();
+    return m_odometry.getPoseMeters();
+    //return new Pose2d(getX(), getY(), new Rotation2d(getAngle() * DEGtoRAD));
   }
 
 
@@ -166,7 +150,6 @@ public class SwerveOdometry extends SubsystemBase {
     m_robotX = l1.add("X (m)", 0.0).getEntry();
     m_robotY = l1.add("Y (m)", 0.0).getEntry();
     m_robotAngle = l1.add("Angle(deg)", 0.0).getEntry();
-    m_gyroAngle = l1.add("Gyro(deg)", 0.0).getEntry();
 
     // Controls to set initial robot position and angle
     ShuffleboardLayout l2 = Tab.getLayout("Initial Position", BuiltInLayouts.kList);
@@ -180,10 +163,9 @@ public class SwerveOdometry extends SubsystemBase {
   /** Update subsystem shuffle board page with current odometry values */
   private void updateShuffleboard() {
     // write current robot odometry
-    m_robotX.setDouble(getX());
-    m_robotY.setDouble(getY());
-    m_robotAngle.setDouble(getAngle());
-    m_gyroAngle.setDouble(getAngle());
+    m_robotX.setDouble(getPose2d().getX());
+    m_robotY.setDouble(getPose2d().getY());
+    m_robotAngle.setDouble(getPose2d().getRotation().getDegrees());
   }
 
 } // end SwerveOdometry Class
