@@ -43,9 +43,9 @@ public class CenterOnNode extends CommandBase {
   public void driveCompensate() {
     updateTx();
     if (this.tx<0){
-      swerveDrive.drive(0.0, -0.05, 0.0, false, false);
-    } else {
       swerveDrive.drive(0.0, 0.05, 0.0, false, false);
+    } else {
+      swerveDrive.drive(0.0, -0.05, 0.0, false, false);
     }
   }
 
@@ -72,6 +72,6 @@ public class CenterOnNode extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(tx)<=0.5);
+    return (Math.abs(tx)<=2.0);
   }
 }
