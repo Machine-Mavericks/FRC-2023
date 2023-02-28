@@ -156,20 +156,20 @@ public class SwerveDrive extends SubsystemBase {
     m_ParkAngleRF = new Rotation2d(-45.0);
 
     // create CANCoder objects - for 2023, swerve drive is on Canimore canbus network
-    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
-    {
-      m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER,"Drivebase");
-      m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER,"Drivebase");
-      m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER,"Drivebase");
-      m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER,"Drivebase");
-    }
-    else
-    {
+    //if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    //{
+    //  m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER,"Drivebase");
+    //  m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER,"Drivebase");
+    //  m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER,"Drivebase");
+    //  m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER,"Drivebase");
+    //}
+    //else
+    //{
       m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER);
       m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER);
       m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER);
       m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER);
-    }
+    //}
 
     m_LFCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_RFCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
@@ -177,20 +177,20 @@ public class SwerveDrive extends SubsystemBase {
     m_RRCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
     // create steeer motors - for 2023, swerve drive is on Canimore canbus network
-    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
-    {
-      m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
-      m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
-      m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
-      m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
-    }
-    else
-    {
+    //if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    //{
+    //  m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
+    //  m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
+    //  m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
+    //  m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
+    //}
+    //else
+    //{
       m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
       m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
       m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
       m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
-    }
+    //}
     m_LFSteerMotor.configFactoryDefault();
     m_RFSteerMotor.configFactoryDefault();
     m_LRSteerMotor.configFactoryDefault();
@@ -238,20 +238,20 @@ public class SwerveDrive extends SubsystemBase {
     // m_RRSteerMotor.configClosedloopRamp(0.5);
 
     // create steeer motors - for 2023, swerve drive is on Canimore canbus network
-    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
-    {
-      m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
-      m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
-      m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
-      m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
-    }
-    else
-    {
+    //if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    //{
+     // m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
+     // m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
+    //  m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
+    //  m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
+    //}
+    //else
+    //{
       m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
       m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
       m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
       m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
-    }
+    //}
     m_LFDriveMotor.configFactoryDefault();
     m_RFDriveMotor.configFactoryDefault();
     m_LRDriveMotor.configFactoryDefault();
@@ -340,30 +340,31 @@ public class SwerveDrive extends SubsystemBase {
   public void drive(ChassisSpeeds speed, boolean fieldOriented, boolean Park) {
   
     // reorient x, y and omega, to make robot base match desired coordinate system
-    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023) {
-      speed = new ChassisSpeeds(speed.vxMetersPerSecond,
+    ChassisSpeeds s;
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023) //{
+      s = new ChassisSpeeds(speed.vxMetersPerSecond,
                                 speed.vyMetersPerSecond,
                                 -speed.omegaRadiansPerSecond); 
-    }
+    
 
-    else if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022) {
-      speed = new ChassisSpeeds(speed.vxMetersPerSecond,
+    else //if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2022) {
+      s = new ChassisSpeeds(speed.vxMetersPerSecond,
                               speed.vyMetersPerSecond,
                               speed.omegaRadiansPerSecond);   
-    }
+    //}
 
     // if chassis speed relative to field, then convert so it is relative to robot
     if (fieldOriented) {
       // convert speeds from field relative according to current gyro angle 
       // note negative sign for gyro angle to have robot drive in correct direction
-      speed = ChassisSpeeds.fromFieldRelativeSpeeds(speed, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
+      s= ChassisSpeeds.fromFieldRelativeSpeeds(s, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
     }
       
     // determine desired swerve module states from desired chassis speeds
     //m_states = m_kinematics.toSwerveModuleStates(speed);
 
     // try this to see if the swerve modules will leave the wheel angles alone when the speed is zero instead of setting the angle to zero
-    m_states = m_kinematics.toSwerveModuleStates(speed, m_CenterOfRotation);
+    m_states = m_kinematics.toSwerveModuleStates(s, m_CenterOfRotation);
 
     // Park will override any of the drive inputs for chassis speeds
     if (Park) {

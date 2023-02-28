@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,12 +19,15 @@ import frc.robot.subsystems.SwervePoseEstimator;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
+import frc.robot.subsystems.TargetSelect;
 import frc.robot.commands.ManualDriveCommand;
+import frc.robot.commands.DrivetoRelativePose;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.Autonomous.CoopCubePath;
 import frc.robot.commands.Autonomous.RightPath;
 import frc.robot.commands.Autonomous.TwoConesPath;
+import frc.robot.commands.SemiAutonomous.DrivetoPickupTarget;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 //import frc.robot.commands.LEDCommand;
@@ -39,14 +44,15 @@ public class RobotContainer {
 
   // Create robot's shuffboard operator interface
   public static final AutoPathSelect autopathselect = new AutoPathSelect();
+  public static final TargetSelect targetselector = new TargetSelect();
+  
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
   // public static final Pigeon gyro2 = new Pigeon();
-  public static final Limelight limelight1 = new Limelight("tags");
+  public static final Limelight limelight_tags_main = new Limelight("tagslow", true);
   public static final SwerveDrive swervedrive = new SwerveDrive();
-
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
-  public static final SwervePoseEstimator swerveestimator = new SwervePoseEstimator();
+  public static final SwervePoseEstimator poseestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
   public static final Grabber grabber = new Grabber();
   public static final GamePieceTargeting gamepiecetargeting = new GamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
@@ -82,6 +88,11 @@ public class RobotContainer {
     // reset gyro button
     OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro.resetGyro()));
     
+    // shelf pickup semi-auto routine
+    //OI.DriverButtons.shelf_Button.whileTrue(new CoopCubePath());
+    //OI.DriverButtons.shelf_Button.whileTrue(new AutoBalance());
+    
+
     // arrm movement buttons
     OI.OperatorButtons.ground_Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
     OI.OperatorButtons.mid_Button.onTrue(new SetArmPosition(Arm.MID_DEG));

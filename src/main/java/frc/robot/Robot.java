@@ -90,11 +90,11 @@ public class Robot extends TimedRobot {
     RobotContainer.swervedrive.ResetSteerEncoders();
 
     // set AprilTags camera pipeline to 0
-    RobotContainer.limelight1.setPipeline(0);
+    RobotContainer.limelight_tags_main.setPipeline(0);
     
     // Reset odometry
     RobotContainer.swerveodometry.InitializetoZero();
-    RobotContainer.swerveestimator.InitializetoZero();
+    RobotContainer.poseestimator.InitializetoZero();
 
     // set default swerve drive command to manual drive mode
     RobotContainer.swervedrive.setDefaultCommand(new ManualDriveCommand());
