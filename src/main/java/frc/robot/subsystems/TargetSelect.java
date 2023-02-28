@@ -17,11 +17,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class TargetSelect extends SubsystemBase {
   
-  
   private GenericEntry m_Indicators[][] = new GenericEntry[9][3];
   private GenericEntry m_TargetPose;
   private GenericEntry m_SelectedIndicator;
   private GenericEntry m_ConeSelect; 
+  private GenericEntry m_PickupLeftRightSelect;
+  private GenericEntry m_PickupPose;
 
   // currently selected target position
   private boolean m_TargetSelected;
@@ -56,7 +57,7 @@ public class TargetSelect extends SubsystemBase {
   }
 
 
-  // ------------------ Public Funcitons to Get Target Info
+  // ------------------ Public Funcitons to Get Dropoff Target Info
 
   // returns true if target is curently selected
   public boolean IsTargetSelected()
@@ -123,9 +124,44 @@ public class TargetSelect extends SubsystemBase {
     }
   
   // return Pose2d target position
-  return new Pose2d(x, y, Rotation2d.fromDegrees(180.0));
+  return new Pose2d(x, y, Rotation2d.fromDegrees(0.0));
   }
 
+
+  // ------------------ Public Funcitons to Get Pickup Target Info
+
+  // function to return selected target position (in meters)
+  // returns position of target in current team (red/blue) coordinates
+  // coordinate 0,0 at right-side corner at end with driver stations
+  public Pose2d GetPickupTargetPose2d()
+  {
+    // field length is 54'3.25"  (=16.54175m)
+    // field width is 26'3.5" (=8.0137)
+    
+    // x coordinate same for each team - apriltag xcoordinate - 1.5m distance for robot length (TBD)
+    double x=16.1787 - 1.5;
+    
+    // are we on blue or red team
+    double y = 0;
+    if (DriverStation.getAlliance() == Alliance.Blue)
+    {
+      // on blue team. Choose 0.5m to right of left of apriltag y coordinate
+      if (m_PickupLeftRightSelect.getBoolean(true))
+        y = 6.74 +0.5;
+      else
+        y = 6.74 - 0.5;
+    }
+    else
+    {
+      // on red team. Choose 0.5m to right or left of apriltag y coordinate
+      if (m_PickupLeftRightSelect.getBoolean(true))
+        y = 8.0137 - 6.74 - 0.5;
+      else
+        y = 8.0137 - 6.74 + 0.5;
+    }
+    
+    return new Pose2d(x, y, Rotation2d.fromDegrees(180.0));
+  }
 
 
 
@@ -160,7 +196,7 @@ public class TargetSelect extends SubsystemBase {
               .withSize(1,1)
               .getEntry();
     // current target position coordinates 
-    m_TargetPose = Tab.add("TargetPose", "")
+    m_TargetPose = Tab.add("Target Pose", "")
               .withWidget(BuiltInWidgets.kTextView)
               .withPosition(1, 3)
               .withSize(1,1)
@@ -172,6 +208,20 @@ public class TargetSelect extends SubsystemBase {
               .withPosition(5, 3)
               .withSize(1,1)
               .getEntry(); 
+
+    // pickup target select
+    m_PickupLeftRightSelect = Tab.add("L-R", true)
+              .withWidget(BuiltInWidgets.kToggleSwitch)
+              .withPosition(9, 3)
+              .withSize(1,1)
+              .getEntry(); 
+
+    // current target position coordinates 
+    m_PickupPose = Tab.add("Pickup Pose", "")
+              .withWidget(BuiltInWidgets.kTextView)
+              .withPosition(9, 4)
+              .withSize(1,1)
+              .getEntry();
     }
 
 
@@ -227,8 +277,12 @@ public class TargetSelect extends SubsystemBase {
       m_SelectedIndicator.setString("");
       m_TargetPose.setString("");
     } 
-  }
+  
+    // update pickup target position on shuffleboard
+    Pose2d pose = GetPickupTargetPose2d();
+    m_PickupPose.setString(String.format("%.2f", pose.getX())+","+String.format("%.2f", pose.getY()));
 
+  }
 
 
   // clears target if one is currently selected
