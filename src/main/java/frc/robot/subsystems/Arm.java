@@ -180,7 +180,7 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.config_kI(0, getArmI(), 0);
     m_ArmMotor.config_kD(0, getArmD(), 0);
     // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.50);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.55); // was 0.5
     m_ArmMotor.configClosedloopRamp(getMaxAcceleration());
   
     // The other code already is supposed to do this, but keep this as a backup
@@ -349,7 +349,7 @@ private void GetArmPositions() {
 
     // create slider controls
     // note: PID's will be removed when testing is over.
-    m_AccelLimit = Tab.add("Accel Limit (sec to full)", 0.40)
+    m_AccelLimit = Tab.add("Accel Limit (sec to full)", 0.50)  // was 0.4
        .withPosition(0, 0)
        .withSize(2, 1)
        .withWidget(BuiltInWidgets.kNumberSlider)

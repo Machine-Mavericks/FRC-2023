@@ -27,8 +27,8 @@ public class OI {
         public static JoystickButton gyro_reset_Button = new JoystickButton(driverController, XboxController.Button.kBack.value);
        
         // semi-auto pickup/drop off buttons
-        public static JoystickButton Dropoff_Button = new JoystickButton(driverController, XboxController.Button.kX.value);
         public static JoystickButton shelf_Button = new JoystickButton(driverController, XboxController.Button.kY.value);
+        public static JoystickButton Dropoff_Button = new JoystickButton(driverController, XboxController.Button.kX.value);
         public static JoystickButton auto_balance_Button = new JoystickButton(driverController, XboxController.Button.kB.value);
         public static JoystickButton floor_pickup_Button = new JoystickButton(driverController, XboxController.Button.kA.value);
         

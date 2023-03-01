@@ -130,6 +130,13 @@ public class TargetSelect extends SubsystemBase {
 
   // ------------------ Public Funcitons to Get Pickup Target Info
 
+  // is intended taret on left or right side
+  // return true if right, false if left
+  public boolean IsPickupRightSide()
+  {
+    return m_PickupLeftRightSelect.getBoolean(true);
+  }
+
   // function to return selected target position (in meters)
   // returns position of target in current team (red/blue) coordinates
   // coordinate 0,0 at right-side corner at end with driver stations
