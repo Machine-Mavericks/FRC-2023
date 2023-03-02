@@ -89,7 +89,7 @@ public class RobotContainer {
    */
   private static void configureButtonBindings() {
 
-    // reset gyro button
+    // reset gyro button 
     OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro.resetGyro()));
     
     // shelf pickup semi-auto routine

@@ -27,7 +27,7 @@ public class OI {
         public static JoystickButton gyro_reset_Button = new JoystickButton(driverController, XboxController.Button.kBack.value);
        
         // semi-auto pickup/drop off buttons
-        public static JoystickButton shelf_Button = new JoystickButton(driverController, XboxController.Button.kY.value);//does nothing
+        public static JoystickButton shelf_Button = new JoystickButton(driverController, XboxController.Button.kY.value);//does nothing not sure, may still go to shelp pickup but button for driver
         public static JoystickButton Dropoff_Button = new JoystickButton(driverController, XboxController.Button.kX.value);
         public static JoystickButton auto_balance_Button = new JoystickButton(driverController, XboxController.Button.kB.value);
         public static JoystickButton floor_pickup_Button = new JoystickButton(driverController, XboxController.Button.kA.value);
@@ -45,7 +45,7 @@ public class OI {
         public static JoystickButton mid_Button = new JoystickButton(operatorController, XboxController.Button.kX.value);
         public static JoystickButton high_Button = new JoystickButton(operatorController, XboxController.Button.kY.value);
         public static JoystickButton stow_Button = new JoystickButton(operatorController, XboxController.Button.kRightBumper.value);
-        public static JoystickButton shelf_pickup_Button = new JoystickButton(operatorController, XboxController.Button.kB.value); //does nothing
+        public static JoystickButton shelf_pickup_Button = new JoystickButton(operatorController, XboxController.Button.kB.value); 
         public static JoystickButton GrabberButton = new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value);
     }
 
@@ -73,15 +73,14 @@ public class OI {
     }
 
     public static double getRotateDriveInput(){
-        return OI.driverController.getRightY();
+        return OI.driverController.getRightX();
     }
 
     public static double getArmSpeed(){
         return OI.operatorController.getRightY();
     }
     public static double getGoFast (){
-        //return OI.driverController.getRightTriggerAxis();
-        return OI.driverController.getLeftTriggerAxis();
+        return OI.driverController.getLeftTriggerAxis(); //right trigger does not work
     }
 
 
