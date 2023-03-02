@@ -52,33 +52,37 @@ public class NodeTargeting extends SubsystemBase {
    * @return tx of target
    */
   public double txLeftBottomTarget(){
-    double tempx = this.Txs[0];
-    int tempi = 0;
-    int templast = 0;
-    // looks for left and second leftmost target
-    for (int i = 0; i < m_nodeTargetCamera.getNumOfRetro(); i++){
-      if (Txs[i]<tempx){
-        templast = tempi;
-        tempx = Txs[i];
-        tempi = i;
-      }
-    }
-    // if second leftmost is never populated, populate using remaining targets
-    if (tempi == 0){
-      double tempx2 = this.Txs[1];
-      for (int i = 1; i < m_nodeTargetCamera.getNumOfRetro(); i++){
-        if (Txs[i]<tempx2){
+      if (IsTarget()){
+        double tempx = this.Txs[0];
+      int tempi = 0;
+      int templast = 0;
+      // looks for left and second leftmost target
+      for (int i = 0; i < m_nodeTargetCamera.getNumOfRetro(); i++){
+        if (Txs[i]<tempx){
           templast = tempi;
-          tempx2 = this.Txs[i];
+          tempx = Txs[i];
           tempi = i;
         }
       }
-    }
-    // return tx of the bottom most of the two left most targets
-    if (this.Tys[templast]<this.Tys[tempi]){
-      return this.Txs[templast];
+      // if second leftmost is never populated, populate using remaining targets
+      if (tempi == 0){
+        double tempx2 = this.Txs[1];
+        for (int i = 1; i < m_nodeTargetCamera.getNumOfRetro(); i++){
+          if (Txs[i]<tempx2){
+            templast = tempi;
+            tempx2 = this.Txs[i];
+            tempi = i;
+          }
+        }
+      }
+      // return tx of the bottom most of the two left most targets
+      if (this.Tys[templast]<this.Tys[tempi]){
+       return this.Txs[templast];
+      } else {
+        return this.Txs[tempi];
+     }
     } else {
-      return this.Txs[tempi];
+      return 0.0;
     }
   }
 
