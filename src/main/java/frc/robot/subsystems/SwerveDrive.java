@@ -156,20 +156,20 @@ public class SwerveDrive extends SubsystemBase {
     m_ParkAngleRF = new Rotation2d(-45.0);
 
     // create CANCoder objects - for 2023, swerve drive is on Canimore canbus network
-    //if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
-    //{
-    //  m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER,"Drivebase");
-    //  m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER,"Drivebase");
-    //  m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER,"Drivebase");
-    //  m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER,"Drivebase");
-    //}
-    //else
-    //{
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    {
+      m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER,"Drivebase");
+      m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER,"Drivebase");
+      m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER,"Drivebase");
+      m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER,"Drivebase");
+    }
+    else
+    {
       m_LFCanCoder = new CANCoder(RobotMap.CANID.LF_CANCODER);
       m_RFCanCoder = new CANCoder(RobotMap.CANID.RF_CANCODER);
       m_LRCanCoder = new CANCoder(RobotMap.CANID.LR_CANCODER);
       m_RRCanCoder = new CANCoder(RobotMap.CANID.RR_CANCODER);
-    //}
+    }
 
     m_LFCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_RFCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
@@ -177,20 +177,20 @@ public class SwerveDrive extends SubsystemBase {
     m_RRCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
     // create steeer motors - for 2023, swerve drive is on Canimore canbus network
-    //if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
-    //{
-    //  m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
-    //  m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
-    //  m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
-    //  m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
-    //}
-    //else
-    //{
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    {
+      m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
+      m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
+      m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
+      m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
+    }
+    else
+    {
       m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
       m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
       m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
       m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
-    //}
+    }
     m_LFSteerMotor.configFactoryDefault();
     m_RFSteerMotor.configFactoryDefault();
     m_LRSteerMotor.configFactoryDefault();
@@ -238,20 +238,20 @@ public class SwerveDrive extends SubsystemBase {
     // m_RRSteerMotor.configClosedloopRamp(0.5);
 
     // create steeer motors - for 2023, swerve drive is on Canimore canbus network
-    //if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
-    //{
-     // m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
-     // m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
-    //  m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
-    //  m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
-    //}
-    //else
-    //{
+    if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
+    {
+      m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
+      m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
+      m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
+      m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
+    }
+    else
+    {
       m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
       m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
       m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
       m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
-    //}
+    }
     m_LFDriveMotor.configFactoryDefault();
     m_RFDriveMotor.configFactoryDefault();
     m_LRDriveMotor.configFactoryDefault();
@@ -510,7 +510,7 @@ public SwerveDriveKinematics getKinematics() {
        .withPosition(0, 0)
        .withSize(2, 1)
        .withWidget(BuiltInWidgets.kNumberSlider)
-       .withProperties(Map.of("min", 0, "max", MAX_VELOCITY_METERS_PER_SECOND))
+       .withProperties(Map.of("min", 0, "max", 1.0))
        .getEntry();
 
     // create max accel slider control
@@ -522,7 +522,7 @@ public SwerveDriveKinematics getKinematics() {
       .getEntry();
 
     // create max accel slider control
-       m_AccelLimit = Tab.add("Max Accel", 7.0)
+       m_AccelLimit = Tab.add("Max Accel", 7.5)
        .withPosition(0, 2)
        .withSize(2, 1)
        .withWidget(BuiltInWidgets.kNumberSlider)
@@ -658,7 +658,7 @@ public SwerveDriveKinematics getKinematics() {
   // returns maximum drive speed set in shuffleboard slider
   public double getMaxAccel()
   {
-    return m_AccelLimit.getDouble(7.0);
+    return m_AccelLimit.getDouble(7.5);
   }
 
   // return maximum rotational speed

@@ -30,31 +30,40 @@ public class LEDBlinkin extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    //Since LED comand dont like working we are doing it here
+   
+    if (RobotContainer.targetselector.isConeSelected())
+    {
+      // we are in cone mode
+      if (RobotContainer.limelight_high.isTargetPresent()==1.0)
+        setPattern(LED_PATTERN.SOLIDYELLOW);
+      else
+        setPattern(LED_PATTERN.FLASHYELLOW);
+    }
+    else
+    {
+      //cone mode is selected
+      if (RobotContainer.limelight_high.isTargetPresent()==1.0)
+        setPattern(LED_PATTERN.SOLIDVIOLET);
+      else
+        setPattern(LED_PATTERN.FLASHVIOLET);
 
 
-    //Low power-owerr-werrr-errrr-rrrrr
-    //if( !(RobotContainer.panel.getVoltage() <11.0))
-   // {
-    //  RobotContainer.LEDStrip.setPattern(LED_PATTERN.LOWBATTERY);
-   // }
+    }
+    
+    
 
-   //Working????
-    //System.out.println("************************LED COMAND************************************************************");
 
-    //RobotContainer.LEDStrip.setPattern(LED_PATTERN.TEST);
-    // If yes YAY if no heh have fun fixing
+    
   }
 
   public enum LED_PATTERN {
     OFF,
-    REDBALL,
-    BLUEBALL,
-    HUB,
     LOWBATTERY,
-    DISCO,
-    TEST
+    TEST,
+    SOLIDYELLOW,
+    FLASHYELLOW,
+    SOLIDVIOLET,
+    FLASHVIOLET
   };
 
   // sets pattern of LED strip
@@ -68,21 +77,21 @@ public class LEDBlinkin extends SubsystemBase {
       case OFF:
         led.setSpeed(0.99);    // black
       break;
-      case REDBALL:
-        led.setSpeed(-0.11);   // strobe red
-      break;
-      case BLUEBALL:
-        led.setSpeed(-0.09);   // strobe blue
-      break;
-      case HUB:
-        led.setSpeed(-0.07);   // strobe red
-      break;
       case LOWBATTERY:
         led.setSpeed(0.91);    // solid purple
       break;
-      case DISCO:
-        led.setSpeed(-0.45);   // color wave - rainbow
+      case SOLIDYELLOW:
+        led.setSpeed(0.69);
       break;
+      case FLASHYELLOW:
+        led.setSpeed(-0.07);
+      break;
+      case SOLIDVIOLET:
+        led.setSpeed(0.89);
+      break;
+      case FLASHVIOLET:
+        led.setSpeed(-0.09);
+        break;
       case TEST:
         led.setSpeed(-0.35);
       break;

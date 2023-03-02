@@ -9,9 +9,15 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-
+//import com.revrobotics.Rev2mDistanceSensor;
+//import com.revrobotics.Rev2mDistanceSensor.Port;
+//import com.revrobotics.Rev2mDistanceSensor.Unit;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import java.util.Map;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.RobotMap;
@@ -22,7 +28,9 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_MotorCurrent; 
   private GenericEntry m_MotorVoltage;
   private GenericEntry m_GrabberPos;
- 
+  private GenericEntry m_SensorDistance;
+  public GenericEntry m_Volts;
+
   // spark max motor
   private CANSparkMax m_motor;
 
@@ -38,6 +46,10 @@ public class Grabber extends SubsystemBase {
     Open
   };
   GrabberPos m_targetPos;
+
+  // create range sensor
+  //Rev2mDistanceSensor m_distsensor;
+  AnalogInput m_sensor;
 
   /** Creates a new Grabber. */
   public Grabber() {
@@ -60,6 +72,11 @@ public class Grabber extends SubsystemBase {
 
     Disable();
 
+    // set up range sensor, set for mm measurement, and enable
+    //m_distsensor = new Rev2mDistanceSensor(Port.kOnboard);
+    //m__distsensor.setDistanceUnits(Unit.kMillimeters);
+    //m_distsensor.setAutomaticMode(true);
+    m_sensor = new AnalogInput(0);
   }
 
   // This method will be called once per scheduler run
@@ -137,6 +154,18 @@ public class Grabber extends SubsystemBase {
   { m_enabled = true; }
 
 
+  // get sensor distance (mmm)
+  // returns voltage of GP2Y0A41SK0F sensor
+  public double GetSensorDistance()
+  {
+    return m_sensor.getVoltage();
+    //if (m_distsensor.isRangeValid())
+    //  return m_distsensor.GetRange();
+    //else
+    //  return 9999.0;
+  }
+
+
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
 
@@ -152,8 +181,18 @@ public class Grabber extends SubsystemBase {
     m_GrabberPos= l1.add("Grabber Pos", 0.0).getEntry();
     m_MotorCurrent = l1.add("Current", 0.0).getEntry(); 
     m_MotorVoltage = l1.add("Applied Out", 0.0).getEntry();
-    }
+    m_SensorDistance = l1.add("Distance(mm)", 0.0).getEntry();
+    
+    m_Volts = Tab.add("Volts", 0.05)
+    .withPosition(3, 0)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.2, "max", 1.00))
+    .getEntry();
+  
+  }
 
+ int ken = 0;
 
     /** Update subsystem shuffle board page with current odometry values */
     private void updateShuffleboard() {
@@ -166,6 +205,9 @@ public class Grabber extends SubsystemBase {
       // update motor voltage and current
       m_MotorCurrent.setDouble(m_motor.getOutputCurrent());
       m_MotorVoltage.setDouble(m_motor.getAppliedOutput()*12.0);
+
+      // update distance
+      m_SensorDistance.setDouble(GetSensorDistance());
     }
 
 
