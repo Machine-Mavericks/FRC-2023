@@ -18,7 +18,8 @@ public class RightPath extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-    new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LED_PATTERN.REDBALL)));
+    //new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LED_PATTERN.REDBALL))
+    );
     /**
      drive forward
      place cone on 9,2
