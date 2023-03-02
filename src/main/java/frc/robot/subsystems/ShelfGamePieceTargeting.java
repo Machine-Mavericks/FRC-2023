@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Utils.GamePieceData;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -31,11 +32,11 @@ public class ShelfGamePieceTargeting extends SubsystemBase {
   private GamePieceData m_conePose = new GamePieceData(0, 0);
 
   public ShelfGamePieceTargeting(double limelightOffset_X, double limelightOffset_Y) {
-    m_gamepiececamera = new Limelight("humplay");
+    RobotContainer.limelight_high.setPipeline(2);;
 
     System.out.println("Shelf Limelight online??"); // Hopefully
 
-    m_gamepiececamera.setPipeline(1);
+    //m_gamepiececamera.setPipeline(2);
 
     m_limelightOffset_X = limelightOffset_X;
     m_limelightOffset_Y = limelightOffset_Y;
@@ -80,25 +81,25 @@ public class ShelfGamePieceTargeting extends SubsystemBase {
   // -----------  Generic Target Functions ----- //
 
   public boolean isTarget(){
-    if (m_gamepiececamera.isTargetPresent() == 0) { return false; }
+    if (RobotContainer.limelight_high.isTargetPresent() == 0) { return false; }
     else { return true; }
   }
 
   public double getTargetHorAngle() {
-    double Angle = m_gamepiececamera.getHorizontalTargetOffsetAngle();
+    double Angle = RobotContainer.limelight_high.getHorizontalTargetOffsetAngle();
     return Angle;
   }
 
   public double getGamePieceDistance(){
-    return m_gamepiececamera.getGamePieceDistance();
+    return RobotContainer.limelight_high.getGamePieceDistance();
   }
   
   public boolean getGamePieceValid(){
-    return m_gamepiececamera.getGamePieceValid();
+    return RobotContainer.limelight_high.getGamePieceValid();
   }
   /** Returns vertical angle of target (deg)*/
   public double getTargetVertAngle() {
-    return m_gamepiececamera.getVerticalTargetOffsetAngle();
+    return RobotContainer.limelight_high.getVerticalTargetOffsetAngle();
   }
 
   /**  */

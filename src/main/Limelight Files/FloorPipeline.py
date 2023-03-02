@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 # global variables go here:
-min_gamepeice_area = 8000
+min_gamepeice_area = 3500
 # cone_height_cm = 33.2
 # ll_mountpoint_x = 1
 # ll_mountpoint_y = 1
@@ -37,14 +37,15 @@ def runPipeline(image, llrobot):
         for i, cont in enumerate(contours):
             area = cv2.contourArea(cont)
             if area > min_gamepeice_area:
-                largestContour = max(contours, key=cv2.contourArea)
+                #largestContour = max(contours, key=cv2.contourArea)
 
-                if (cont != largestContour):
-                    pass
+               
                 
                 rect = cv2.minAreaRect(cont)
                 box = cv2.boxPoints(rect)
                 box = np.intp(box)
+
+                
 
 
                 
@@ -53,7 +54,10 @@ def runPipeline(image, llrobot):
 
                 x,y,w,h = cv2.boundingRect(cont)
                 cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,255),5)
-
+                #print(cont)
+                pointList = np.array([[x,y], [x+w,y], [x+w, y+h], [x, y+h]],  dtype=np.int)
+                pointList = pointList.reshape(-1,1,2)
+                largestContour = pointList
                 #Calculate distance
                 distance = 17259*pow(area, -0.504)
 

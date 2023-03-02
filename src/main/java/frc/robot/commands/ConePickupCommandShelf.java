@@ -38,7 +38,7 @@ public class ConePickupCommandShelf extends CommandBase {
   private Pose2d m_targetpose;
 
   // cone targeting
-  private double m_idealdistance = 80.0;
+  private double m_idealdistance = 120.0;
 
   private boolean m_canceled = false;
   private boolean m_notFirstLoop = false;
@@ -139,18 +139,23 @@ public class ConePickupCommandShelf extends CommandBase {
     //  distCoefficient = (distance - m_idealdistance) / distance; 
     //}
 
-    Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, new Rotation2d(Math.toRadians(0))); // Robot relative
+    Pose2d dataPose = new Pose2d(data.m_X, data.m_Y, new Rotation2d(Math.toRadians(180))); // Robot relative
   
     // Rotate pose around robot angle
     double X = dataPose.getX() * Math.cos(odometryPose.getRotation().getRadians()) - dataPose.getY() * Math.sin(odometryPose.getRotation().getRadians());
     double Y = dataPose.getY() * Math.cos(odometryPose.getRotation().getRadians()) + dataPose.getX() * Math.sin(odometryPose.getRotation().getRadians());
 
     // Move back target pose by ideal distance
-    Y -= m_idealdistance;
+    Y += m_idealdistance;
+    //X -= 4; // Tiny offset
+
+    System.out.println(Y);
 
     // Convert cm to meters
     X = X / 100;
     Y = Y / 100;
+
+    
 
     // Account for camera on rear of robot
     X = -X;
