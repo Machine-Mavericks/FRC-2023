@@ -27,8 +27,11 @@ import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.Autonomous.CoopCubePath;
 import frc.robot.commands.Autonomous.RightPath;
 import frc.robot.commands.Autonomous.TwoConesPath;
+import frc.robot.commands.SemiAutonomous.AutoBalance;
+import frc.robot.commands.SemiAutonomous.DriveToConeDropOff;
 import frc.robot.commands.SemiAutonomous.DriveToShelfPickup;
-import frc.robot.commands.SemiAutonomous.DrivetoPickupTarget;
+import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
+import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoShelfPickup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
@@ -52,11 +55,10 @@ public class RobotContainer {
   public static final NavX gyro = new NavX();
   // public static final Pigeon gyro2 = new Pigeon();
   public static final Limelight limelight_high = new Limelight("high");
- 
-  public static final Limelight limelight_low = new Limelight("low", true); 
+  public static final Limelight limelight_med = new Limelight("med"); 
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
-  public static final SwervePoseEstimator poseestimator = new SwervePoseEstimator();
+  //public static final SwervePoseEstimator poseestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
   public static final Grabber grabber = new Grabber();
   public static final GamePieceTargeting gamepiecetargeting = new GamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
@@ -93,10 +95,15 @@ public class RobotContainer {
     OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro.resetGyro()));
     
     // shelf pickup semi-auto routine
-    OI.DriverButtons.shelf_Button.whileTrue(new SemiAutoShelfPickup());
-    //OI.DriverButtons.shelf_Button.whileTrue(new DriveToShelfPickup());
+    OI.DriverButtons.shelfpickup_Button.whileTrue(new SemiAutoShelfPickup());
+    OI.DriverButtons.DropoffHigh_Button.whileTrue(new SemiAutoConeDropOffHigh());
+    OI.DriverButtons.DropoffMed_Button.whileTrue(new SemiAutoConeDropOffMed());
+    //OI.DriverButtons.DropoffHigh_Button.whileTrue(new DriveToConeDropOffHigh());
+    OI.DriverButtons.auto_balance_Button.whileTrue(new AutoBalance());
+   
+    
     //OI.DriverButtons.shelf_Button.whileTrue(new CoopCubePath());
-    //OI.DriverButtons.shelf_Button.whileTrue(new AutoBalance());
+    //OI.DriverButtons.auto_balance_Button.whileTrue(new CoopCubePath());
     
 
     // arrm movement buttons

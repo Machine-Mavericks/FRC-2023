@@ -77,7 +77,6 @@ public class Robot extends TimedRobot {
     
     // Reset odometry
     RobotContainer.swerveodometry.InitializetoZero();
-    RobotContainer.poseestimator.InitializetoZero();
 
     // schedule the autonomous command
     m_autonomousCommand = RobotContainer.getAutonomousCommand();
@@ -102,11 +101,10 @@ public class Robot extends TimedRobot {
     RobotContainer.swervedrive.ResetSteerEncoders();
 
     // set AprilTags camera pipeline to 0
-    RobotContainer.limelight_low.setPipeline(0);
+    RobotContainer.limelight_med.setPipeline(0);
     
     // Reset odometry
     RobotContainer.swerveodometry.InitializetoZero();
-    RobotContainer.poseestimator.InitializetoZero();
 
     // enable arm
     RobotContainer.arm.SetEnableArm(true);

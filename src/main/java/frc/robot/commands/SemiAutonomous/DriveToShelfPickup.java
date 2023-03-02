@@ -36,7 +36,7 @@ public class DriveToShelfPickup extends CommandBase {
     // change pipeline of high camera
     // use #1 for left object, use #2 for right object-side
     //if (RobotContainer.targetselector.IsPickupRightSide())
-      RobotContainer.limelight_high.setPipeline(1);
+      RobotContainer.limelight_high.setPipeline(0);
     //else
     //  RobotContainer.limelight_high.setPipeline(2);
 
@@ -63,11 +63,11 @@ public class DriveToShelfPickup extends CommandBase {
     if (RobotContainer.limelight_high.isTargetPresent()==1.0)
     {
       ySpeed = m_yController.calculate( RobotContainer.limelight_high.getHorizontalTargetOffsetAngle());
-      m_targetdist_filtered = 0.95*m_targetdist_filtered + 0.05*dist;
+      m_targetdist_filtered = 0.93*m_targetdist_filtered + 0.07*dist;
     }
     else
     {
-      m_targetdist_filtered = 0.95*m_targetdist_filtered;
+      m_targetdist_filtered = 0.93*m_targetdist_filtered;
       ySpeed = m_yController.calculate( 0.0);
     }
 
@@ -96,6 +96,8 @@ public class DriveToShelfPickup extends CommandBase {
   @Override
   public boolean isFinished() {
     // command finishes when target closer than ~20cm from target
-    return (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(0.45));  //0.53
+    return (m_targetdist_filtered >1.6);  //0.53
+  
+    //return (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(2.20));  //0.53
   }
 }

@@ -96,14 +96,14 @@ public class Grabber extends SubsystemBase {
       if (m_targetPos==GrabberPos.Close)
       {
         // if motor is in close mode, apply full effort for 0.8s, after which, reduce to 0V
-        if (t <0.8)
+        if (t <2.0)
           m_motor.setVoltage(-12.0);
         else
         m_motor.setVoltage(0.0);
       }
       else
       {
-        if (t <0.6)
+        if (t <1.0)
           m_motor.setVoltage(12.0);
         else
           m_motor.setVoltage(0);
@@ -181,9 +181,9 @@ public class Grabber extends SubsystemBase {
     m_GrabberPos= l1.add("Grabber Pos", 0.0).getEntry();
     m_MotorCurrent = l1.add("Current", 0.0).getEntry(); 
     m_MotorVoltage = l1.add("Applied Out", 0.0).getEntry();
-    m_SensorDistance = l1.add("Distance(mm)", 0.0).getEntry();
+    m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
     
-    m_Volts = Tab.add("Volts", 0.05)
+    m_Volts = Tab.add("Volts", 0.24)
     .withPosition(3, 0)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)

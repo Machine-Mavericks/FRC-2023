@@ -69,13 +69,13 @@ public class ManualDriveCommand extends CommandBase {
      {
       dX = 0.5*inputdX;
       dY = 0.5*inputdY;
-      omega = -inputomega*2.5;
+      omega = -inputomega*2.0;
      }
     else if (speedfactor >0.5)
     {
       dX = 4.0*inputdX*maxSpeed;
       dY = 4.0*inputdY*maxSpeed;
-      omega = -inputomega*5.0*RobotContainer.swervedrive.getMaxRotateSpeed();
+      omega = -inputomega*4.0*RobotContainer.swervedrive.getMaxRotateSpeed();
     }
     
     // determine desired speeds

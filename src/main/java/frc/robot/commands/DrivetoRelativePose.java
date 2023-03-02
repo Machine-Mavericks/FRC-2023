@@ -30,7 +30,7 @@ public class DrivetoRelativePose extends CommandBase {
 
   // final position tolerance (m) / angle tolerance (deg) to consider we have arrived at destination
   private final double m_positiontolerance = 0.3;
-  private final double m_angletolerance = 0.5;
+  private final double m_angletolerance = 5.0;
 
   private SwerveDriveOdometry m_odometry;
 

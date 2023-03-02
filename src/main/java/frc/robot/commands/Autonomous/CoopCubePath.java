@@ -12,6 +12,7 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 import frc.robot.commands.DrivetoFieldPose;
 import frc.robot.commands.DrivetoRelativePose;
+import frc.robot.commands.SemiAutonomous.AutoBalance;
 import frc.robot.subsystems.LEDBlinkin.LED_PATTERN;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -27,7 +28,7 @@ public class CoopCubePath extends SequentialCommandGroup {
 
     // This ection currently being worked on (a work in progress)
     // commented out so robot will not run unexpectedly
-    
+    /*
 
     // enable arm, and lift to stow position
     new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
@@ -36,13 +37,13 @@ public class CoopCubePath extends SequentialCommandGroup {
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
 
     // delay until arm gets back
-    new DelayCommand(1.5),
+    new DelayCommand(2.0),
     
     // open gripper
     new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
 
     // delay for gripper to open
-    new DelayCommand(0.25),
+    new DelayCommand(0.5),
     
     // close gripper
     new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
@@ -60,9 +61,11 @@ public class CoopCubePath extends SequentialCommandGroup {
     new DrivetoRelativePose(new Pose2d(5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
     
     // drive straight back onto charge station
-    new DrivetoRelativePose(new Pose2d(-3, 0, new Rotation2d(0.0)),1.0,0.1, 30.0)
+    new DrivetoRelativePose(new Pose2d(-1.7, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
 
-    
+    // balance
+    new AutoBalance()
+    */
     );
     
     
