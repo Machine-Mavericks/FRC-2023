@@ -329,6 +329,11 @@ public double GetArmPosition() {
   return m_MidArmPositionDeg;
 }
 
+// Get arm position according to CANcoder in degrees
+public double GetArmPositionCANCoder() {
+  return (m_ArmCanCoder.getAbsolutePosition()-m_ArmCanCoderOffsetDeg)%360;
+} 
+
 // Get Arm Position in degrees
 private void GetArmPositions() {
     // determine the arm position with the mod operator but note that it will can return between -360 and 360 so need to add a rotation to make it in the 0-360 range.
@@ -339,6 +344,24 @@ private void GetArmPositions() {
     m_MidArmPositionDeg = MidArmPositionDeg;
   }
 }
+
+
+public void EnableFast(boolean enable)
+{
+  if (enable)
+  {
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.55);
+    m_ArmMotor.configClosedloopRamp(0.5);
+  }
+  else
+  {
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.35);
+    m_ArmMotor.configClosedloopRamp(0.6);
+  }
+
+}
+
+
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
 

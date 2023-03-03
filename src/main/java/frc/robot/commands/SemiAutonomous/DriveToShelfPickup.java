@@ -95,9 +95,8 @@ public class DriveToShelfPickup extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // command finishes when target closer than ~20cm from target
-    return (m_targetdist_filtered >1.6);  //0.53
-  
-    //return (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(2.20));  //0.53
+    // command finishes when sensor voltage >1.45V (closer than ~20cm from target)
+    //return (m_targetdist_filtered >1.45);  
+    return (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(1.45) ); 
   }
 }

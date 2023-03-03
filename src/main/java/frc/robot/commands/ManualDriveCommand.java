@@ -40,8 +40,8 @@ public class ManualDriveCommand extends CommandBase {
     double maxAccel = RobotContainer.swervedrive.getMaxAccel();
 
     // check - ensure maxAccel is resonable value to ensure robot can slow down in reasonable time
-    if (maxAccel < 6.5)
-      maxAccel = 6.5;
+    if (maxAccel < 7.0)
+      maxAccel = 7.0;
 
     // max rate of change of speed
     double MaxChange = 0.02*maxAccel;
@@ -65,6 +65,11 @@ public class ManualDriveCommand extends CommandBase {
     double dX = 0.0, dY=0.0, omega =0.0;
     
     double speedfactor = OI.getGoFast();
+    
+    // override go fast if arm is not stowed. Force slow mode
+    if (RobotContainer.arm.GetArmPosition() < 115.0 || RobotContainer.arm.GetArmPosition() > 150.0)
+      speedfactor = 0.0;
+
     if (speedfactor < 0.5)
      {
       dX = 0.5*inputdX;
@@ -75,7 +80,7 @@ public class ManualDriveCommand extends CommandBase {
     {
       dX = 4.0*inputdX*maxSpeed;
       dY = 4.0*inputdY*maxSpeed;
-      omega = -inputomega*4.0*RobotContainer.swervedrive.getMaxRotateSpeed();
+      omega = -inputomega*7.5*RobotContainer.swervedrive.getMaxRotateSpeed();
     }
     
     // determine desired speeds

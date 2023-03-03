@@ -179,11 +179,11 @@ public class Grabber extends SubsystemBase {
     m_MotorVoltage = l1.add("Applied Out", 0.0).getEntry();
     m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
     
-    m_Volts = Tab.add("Volts", 0.24)
+    m_Volts = Tab.addPersistent("Volts", 1.45)
     .withPosition(3, 0)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.2, "max", 1.00))
+    .withProperties(Map.of("min", 1.25, "max", 1.75))
     .getEntry();
   
   }

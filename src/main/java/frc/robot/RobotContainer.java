@@ -25,6 +25,7 @@ import frc.robot.commands.DrivetoRelativePose;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.Autonomous.CoopCubePath;
+import frc.robot.commands.Autonomous.LeftPath;
 import frc.robot.commands.Autonomous.RightPath;
 import frc.robot.commands.Autonomous.TwoConesPath;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
@@ -98,12 +99,7 @@ public class RobotContainer {
     OI.DriverButtons.shelfpickup_Button.whileTrue(new SemiAutoShelfPickup());
     OI.DriverButtons.DropoffHigh_Button.whileTrue(new SemiAutoConeDropOffHigh());
     OI.DriverButtons.DropoffMed_Button.whileTrue(new SemiAutoConeDropOffMed());
-    //OI.DriverButtons.DropoffHigh_Button.whileTrue(new DriveToConeDropOffHigh());
     OI.DriverButtons.auto_balance_Button.whileTrue(new AutoBalance());
-   
-    
-    //OI.DriverButtons.shelf_Button.whileTrue(new CoopCubePath());
-    //OI.DriverButtons.auto_balance_Button.whileTrue(new CoopCubePath());
     
 
     // arrm movement buttons
@@ -131,7 +127,7 @@ public class RobotContainer {
     if (index == 0)
       return new CoopCubePath();
     else if (index == 1)
-      return new TwoConesPath();
+      return new LeftPath();
     else if (index == 2)
       return new RightPath();
     else

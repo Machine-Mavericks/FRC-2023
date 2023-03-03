@@ -26,10 +26,10 @@ public class SemiAutoShelfPickup extends SequentialCommandGroup {
       new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
 
       // lift arm
-      new InstantCommand(() -> RobotContainer.arm.SetArmPosition(207.9)), // was 210.9
+      new InstantCommand(() -> RobotContainer.arm.SetArmPosition(202.9)), // was 210.9 // was 204.9
 
       // delay until arm gets back
-      new DelayCommand(2.0),
+      new DelayCommand(1.8),
 
       // open gripper
       new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
@@ -37,7 +37,7 @@ public class SemiAutoShelfPickup extends SequentialCommandGroup {
       // drive to pickup
       new DriveToShelfPickup(),
 
-      // open gripper
+      // close gripper
       new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
 
       // delay until arm gets back

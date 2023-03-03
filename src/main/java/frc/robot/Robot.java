@@ -112,6 +112,9 @@ public class Robot extends TimedRobot {
     // set default swerve drive command to manual drive mode
     RobotContainer.swervedrive.setDefaultCommand(new ManualDriveCommand());
 
+    // set arm to normal speed
+    RobotContainer.arm.EnableFast(false);
+
     // set default arm command to manual speed
     RobotContainer.arm.setDefaultCommand(new ManualArmSpeed());
 
