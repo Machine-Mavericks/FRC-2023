@@ -70,16 +70,16 @@ public class ManualDriveCommand extends CommandBase {
     if (RobotContainer.arm.GetArmPosition() < 115.0 || RobotContainer.arm.GetArmPosition() > 150.0)
       speedfactor = 0.0;
 
-    if (speedfactor < 0.5)
+    if (speedfactor < 0.01)
      {
       dX = 0.5*inputdX;
       dY = 0.5*inputdY;
       omega = -inputomega*2.0;
      }
-    else if (speedfactor >0.5)
+    else if (speedfactor >0.01)
     {
-      dX = 4.0*inputdX*maxSpeed;
-      dY = 4.0*inputdY*maxSpeed;
+      dX = 0.5*inputdX + 4.0*inputdX*maxSpeed*speedfactor; // was 4.0*inputdX*maxSpeed
+      dY = 0.5*inputdY + 4.0*inputdY*maxSpeed*speedfactor; // was 4.0*inputdY*maxSpeed
       omega = -inputomega*7.5*RobotContainer.swervedrive.getMaxRotateSpeed();
     }
     
