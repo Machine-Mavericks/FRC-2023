@@ -18,7 +18,8 @@ public class TwoConesPath extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
 
-    new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LED_PATTERN.DISCO)));
+    //new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LED_PATTERN.DISCO))
+    );
     /**
      * drive forwards
      * place cone on high (9,2)

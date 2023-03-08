@@ -102,7 +102,7 @@ public class Arm extends SubsystemBase {
 
   public static final double PICKUP_DEG = 92;
   public static final double LOW_DEG = 107;
-  public static final double STOW_DEG = 120;
+  public static final double STOW_DEG = 150;  // was 120
   public static final double MID_DEG = 195;
   public static final double PICKUP_SHELF_DEG = 220;
   public static final double HIGH_DEG = 248;
@@ -180,7 +180,7 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.config_kI(0, getArmI(), 0);
     m_ArmMotor.config_kD(0, getArmD(), 0);
     // This is simply here for arm testing, can be removed later on if we see fit, or leave it if it's too powerfull
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.50);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.35); // was 0.5
     m_ArmMotor.configClosedloopRamp(getMaxAcceleration());
   
     // The other code already is supposed to do this, but keep this as a backup
@@ -329,6 +329,11 @@ public double GetArmPosition() {
   return m_MidArmPositionDeg;
 }
 
+// Get arm position according to CANcoder in degrees
+public double GetArmPositionCANCoder() {
+  return (m_ArmCanCoder.getAbsolutePosition()-m_ArmCanCoderOffsetDeg)%360;
+} 
+
 // Get Arm Position in degrees
 private void GetArmPositions() {
     // determine the arm position with the mod operator but note that it will can return between -360 and 360 so need to add a rotation to make it in the 0-360 range.
@@ -340,6 +345,24 @@ private void GetArmPositions() {
   }
 }
 
+
+public void EnableFast(boolean enable)
+{
+  if (enable)
+  {
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.55);
+    m_ArmMotor.configClosedloopRamp(0.5);
+  }
+  else
+  {
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.35);
+    m_ArmMotor.configClosedloopRamp(0.6);
+  }
+
+}
+
+
+
   // -------------------- Subsystem Shuffleboard Methods --------------------
 
   /** Initialize subsystem shuffleboard page and controls */
@@ -349,7 +372,7 @@ private void GetArmPositions() {
 
     // create slider controls
     // note: PID's will be removed when testing is over.
-    m_AccelLimit = Tab.add("Accel Limit (sec to full)", 0.40)
+    m_AccelLimit = Tab.add("Accel Limit (sec to full)", 0.60)  // was 0.4 0.6
        .withPosition(0, 0)
        .withSize(2, 1)
        .withWidget(BuiltInWidgets.kNumberSlider)

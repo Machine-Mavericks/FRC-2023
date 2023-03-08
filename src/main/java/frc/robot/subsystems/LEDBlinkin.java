@@ -7,6 +7,9 @@ package frc.robot.subsystems;
 //import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
+
+import javax.lang.model.util.ElementScanner14;
+
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,80 +19,99 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDBlinkin extends SubsystemBase {
 
-  //Victor led;
+  // Victor led;
   PWM led;
+
   /** Creates a new LEDBlinkin. */
   public LEDBlinkin() {
 
-      // set up pwm channel
-      //led = new Victor(RobotMap.PWMPorts.LED_BLINKIN);
-      led = new PWM(RobotMap.PWMPorts.LED_BLINKIN);
-      
-      setPattern(LED_PATTERN.TEST);
-    }
+    // set up pwm channel
+    // led = new Victor(RobotMap.PWMPorts.LED_BLINKIN);
+    led = new PWM(RobotMap.PWMPorts.LED_BLINKIN);
+
+    setPattern(LED_PATTERN.TEST);
+  }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    //Since LED comand dont like working we are doing it here
 
+    if (RobotContainer.limelight_med.isTargetPresent() == 1.0)
+      setPattern(LED_PATTERN.STROBEBLUE);
+    else if (RobotContainer.limelight_high.isTargetPresent() == 1.0)
+      setPattern(LED_PATTERN.FLASHYELLOW);
+    else
+      setPattern(LED_PATTERN.HEARTBEATRED);
 
-    //Low power-owerr-werrr-errrr-rrrrr
-    //if( !(RobotContainer.panel.getVoltage() <11.0))
-   // {
-    //  RobotContainer.LEDStrip.setPattern(LED_PATTERN.LOWBATTERY);
-   // }
+    /*
+     * if (RobotContainer.targetselector.isConeSelected())
+     * {
+     * // we are in cone mode
+     * if (RobotContainer.limelight_high.isTargetPresent()==1.0)
+     * setPattern(LED_PATTERN.SOLIDYELLOW);
+     * else
+     * setPattern(LED_PATTERN.FLASHYELLOW);
+     * }
+     * else
+     * {
+     * //cone mode is selected
+     * if (RobotContainer.limelight_high.isTargetPresent()==1.0)
+     * setPattern(LED_PATTERN.SOLIDVIOLET);
+     * else
+     * setPattern(LED_PATTERN.FLASHVIOLET);
+     * }
+     */
 
-   //Working????
-    //System.out.println("************************LED COMAND************************************************************");
-
-    //RobotContainer.LEDStrip.setPattern(LED_PATTERN.TEST);
-    // If yes YAY if no heh have fun fixing
   }
 
   public enum LED_PATTERN {
     OFF,
-    REDBALL,
-    BLUEBALL,
-    HUB,
     LOWBATTERY,
-    DISCO,
-    TEST
+    TEST,
+    SOLIDYELLOW,
+    FLASHYELLOW,
+    SOLIDVIOLET,
+    FLASHVIOLET,
+    STROBEBLUE,
+    HEARTBEATRED
   };
 
   // sets pattern of LED strip
   /**
    * SET
+   * 
    * @param pattern
    */
-  public void setPattern(LED_PATTERN pattern)
-  {
+  public void setPattern(LED_PATTERN pattern) {
     switch (pattern) {
       case OFF:
-        led.setSpeed(0.99);    // black
-      break;
-      case REDBALL:
-        led.setSpeed(-0.11);   // strobe red
-      break;
-      case BLUEBALL:
-        led.setSpeed(-0.09);   // strobe blue
-      break;
-      case HUB:
-        led.setSpeed(-0.07);   // strobe red
-      break;
+        led.setSpeed(0.99); // black
+        break;
       case LOWBATTERY:
-        led.setSpeed(0.91);    // solid purple
-      break;
-      case DISCO:
-        led.setSpeed(-0.45);   // color wave - rainbow
-      break;
+        led.setSpeed(0.91); // solid purple
+        break;
+      case SOLIDYELLOW:
+        led.setSpeed(0.69);
+        break;
+      case FLASHYELLOW:
+        led.setSpeed(-0.07);
+        break;
+      case SOLIDVIOLET:
+        led.setSpeed(0.89);
+        break;
+      case FLASHVIOLET:
+        led.setSpeed(-0.09);
+        break;
+      case STROBEBLUE:
+        led.setSpeed(-0.09);
+        break;
+      case HEARTBEATRED:
+        led.setSpeed(-0.25);
       case TEST:
         led.setSpeed(-0.35);
-      break;
+        break;
 
     }
-    
-  }
 
+  }
 
 }

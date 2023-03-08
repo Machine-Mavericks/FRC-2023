@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
-import frc.robot.commands.DrivetoFieldPose;
 import frc.robot.commands.DrivetoRelativePose;
-import frc.robot.subsystems.LEDBlinkin.LED_PATTERN;
+import frc.robot.commands.SemiAutonomous.AutoBalance;
+
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -23,14 +23,15 @@ public class CoopCubePath extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-    //new AutoDelayCommand(),
 
-    // This ection currently being worked on (a work in progress)
+    // This section currently being worked on (a work in progress)
     // commented out so robot will not run unexpectedly
-    /* 
-
+  
     // enable arm, and lift to stow position
     new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
+
+    // switch arm to fast control mode
+    new InstantCommand(() -> RobotContainer.arm.EnableFast(true)),
     
     // move arm back to drop off cube
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
@@ -42,7 +43,7 @@ public class CoopCubePath extends SequentialCommandGroup {
     new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
 
     // delay for gripper to open
-    new DelayCommand(0.25),
+    new DelayCommand(0.35),
     
     // close gripper
     new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
@@ -50,19 +51,35 @@ public class CoopCubePath extends SequentialCommandGroup {
     // delay for gripper to close
     new DelayCommand(0.40),
 
-    // move arm to stow position
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG)),
+    // move arm to stow position - 25deg  (aka 'forward position' but inside robot bumper)
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG-25.0)),
 
     // delay for arm to get to stow
     new DelayCommand(1.5),
 
+    // ensure arm is stowed before it is allow to begin moving over charge station
+    new SafetyCheckStowPosition(),
+
     // drive straight ahead over charge station by 6m
-    new DrivetoRelativePose(new Pose2d(5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
+    new DrivetoRelativePose(new Pose2d(2.5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
     
     // drive straight back onto charge station
-    new DrivetoRelativePose(new Pose2d(-3, 0, new Rotation2d(0.0)),1.0,0.1, 30.0)
+    //new DrivetoRelativePose(new Pose2d(-1.7, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
 
-    */
+
+    // drive straight ahead over charge station by 6m
+    //new DrivetoRelativePose(new Pose2d(5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
+        
+    // drive straight back onto charge station
+    //new DrivetoRelativePose(new Pose2d(-1.7, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),//
+
+
+    // balance
+    new AutoBalance()
+    
+
+
+    
     );
     
     

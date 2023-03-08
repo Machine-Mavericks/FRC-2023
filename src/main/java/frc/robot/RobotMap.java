@@ -47,30 +47,30 @@ public class RobotMap {
     /**
      * Inner class to hold RoboRIO I/O connection constants
      */
-    private static class RIO {
+  public static class RIO {
         /** Pin of DIO connection 1 */
-        private static final int DIO_1 = 0;
+        public static final int DIO_1 = 0;
         /** Pin of DIO connection 2 */
-        private static final int DIO_2 = 1;
+        public static final int DIO_2 = 1;
 
         /** Pin of Analog Input connection 1 */
-        private static final int ANALOG_1 = 0;
+        public static final int ANALOG_1 = 0;
         
         /** CAN ID of left talon 1. */
-        private static final int LEFT_CONTROLLER_1 = 0;
+        public static final int LEFT_CONTROLLER_1 = 0;
         /** CAN ID of left talon 2. */
-        private static final int LEFT_CONTROLLER_2 = 1;
+        public static final int LEFT_CONTROLLER_2 = 1;
         
         /** CAN ID of right talon 1. */
-        private static final int RIGHT_CONTROLLER_1 = 2;
+        public static final int RIGHT_CONTROLLER_1 = 2;
         /** CAN ID of right talon 2. */
-        private static final int RIGHT_CONTROLLER_2 = 3;
+        public static final int RIGHT_CONTROLLER_2 = 3;
     }
 //LED's
     public static class PWMPorts {
         /** PWM Port for led strip */
         //public static final int LED_STRIP1 = 0;
-        public static final int LED_BLINKIN = 3;
+        public static final int LED_BLINKIN = 0;
     } 
 
 }

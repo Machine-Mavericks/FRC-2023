@@ -40,8 +40,8 @@ public class ManualDriveCommand extends CommandBase {
     double maxAccel = RobotContainer.swervedrive.getMaxAccel();
 
     // check - ensure maxAccel is resonable value to ensure robot can slow down in reasonable time
-    if (maxAccel < 5.0)
-      maxAccel = 5.0;
+    if (maxAccel < 7.0)
+      maxAccel = 7.0;
 
     // max rate of change of speed
     double MaxChange = 0.02*maxAccel;
@@ -49,16 +49,11 @@ public class ManualDriveCommand extends CommandBase {
     // get joystick drive inputs - use methods in OI module to get inputs
     
     // get go fast/slow speed factor from joystick trigger
-    double speedfactor = OI.getGoFast();
-    if (speedfactor < 0.5)
-      speedfactor = 0.5;
-    else if (speedfactor >0.5)
-      speedfactor = 1.0;
 
 
-    double inputdX = OI.getXDriveInput()*speedfactor;
-    double inputdY = OI.getYDriveInput()*speedfactor;;
-    double inputomega = OI.getRotateDriveInput()*0.5*speedfactor;;
+    double inputdX = OI.getXDriveInput();
+    double inputdY = OI.getYDriveInput();
+    double inputomega = OI.getRotateDriveInput()*0.5;
     boolean Park = OI.DriverButtons.park_Button.getAsBoolean();
     
     // implement dead-zoning of joystick inputs
@@ -67,9 +62,29 @@ public class ManualDriveCommand extends CommandBase {
     inputomega = Math.abs(inputomega) > 0.05 ? inputomega : 0;
 
     // determine desired speeds
-    double dX = inputdX*maxSpeed;
-    double dY = inputdY*maxSpeed;
-    double omega = -inputomega*5.0*RobotContainer.swervedrive.getMaxRotateSpeed();
+    double dX = 0.0, dY=0.0, omega =0.0;
+    
+    double speedfactor = OI.getGoFast();
+    
+    // override go fast if arm is not stowed. Force slow mode
+    if (RobotContainer.arm.GetArmPosition() < 115.0 || RobotContainer.arm.GetArmPosition() > 150.0)
+      speedfactor = 0.0;
+
+    if (speedfactor < 0.5)
+     {
+      dX = 0.5*inputdX;
+      dY = 0.5*inputdY;
+      omega = -inputomega*2.0;
+     }
+    else if (speedfactor >0.5)
+    {
+      dX = 4.0*inputdX*maxSpeed;
+      dY = 4.0*inputdY*maxSpeed;
+      omega = -inputomega*7.5*RobotContainer.swervedrive.getMaxRotateSpeed();
+    }
+    
+    // determine desired speeds
+    
 
     
     // --------- Correct robot angle for gyro angle wander --------

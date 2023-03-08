@@ -66,7 +66,7 @@ public class AutoPathSelect extends SubsystemBase {
 
         // add autonomous commands to page -
         m_autonomousPath.addOption("Co-op Cube Path",0);
-        m_autonomousPath.addOption("Two Cones Path",1);
+        m_autonomousPath.addOption("Left Path",1);
         m_autonomousPath.addOption("Right Path", 2);
         m_autonomousPath.setDefaultOption("Co-op Cube Path", 0);
 

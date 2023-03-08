@@ -67,8 +67,19 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    
+    // Reset gyro
+    RobotContainer.gyro.resetGyro();
+    //RobotContainer.gyro2.resetGyro();
+
+    // Reset swerve drive encoders
+    RobotContainer.swervedrive.ResetSteerEncoders();
+    
+    // Reset odometry
+    RobotContainer.swerveodometry.InitializetoZero();
+
+    // schedule the autonomous command
     m_autonomousCommand = RobotContainer.getAutonomousCommand();
-    // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -90,20 +101,24 @@ public class Robot extends TimedRobot {
     RobotContainer.swervedrive.ResetSteerEncoders();
 
     // set AprilTags camera pipeline to 0
-    RobotContainer.limelight_tags_main.setPipeline(0);
+    RobotContainer.limelight_med.setPipeline(0);
     
     // Reset odometry
     RobotContainer.swerveodometry.InitializetoZero();
-    RobotContainer.poseestimator.InitializetoZero();
+
+    // enable arm
+    RobotContainer.arm.SetEnableArm(true);
 
     // set default swerve drive command to manual drive mode
     RobotContainer.swervedrive.setDefaultCommand(new ManualDriveCommand());
 
+    // set arm to normal speed
+    RobotContainer.arm.EnableFast(false);
+
     // set default arm command to manual speed
     RobotContainer.arm.setDefaultCommand(new ManualArmSpeed());
 
-
-        // This makes sure that the autonomous stops running when
+    // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.

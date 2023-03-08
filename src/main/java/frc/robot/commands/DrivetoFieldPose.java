@@ -80,7 +80,7 @@ public class DrivetoFieldPose extends CommandBase {
   public void execute() {
   
     // get current position estimate from estimator
-    Pose2d pose = RobotContainer.poseestimator.getPose2d();
+    Pose2d pose = new Pose2d(); //= RobotContainer.poseestimator.getPose2d();
 
     // only integrate errors in within 10cm or 5deg of target
     if (Math.abs(m_target.getX() - pose.getX())<0.10)
@@ -129,7 +129,7 @@ public class DrivetoFieldPose extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    Pose2d CurrentPosition = RobotContainer.poseestimator.getPose2d();
+    Pose2d CurrentPosition = new Pose2d(); //= RobotContainer.poseestimator.getPose2d();
 
     // we are finished if we are within erorr of target or command had timeed out
     return (((Math.abs(m_target.getX() - CurrentPosition.getX()) <  m_positiontolerance) &&
