@@ -97,7 +97,7 @@ public class DriveToConeDropOff extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((m_camerapipeline==0 && m_targetarea_filtered > 0.20) ||
-            (m_camerapipeline==1 && m_targetarea_filtered > 0.32));   // 0.52 is good! keep   
+    return ((m_camerapipeline==0 && m_targetarea_filtered > 0.30) || // 0.20
+            (m_camerapipeline==1 && m_targetarea_filtered > 0.52));   // 0.52 is good! keep    0.32
   }
 }
