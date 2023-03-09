@@ -45,7 +45,7 @@ public class ManualDriveCommand extends CommandBase {
 
     // max rate of change of speed
     double MaxChange = 0.02*maxAccel;
-    double MaxChangeDecel = 1.2*MaxChange;
+    double MaxChangeDecel = MaxChange;
 
     // get joystick drive inputs - use methods in OI module to get inputs
     
