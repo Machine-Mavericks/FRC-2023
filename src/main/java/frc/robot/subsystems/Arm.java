@@ -104,7 +104,7 @@ public class Arm extends SubsystemBase {
   public static final double LOW_DEG = 107;
   public static final double STOW_DEG = 150;  // was 120
   public static final double MID_DEG = 198;
-  public static final double PICKUP_SHELF_DEG = 202;
+  public static final double PICKUP_SHELF_DEG = 206;
   public static final double HIGH_DEG = 248;
 
 
