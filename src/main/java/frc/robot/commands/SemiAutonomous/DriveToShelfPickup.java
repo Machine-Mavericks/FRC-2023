@@ -63,12 +63,12 @@ public class DriveToShelfPickup extends CommandBase {
     if (RobotContainer.limelight_high.isTargetPresent())
     {
       ySpeed = m_yController.calculate( RobotContainer.limelight_high.getHorizontalTargetOffsetAngle());
-      //m_targetdist_filtered = 0.93*m_targetdist_filtered + 0.07*dist;
-      m_targetdist_filtered = dist;
+      m_targetdist_filtered = 0.93*m_targetdist_filtered + 0.07*dist;
+      //m_targetdist_filtered = dist;
     }
     else
     {
-      m_targetdist_filtered = 0.93*m_targetdist_filtered;
+      //m_targetdist_filtered = 0.93*m_targetdist_filtered;
       ySpeed = m_yController.calculate( 0.0);
     }
 
