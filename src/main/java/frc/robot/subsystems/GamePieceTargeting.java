@@ -82,7 +82,7 @@ public class GamePieceTargeting extends SubsystemBase {
   // -----------  Generic Target Functions ----- //
 
   public boolean isTarget(){
-    if (m_gamepiececamera.isTargetPresent() == 0) { return false; }
+    if (m_gamepiececamera.isTargetPresent()) { return false; }
     else { return true; }
   }
 

@@ -45,6 +45,7 @@ public class ManualDriveCommand extends CommandBase {
 
     // max rate of change of speed
     double MaxChange = 0.02*maxAccel;
+    double MaxChangeDecel = 0.6*MaxChange;
 
     // get joystick drive inputs - use methods in OI module to get inputs
     
@@ -70,16 +71,17 @@ public class ManualDriveCommand extends CommandBase {
     if (RobotContainer.arm.GetArmPosition() < 115.0 || RobotContainer.arm.GetArmPosition() > 150.0)
       speedfactor = 0.0;
 
-    if (speedfactor < 0.5)
+
+    if (speedfactor < 0.01)
      {
       dX = 0.5*inputdX;
       dY = 0.5*inputdY;
       omega = -inputomega*2.0;
      }
-    else if (speedfactor >0.5)
+    if (speedfactor >0.01)
     {
-      dX = 4.0*inputdX*maxSpeed;
-      dY = 4.0*inputdY*maxSpeed;
+      dX = 0.5*inputdX + 4.0*inputdX*maxSpeed*speedfactor; // was 4.0*inputdX*maxSpeed
+      dY = 0.5*inputdY + 4.0*inputdY*maxSpeed*speedfactor; // was 4.0*inputdY*maxSpeed
       omega = -inputomega*7.5*RobotContainer.swervedrive.getMaxRotateSpeed();
     }
     
@@ -121,13 +123,13 @@ public class ManualDriveCommand extends CommandBase {
     // apply acceleration limit to drive
     if ((dX - prevdX) > MaxChange)
       dX = prevdX + MaxChange;
-    else if ((dX - prevdX) < (-MaxChange))
-      dX = prevdX - MaxChange;
+    else if ((dX - prevdX) < (-MaxChangeDecel))
+      dX = prevdX - MaxChangeDecel;
     
     if ((dY - prevdY) > MaxChange)
       dY = prevdY + MaxChange;
-    else if ((dY - prevdY) < (-MaxChange))
-      dY = prevdY - MaxChange;
+    else if ((dY - prevdY) < (-MaxChangeDecel))
+      dY = prevdY - MaxChangeDecel;
 
     // command robot to drive
     // swap x, y, omega as necessary to get robot driving with desired axes

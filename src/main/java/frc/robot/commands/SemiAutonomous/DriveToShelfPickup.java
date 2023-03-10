@@ -60,10 +60,11 @@ public class DriveToShelfPickup extends CommandBase {
 
     // assume sideways speed is 0 unless target is detected in camera
     double ySpeed =0.0;
-    if (RobotContainer.limelight_high.isTargetPresent()==1.0)
+    if (RobotContainer.limelight_high.isTargetPresent())
     {
       ySpeed = m_yController.calculate( RobotContainer.limelight_high.getHorizontalTargetOffsetAngle());
-      m_targetdist_filtered = 0.93*m_targetdist_filtered + 0.07*dist;
+      //m_targetdist_filtered = 0.93*m_targetdist_filtered + 0.07*dist;
+      m_targetdist_filtered = dist;
     }
     else
     {
@@ -97,6 +98,6 @@ public class DriveToShelfPickup extends CommandBase {
   public boolean isFinished() {
     // command finishes when sensor voltage >1.45V (closer than ~20cm from target)
     //return (m_targetdist_filtered >1.45);  
-    return (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(1.45) ); 
+    return (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(2.22) ); 
   }
 }

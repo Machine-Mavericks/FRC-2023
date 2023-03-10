@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
+import frc.robot.subsystems.Arm;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -19,7 +20,7 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
     addCommands(
        // move arm back to drop off cone
     //new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.MID_DEG)),
-   new InstantCommand(() -> RobotContainer.arm.SetArmPosition(208.0)),
+   new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)), // was 208.0
 
     // change camera pipeline
     new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(1)),
