@@ -23,25 +23,15 @@ public class FloorPickup extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LEDBlinkin.LED_PATTERN.HEARTBEATRED)),
-      new SetArmPosition(Arm.PICKUP_DEG));
-     if (RobotContainer.gamepiecetargeting.isTarget()){
-      addCommands(
-          new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open))
-      );
-      double xdif = Math.abs(RobotContainer.gamepiecetargeting.getTargetHorAngle()+4);
-      while (xdif > 1.0){
-        addCommands(
-          new InstantCommand(() -> RobotContainer.swervedrive.drive(0.01*xdif, 0, 0, false, false))
-        );
-      }
-      if (RobotContainer.gamepiecetargeting.getGamePieceDistance() > 13.0){
-        addCommands(
-          new InstantCommand(() -> RobotContainer.swervedrive.drive(0, 0.2, 0, false, false)),
-          new DelayCommand(1),
-          new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
-          new SetArmPosition(Arm.STOW_DEG)
-        );
-      }
-     }
+      new SetArmPosition(Arm.PICKUP_DEG+4),
+      new DelayCommand(2),
+      new DelayIfNoTarget(),
+      new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
+      // new CenterOnTarget(),
+      new FloorDriveUp(),
+      new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
+      new SetArmPosition(Arm.STOW_DEG),  
+      new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LEDBlinkin.LED_PATTERN.OFF)) 
+    );
   }
 }
