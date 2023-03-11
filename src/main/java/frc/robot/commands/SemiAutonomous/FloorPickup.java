@@ -19,11 +19,11 @@ public class FloorPickup extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     
-
+    addCommands(
+      new SetArmPosition(Arm.LOW_DEG));
      if (RobotContainer.gamepiecetargeting.isTarget()){
-        addCommands(
+      addCommands(
           // center on target (depends on camera mount) use gamepiecetargeting.getHorizontalTargetOffset (neccessary?)
-          new SetArmPosition(Arm.LOW_DEG),
           new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
           // drive towards the cone until it reaches a  certain gamepiecetargeting.getGamepieceDistance v
           //new DrivetoPickupTarget(),
