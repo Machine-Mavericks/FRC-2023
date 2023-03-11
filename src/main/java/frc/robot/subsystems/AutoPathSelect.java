@@ -71,7 +71,7 @@ public class AutoPathSelect extends SubsystemBase {
         m_autonomousPath.setDefaultOption("Co-op Cube Path", 0);
 
         tab.add("Preround Paths", m_autonomousPath).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 0).withSize(2,1);
-        m_delayTime = tab.add("Auto Delay Time", 0).withWidget(BuiltInWidgets.kNumberSlider).withPosition(0, 1).withSize(1, 1).withProperties(Map.of("min", 0, "max", 10)).getEntry();
+        m_delayTime = tab.add("Auto Delay Time", 0).withWidget(BuiltInWidgets.kNumberSlider).withPosition(0, 1).withSize(1, 1).withProperties(Map.of("min", 0, "max", 15)).getEntry();
 
               
         // add match time remaining in autonomous/teleop part of match (seconds)
