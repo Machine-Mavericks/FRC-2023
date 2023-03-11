@@ -90,7 +90,7 @@ public class Grabber extends SubsystemBase {
     // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
     AnalogInput.setGlobalSampleRate(250000.0);
     m_sensor = new AnalogInput(0);
-    m_sensor.setOversampleBits(6);
+    m_sensor.setOversampleBits(5);
   }
 
   // This method will be called once per scheduler run
@@ -117,7 +117,7 @@ public class Grabber extends SubsystemBase {
       }
       else
       {
-        if (t <0.60)
+        if (t <0.75)
           m_PIDController.setReference(-GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
         else
           { m_PIDController.setIAccum(0.0); m_motor.setVoltage(0);  }
@@ -130,13 +130,6 @@ public class Grabber extends SubsystemBase {
 
   }
 
-  // function to filter distance sensor at 200Hz
-  public void periodic_200Hz()
-  {
-
-
-
-  }
 
   // -------------------- Open / Close Methods --------------------
 
@@ -202,11 +195,11 @@ public class Grabber extends SubsystemBase {
     m_MotorSpeed = l1.add("Speed(rpm)", 0.0).getEntry();
     m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
     
-    m_Volts = Tab.addPersistent("Volts", 1.45)
+    m_Volts = Tab.addPersistent("Volts", 1.50)
     .withPosition(3, 0)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 1.25, "max", 1.75))
+    .withProperties(Map.of("min", 0.00, "max", 2.5))
     .getEntry();
 
   }

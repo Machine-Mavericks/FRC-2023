@@ -12,11 +12,20 @@ public class DriveToShelfPickup extends CommandBase {
     // y PID controllers to get us to the intended destination
     private PIDController m_yController; 
   
-    // maximum speed
-    private double m_maxspeed;
+    // maximum drive speed to use during command (m/s)
+    private double m_maxspeed = 0.8;
 
-    // target distance - low pass filtered
+    // target distance - low-pass filtered
     private double m_targetdist_filtered;
+
+    // camera target angle - low-pass filtered
+    private double m_targetangle_filtered;
+
+    // target longitudinal speed
+    private double m_targetxSpeed;
+
+    // current speed to move forward at
+    private double xSpeed;
 
   /** Creates a new DriveToShelfPickup. */
   public DriveToShelfPickup() {
@@ -31,56 +40,72 @@ public class DriveToShelfPickup extends CommandBase {
   public void initialize() {
 
     // set up PIDs
-    m_yController = new PIDController(0.05, 0.00, 0.0);
+    m_yController = new PIDController(0.02, 0.01, 0.0);
 
     // change pipeline of high camera
     // use #1 for left object, use #2 for right object-side
     //if (RobotContainer.targetselector.IsPickupRightSide())
-      RobotContainer.limelight_high.setPipeline(0);
+    RobotContainer.limelight_high.setPipeline(0);
     //else
-    //  RobotContainer.limelight_high.setPipeline(2);
+    //  RobotContainer.limelight_high.setPipeline(1);
 
-   // set maximum speed used during this command
-    m_maxspeed = 0.45;   // was 0.25 @0.35V
-
+    // reset filtered values
     m_targetdist_filtered = 0.0;
+    m_targetangle_filtered = 0.0;
+
+    // reset target x speed
+    m_targetxSpeed = 0.7;
+
+    // reset [initial] forward speed
+    xSpeed = m_targetxSpeed;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    // forward speed
-    double xSpeed = 0.4;
-
-    // get sensor distance - limit to 40cm
+    // get distance sensor reading (in volts) and low pass filter it
     double dist = RobotContainer.grabber.GetSensorDistance();
-    //if (dist > 400.0)
-    //  dist = 400.0;
-
-    // assume sideways speed is 0 unless target is detected in camera
-    double ySpeed =0.0;
+    m_targetdist_filtered = 0.8*m_targetdist_filtered + 0.2*dist;
+    
+    // low pass filter camera target
+    // note: camera filter corner frequency must be sufficiently low to filter out natural wobble frequency of arm (with camera on it)
     if (RobotContainer.limelight_high.isTargetPresent()==1.0)
     {
-      ySpeed = m_yController.calculate( RobotContainer.limelight_high.getHorizontalTargetOffsetAngle());
-      m_targetdist_filtered = 0.93*m_targetdist_filtered + 0.07*dist;
+      m_targetangle_filtered = 0.95*m_targetangle_filtered + 0.05*RobotContainer.limelight_high.getHorizontalTargetOffsetAngle();
     }
     else
     {
-      m_targetdist_filtered = 0.93*m_targetdist_filtered;
-      ySpeed = m_yController.calculate( 0.0);
+      m_targetangle_filtered = 0.95*m_targetangle_filtered;
     }
-
+    
+    // determine lateral speed to get on path - determined by PID controller
+    double ySpeed = m_yController.calculate(m_targetangle_filtered);
+    
     // limit x and y speeds
-      if (xSpeed > m_maxspeed)
+    if (xSpeed > m_maxspeed)
       xSpeed = m_maxspeed;
     if (xSpeed < -m_maxspeed)
       xSpeed = -m_maxspeed;
-    if (ySpeed > m_maxspeed)
-      ySpeed = m_maxspeed; 
-    if (ySpeed < -m_maxspeed)
-      ySpeed = -m_maxspeed;  
-      
+    if (ySpeed > 0.5)
+      ySpeed = 0.5; 
+    if (ySpeed < -0.5)
+      ySpeed = -0.5;  
+    
+
+    // have we reached point (indicated by sensor) where we need to slow down to a stop?
+    // deceleration used to reduce unintended longitudinal movement of arm when robot stops to pick up cone
+    if (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(1.50))
+      m_targetxSpeed = 0;
+
+   
+    // if we are to decelerate, then reduce speed in controlled fashion (limit deceleration) until robot is stopped
+    if (xSpeed > m_targetxSpeed)
+      { xSpeed = xSpeed - 0.05;
+        if (xSpeed < 0.0)
+          xSpeed = 0.0;
+      }
+
     // drive robot according to x,y,rot PID controller speeds
     RobotContainer.swervedrive.drive(xSpeed, ySpeed, 0.0, false, false);  
   }
@@ -95,8 +120,7 @@ public class DriveToShelfPickup extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // command finishes when sensor voltage >1.45V (closer than ~20cm from target)
-    //return (m_targetdist_filtered >1.45);  
-    return (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(1.45) ); 
+    // we are finished command when robot has detected destination, and then finished decelerating to 0m/s speed
+    return (xSpeed <=0.0);
   }
 }
