@@ -25,12 +25,11 @@ public class FloorPickup extends SequentialCommandGroup {
           // center on target (depends on camera mount) use gamepiecetargeting.getHorizontalTargetOffset
           new SetArmPosition(Arm.LOW_DEG),
           new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
-          // drive towards the cone until it reaches a  certain gamepiecetargeting.getGamepieceDistance
+          // drive towards the cone until it reaches a  certain gamepiecetargeting.getGamepieceDistance v
+          //new DrivetoPickupTarget(),
           new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
           new SetArmPosition(Arm.STOW_DEG)
         );
-     } else {
-        addCommands(null);
      }
   }
 }
