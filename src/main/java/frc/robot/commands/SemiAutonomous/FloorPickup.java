@@ -7,8 +7,10 @@ package frc.robot.commands.SemiAutonomous;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
+import frc.robot.commands.DelayCommand;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.subsystems.Arm;
+import java.lang.Math;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -20,16 +22,25 @@ public class FloorPickup extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     
     addCommands(
-      new SetArmPosition(Arm.LOW_DEG));
+      new SetArmPosition(Arm.PICKUP_DEG));
      if (RobotContainer.gamepiecetargeting.isTarget()){
       addCommands(
-          // center on target (depends on camera mount) use gamepiecetargeting.getHorizontalTargetOffset (neccessary?)
-          new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
-          // drive towards the cone until it reaches a  certain gamepiecetargeting.getGamepieceDistance v
-          //new DrivetoPickupTarget(),
+          new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open))
+      );
+      double xdif = Math.abs(RobotContainer.gamepiecetargeting.getTargetHorAngle()+4);
+      while (xdif > 1.0){
+        addCommands(
+          new InstantCommand(() -> RobotContainer.swervedrive.drive(0.01*xdif, 0, 0, false, false))
+        );
+      }
+      if (RobotContainer.gamepiecetargeting.getGamePieceDistance() > 13.0){
+        addCommands(
+          new InstantCommand(() -> RobotContainer.swervedrive.drive(0, 0.2, 0, false, false)),
+          new DelayCommand(1),
           new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
           new SetArmPosition(Arm.STOW_DEG)
         );
+      }
      }
   }
 }
