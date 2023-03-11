@@ -88,7 +88,7 @@ public class Grabber extends SubsystemBase {
     Disable();
 
     // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
-    AnalogInput.setGlobalSampleRate(250000.0);
+    //AnalogInput.setGlobalSampleRate(250000.0);
     m_sensor = new AnalogInput(0);
     m_sensor.setOversampleBits(5);
   }

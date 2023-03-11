@@ -31,6 +31,7 @@ import frc.robot.commands.Autonomous.TwoConesPath;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
 import frc.robot.commands.SemiAutonomous.DriveToConeDropOff;
 import frc.robot.commands.SemiAutonomous.DriveToShelfPickup;
+import frc.robot.commands.SemiAutonomous.FloorPickup;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoShelfPickup;
@@ -100,6 +101,7 @@ public class RobotContainer {
     OI.DriverButtons.DropoffHigh_Button.whileTrue(new SemiAutoConeDropOffHigh());
     OI.DriverButtons.DropoffMed_Button.whileTrue(new SemiAutoConeDropOffMed());
     OI.DriverButtons.auto_balance_Button.whileTrue(new AutoBalance());
+    OI.DriverButtons.AutoFloorPickupButton.whileTrue(new FloorPickup()); //double check this may be wrong and it might not be FloorPickup
     
 
     // arrm movement buttons

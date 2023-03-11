@@ -11,6 +11,7 @@ import frc.robot.commands.DelayCommand;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.subsystems.Arm;
 import java.lang.Math;
+import frc.robot.subsystems.LEDBlinkin;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -20,8 +21,8 @@ public class FloorPickup extends SequentialCommandGroup {
   public FloorPickup() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    
     addCommands(
+      new InstantCommand(() -> RobotContainer.LEDStrip.setPattern(LEDBlinkin.LED_PATTERN.HEARTBEATRED)),
       new SetArmPosition(Arm.PICKUP_DEG));
      if (RobotContainer.gamepiecetargeting.isTarget()){
       addCommands(
