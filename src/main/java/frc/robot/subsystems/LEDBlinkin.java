@@ -35,9 +35,9 @@ public class LEDBlinkin extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (RobotContainer.limelight_med.isTargetPresent() == 1.0)
+    if (RobotContainer.limelight_med.isTargetPresent())
       setPattern(LED_PATTERN.STROBEBLUE);
-    else if (RobotContainer.limelight_high.isTargetPresent() == 1.0)
+    else if (RobotContainer.limelight_high.isTargetPresent())
       setPattern(LED_PATTERN.FLASHYELLOW);
     else
       setPattern(LED_PATTERN.HEARTBEATRED);

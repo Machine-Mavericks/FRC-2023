@@ -55,10 +55,10 @@ public class SwerveDrive extends SubsystemBase {
 
   // theoretical maximum speed of drive (m/s)
   // = <Motor free speed RPM> / 60 / Drive Gear ratio * <Wheel diameter meters> * pi
-  // static final double MAX_VELOCITY_METERS_PER_SECOND = (6380.0 / 60.0) * (1.0 / DRIVE_RATIO) * WHEEL_DIAMETER_METERS * Math.PI;
+  static final double MAX_VELOCITY_METERS_PER_SECOND = (6380.0 / 60.0) * (1.0 / DRIVE_RATIO) * WHEEL_DIAMETER_METERS * Math.PI;
   
   // set temporary maximum speed for safe testing purposes (use 1.75 m/s)
-  static final double MAX_VELOCITY_METERS_PER_SECOND = 1.75;
+  //static final double MAX_VELOCITY_METERS_PER_SECOND = 1.75;
 
   // shuffboard entries - used to display swerve drive data
   private GenericEntry m_LFCanCoderPos;

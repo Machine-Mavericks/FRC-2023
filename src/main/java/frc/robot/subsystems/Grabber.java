@@ -201,7 +201,6 @@ public class Grabber extends SubsystemBase {
     .withWidget(BuiltInWidgets.kNumberSlider)
     .withProperties(Map.of("min", 0.00, "max", 2.5))
     .getEntry();
-
   }
 
 

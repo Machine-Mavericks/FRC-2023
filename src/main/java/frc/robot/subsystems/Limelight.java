@@ -170,8 +170,9 @@ public class Limelight extends SubsystemBase {
     }
   
     /** get whether target is currently detected or not, returns 0 or 1 */ 
-    public double isTargetPresent() {
-      return m_table.getEntry("tv").getDouble(0);
+    public boolean isTargetPresent() {
+      double temp = m_table.getEntry("tv").getDouble(0);
+      return (temp>0.05);
     }
   
     /** get target area atributes - 0 to 100% of image */
@@ -394,7 +395,7 @@ public class Limelight extends SubsystemBase {
     // update camera pipeline and target detected indicator
     m_Pipeline.setDouble(getPipeline());
 
-    m_TargetPresent.setBoolean(isTargetPresent()==1);
+    m_TargetPresent.setBoolean(isTargetPresent());
     m_AprilTagID.setDouble(getPrimAprilTagID());
     m_Distance.setDouble(getGamePieceDistance());
 

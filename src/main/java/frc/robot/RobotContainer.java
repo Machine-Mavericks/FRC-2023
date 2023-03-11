@@ -107,6 +107,7 @@ public class RobotContainer {
     OI.OperatorButtons.mid_Button.onTrue(new SetArmPosition(Arm.MID_DEG));
     OI.OperatorButtons.high_Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
     OI.OperatorButtons.stow_Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
+    OI.OperatorButtons.shelf_pickup_Button.onTrue(new SetArmPosition(Arm.PICKUP_SHELF_DEG));
 
     // grabber open/close
     OI.OperatorButtons.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));

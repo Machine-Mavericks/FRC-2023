@@ -70,7 +70,7 @@ public class DriveToShelfPickup extends CommandBase {
     
     // low pass filter camera target
     // note: camera filter corner frequency must be sufficiently low to filter out natural wobble frequency of arm (with camera on it)
-    if (RobotContainer.limelight_high.isTargetPresent()==1.0)
+    if (RobotContainer.limelight_high.isTargetPresent())
     {
       m_targetangle_filtered = 0.95*m_targetangle_filtered + 0.05*RobotContainer.limelight_high.getHorizontalTargetOffsetAngle();
     }
