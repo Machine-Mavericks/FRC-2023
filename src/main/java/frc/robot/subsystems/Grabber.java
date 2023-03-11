@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import java.util.Map;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.RobotMap;
 
@@ -24,17 +25,26 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_MotorCurrent; 
   private GenericEntry m_MotorVoltage;
   private GenericEntry m_GrabberPos;
+  private GenericEntry m_MotorSpeed;
   private GenericEntry m_SensorDistance;
   public GenericEntry m_Volts;
 
   // spark max motor
   private CANSparkMax m_motor;
+  private SparkMaxPIDController m_PIDController;
 
   // timer to use when open/closing grabber
   private Timer m_timer;
 
   // grabber motor disable
   private boolean m_enabled;
+
+  // grabber motor speed (rpm)
+  private double GrabberMotorSpeed = 6000.0;
+
+  // grabber motor current limit (amps) (must be integer value)
+  private int GrabberMotorCurrentLimitStall = 4;
+  private int GrabberMotorCurrentLimitFree = 4;
 
   // function to open and close gripper
   public enum GrabberPos {
@@ -44,7 +54,6 @@ public class Grabber extends SubsystemBase {
   GrabberPos m_targetPos;
 
   // create range sensor
-  //Rev2mDistanceSensor m_distsensor;
   AnalogInput m_sensor;
 
   /** Creates a new Grabber. */
@@ -54,10 +63,20 @@ public class Grabber extends SubsystemBase {
     initializeShuffleboard();
 
     // create revmax spark object, set factory defaults
-    m_motor = new CANSparkMax(RobotMap.CANID.GRABBER_MOTOR, MotorType.kBrushed);
+    m_motor = new CANSparkMax(RobotMap.CANID.GRABBER_MOTOR, MotorType.kBrushless);
     m_motor.restoreFactoryDefaults();
 
-    // set motor current limit (in amps)
+    // set motor current limit - stall limit, free limit (in amps)
+    m_motor.setSmartCurrentLimit(GrabberMotorCurrentLimitStall, GrabberMotorCurrentLimitFree);
+
+    // set motor PID controller gains
+    m_PIDController = m_motor.getPIDController();
+    m_PIDController.setP(0.0001);
+    m_PIDController.setI(0.0000001);
+    m_PIDController.setIMaxAccum(0.05, 0);
+
+
+    // initially turn off motor
     m_motor.setVoltage(0);
     m_motor.stopMotor();
 
@@ -68,11 +87,10 @@ public class Grabber extends SubsystemBase {
 
     Disable();
 
-    // set up range sensor, set for mm measurement, and enable
-    //m_distsensor = new Rev2mDistanceSensor(Port.kOnboard);
-    //m__distsensor.setDistanceUnits(Unit.kMillimeters);
-    //m_distsensor.setAutomaticMode(true);
+    // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
+    AnalogInput.setGlobalSampleRate(250000.0);
     m_sensor = new AnalogInput(0);
+    m_sensor.setOversampleBits(6);
   }
 
   // This method will be called once per scheduler run
@@ -84,31 +102,39 @@ public class Grabber extends SubsystemBase {
 
     // get time into mode
     double t = m_timer.get();
-
+    
     // if motor is enabled, then set voltage according to mode
     if (m_enabled)
     {
       // control motor based on target position
       if (m_targetPos==GrabberPos.Close)
       {
-        // if motor is in close mode, apply full effort for 0.8s, after which, reduce to 0V
-        if (t <2.0)
-          m_motor.setVoltage(-12.0);
+        // if motor is in close mode, apply full effort for limited time, after which, reduce to 0V
+        if (t <1.2)
+          m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
         else
-        m_motor.setVoltage(0.0);
+          { m_PIDController.setIAccum(0.0); m_motor.setVoltage(0);  }
       }
       else
       {
-        if (t <1.0)
-          m_motor.setVoltage(12.0);
+        if (t <0.60)
+          m_PIDController.setReference(-GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
         else
-          m_motor.setVoltage(0);
+          { m_PIDController.setIAccum(0.0); m_motor.setVoltage(0);  }
       }
     }
 
     else
       // we are disabled - turn motor off
       m_motor.setVoltage(0.0);
+
+  }
+
+  // function to filter distance sensor at 200Hz
+  public void periodic_200Hz()
+  {
+
+
 
   }
 
@@ -154,11 +180,7 @@ public class Grabber extends SubsystemBase {
   // returns voltage of GP2Y0A41SK0F sensor
   public double GetSensorDistance()
   {
-    return m_sensor.getVoltage();
-    //if (m_distsensor.isRangeValid())
-    //  return m_distsensor.GetRange();
-    //else
-    //  return 9999.0;
+    return m_sensor.getAverageVoltage();
   }
 
 
@@ -175,8 +197,9 @@ public class Grabber extends SubsystemBase {
     l1.withPosition(2, 0);
     l1.withSize(1, 4);
     m_GrabberPos= l1.add("Grabber Pos", 0.0).getEntry();
-    m_MotorCurrent = l1.add("Current", 0.0).getEntry(); 
-    m_MotorVoltage = l1.add("Applied Out", 0.0).getEntry();
+    m_MotorCurrent = l1.add("Current(A)", 0.0).getEntry(); 
+    m_MotorVoltage = l1.add("Volts(V)", 0.0).getEntry();
+    m_MotorSpeed = l1.add("Speed(rpm)", 0.0).getEntry();
     m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
     
     m_Volts = Tab.addPersistent("Volts", 1.45)
@@ -185,26 +208,25 @@ public class Grabber extends SubsystemBase {
     .withWidget(BuiltInWidgets.kNumberSlider)
     .withProperties(Map.of("min", 1.25, "max", 1.75))
     .getEntry();
-  
+
   }
 
- int ken = 0;
 
-    /** Update subsystem shuffle board page with current odometry values */
-    private void updateShuffleboard() {
-      // update gripper position
-      if (m_targetPos==GrabberPos.Open)
-        m_GrabberPos.setDouble(0.0);
-      else
-        m_GrabberPos.setDouble(1.0);
+  /** Update subsystem shuffle board page with current odometry values */
+  private void updateShuffleboard() {
+    // update gripper position
+    if (m_targetPos==GrabberPos.Open)
+       m_GrabberPos.setDouble(0.0);
+    else
+       m_GrabberPos.setDouble(1.0);
     
-      // update motor voltage and current
-      m_MotorCurrent.setDouble(m_motor.getOutputCurrent());
-      m_MotorVoltage.setDouble(m_motor.getAppliedOutput()*12.0);
+    // update motor voltage and current
+    m_MotorCurrent.setDouble(m_motor.getOutputCurrent());
+    m_MotorVoltage.setDouble(m_motor.getAppliedOutput()*12.0);
+    m_MotorSpeed.setDouble(m_motor.getEncoder().getVelocity());
 
-      // update distance
-      m_SensorDistance.setDouble(GetSensorDistance());
-    }
-
+    // update distance
+    m_SensorDistance.setDouble(GetSensorDistance());
+  }
 
 }
