@@ -150,7 +150,7 @@ public class SwervePoseEstimator extends SubsystemBase {
 
     } */
     
-    if (RobotContainer.limelight_med.isTargetPresent()==1) 
+    if (RobotContainer.limelight_med.isTargetPresent()) 
     {
       Pose3d ken;
       if (DriverStation.getAlliance() == Alliance.Blue)

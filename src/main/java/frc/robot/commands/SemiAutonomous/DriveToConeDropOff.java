@@ -58,7 +58,7 @@ public class DriveToConeDropOff extends CommandBase {
 
      // assume sideways speed is 0 unless target is detected in camera
      double ySpeed =0.0;
-     if (RobotContainer.limelight_med.isTargetPresent()==1.0)
+     if (RobotContainer.limelight_med.isTargetPresent())
      {
        ySpeed = m_yController.calculate( RobotContainer.limelight_med.getHorizontalTargetOffsetAngle());
      }
@@ -81,7 +81,7 @@ public class DriveToConeDropOff extends CommandBase {
      RobotContainer.swervedrive.drive(xSpeed, ySpeed, 0.0, false, false); 
 
      // update target area
-     if (RobotContainer.limelight_med.isTargetPresent()==1.0)
+     if (RobotContainer.limelight_med.isTargetPresent())
       m_targetarea_filtered = 0.95*m_targetarea_filtered+ 0.05*RobotContainer.limelight_med.getTargetArea();
      else
       m_targetarea_filtered = 0.95*m_targetarea_filtered;
@@ -97,7 +97,7 @@ public class DriveToConeDropOff extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((m_camerapipeline==0 && m_targetarea_filtered > 0.20) ||
-            (m_camerapipeline==1 && m_targetarea_filtered > 0.32));   // 0.52 is good! keep   
+    return ((m_camerapipeline==0 && m_targetarea_filtered > 0.30) || // 0.20
+            (m_camerapipeline==1 && m_targetarea_filtered > 0.52));   // 0.52 is good! keep    0.32
   }
 }
