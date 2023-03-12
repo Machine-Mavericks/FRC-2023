@@ -112,8 +112,15 @@ public class Grabber extends SubsystemBase {
         // if motor is in close mode, apply full effort for limited time, after which, reduce to 0V
         if (t <1.2)
           m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
-        else
-          { m_PIDController.setIAccum(0.0); m_motor.setVoltage(0);  }
+        else { 
+          // pulse gripper at 1Hz, 10% duty cycle to keep firm grip on cone
+          if (((t-1.2)%1.0)<=0.1){
+            m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
+          } else {
+            m_PIDController.setIAccum(0.0);
+            m_motor.setVoltage(0); 
+          } 
+        }
       }
       else
       {
