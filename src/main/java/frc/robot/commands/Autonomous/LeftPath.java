@@ -25,11 +25,14 @@ public class LeftPath extends SequentialCommandGroup {
     // enable arm, and lift to stow position
     new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
 
+    // switch arm to fast control mode
+    new InstantCommand(() -> RobotContainer.arm.EnableFast(true)),
+
     // move arm back to drop off cube
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
 
     // delay until arm gets back
-    new DelayCommand(2.0),
+    new DelayCommand(1.5),
 
     // open gripper
     new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
@@ -56,7 +59,7 @@ public class LeftPath extends SequentialCommandGroup {
     new SafetyCheckStowPosition(),
 
     // drive straight ahead over charge station by 6m
-    new DrivetoRelativePose(new Pose2d(5.1, 0, new Rotation2d(0.0)),0.4,0.1, 10.0)
+    new DrivetoRelativePose(new Pose2d(5.1, 0, new Rotation2d(0.0)),1.2,0.1, 3.5)
     
     /**
      Drive forward
