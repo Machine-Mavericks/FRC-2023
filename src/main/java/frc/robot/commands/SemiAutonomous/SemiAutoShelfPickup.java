@@ -3,10 +3,9 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.SemiAutonomous;
-import frc.robot.subsystems.Arm;
-import frc.robot.RobotContainer;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
