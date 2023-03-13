@@ -19,6 +19,9 @@ public class DriveToConeDropOff extends CommandBase {
   // target distance - low pass filtered
   private double m_targetarea_filtered;
 
+  // target horizontal angle - low pass filtered
+  private double m_targethorangle_filtered;
+
   // pipeline to use
   private int m_camerapipeline;
 
@@ -35,7 +38,7 @@ public class DriveToConeDropOff extends CommandBase {
   @Override
   public void initialize() {
     // set up PIDs
-    m_yController = new PIDController(0.12, 0.00, 0.0);
+    m_yController = new PIDController(0.06, 0.00, 0.0);
 
     // change pipeline of high camera
     
@@ -45,6 +48,13 @@ public class DriveToConeDropOff extends CommandBase {
     m_maxspeed = 0.5; 
 
     m_targetarea_filtered = 0.0;
+
+    // initialize filtered horizontal target
+    if (RobotContainer.limelight_med.isTargetPresent())
+      m_targethorangle_filtered = RobotContainer.limelight_med.getHorizontalTargetOffsetAngle();
+    else
+      m_targethorangle_filtered = 0.0;
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,19 +64,21 @@ public class DriveToConeDropOff extends CommandBase {
      double xSpeed = 0.4;
 
      if (m_camerapipeline==1)
-      xSpeed = 0.2;
+      xSpeed = 0.4;
 
      // assume sideways speed is 0 unless target is detected in camera
      double ySpeed =0.0;
      if (RobotContainer.limelight_med.isTargetPresent())
      {
-       ySpeed = m_yController.calculate( RobotContainer.limelight_med.getHorizontalTargetOffsetAngle());
+        m_targethorangle_filtered =  0.85*m_targethorangle_filtered + 0.15*RobotContainer.limelight_med.getHorizontalTargetOffsetAngle();
      }
      else
      {
-       ySpeed = m_yController.calculate( 0.0);
+        m_targethorangle_filtered =  0.85*m_targethorangle_filtered;
      }
  
+     ySpeed = m_yController.calculate(m_targethorangle_filtered);
+
      // limit x and y speeds
        if (xSpeed > m_maxspeed)
        xSpeed = m_maxspeed;
@@ -97,7 +109,7 @@ public class DriveToConeDropOff extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((m_camerapipeline==0 && m_targetarea_filtered > 0.30) || // 0.20
-            (m_camerapipeline==1 && m_targetarea_filtered > 0.52));   // 0.52 is good! keep    0.32
+    return ((m_camerapipeline==0 && m_targetarea_filtered > RobotContainer.grabber.GetTargetAreaHigh()) ||   // 0.20
+            (m_camerapipeline==1 && m_targetarea_filtered > RobotContainer.grabber.GetTargetAreaMid()));   // 0.52 is good! keep    0.32
   }
 }

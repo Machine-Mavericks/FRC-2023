@@ -11,9 +11,10 @@ public class DriveToShelfPickup extends CommandBase {
   
     // y PID controllers to get us to the intended destination
     private PIDController m_yController; 
-  
+    //private PIDController m_omegaController;
+
     // maximum drive speed to use during command (m/s)
-    private double m_maxspeed = 0.8;
+    private double m_maxspeed = 1.4;
 
     // target distance - low-pass filtered
     private double m_targetdist_filtered;
@@ -40,7 +41,8 @@ public class DriveToShelfPickup extends CommandBase {
   public void initialize() {
 
     // set up PIDs
-    m_yController = new PIDController(0.02, 0.01, 0.0);
+    m_yController = new PIDController(0.03, 0.001, 0.0);  // was 0.022
+    //m_omegaController = new PIDController(0.001, 0.0, 0.0);
 
     // change pipeline of high camera
     // use #1 for left object, use #2 for right object-side
@@ -54,7 +56,7 @@ public class DriveToShelfPickup extends CommandBase {
     m_targetangle_filtered = 0.0;
 
     // reset target x speed
-    m_targetxSpeed = 0.7;
+    m_targetxSpeed = 0.9;
 
     // reset [initial] forward speed
     xSpeed = m_targetxSpeed;
@@ -66,17 +68,18 @@ public class DriveToShelfPickup extends CommandBase {
 
     // get distance sensor reading (in volts) and low pass filter it
     double dist = RobotContainer.grabber.GetSensorDistance();
-    m_targetdist_filtered = 0.8*m_targetdist_filtered + 0.2*dist;
+    m_targetdist_filtered = 0.65*m_targetdist_filtered + 0.35*dist;     // 0.8 and 0.2
     
     // low pass filter camera target
     // note: camera filter corner frequency must be sufficiently low to filter out natural wobble frequency of arm (with camera on it)
+    // 83 and 17 working very well.
     if (RobotContainer.limelight_high.isTargetPresent())
     {
-      m_targetangle_filtered = 0.95*m_targetangle_filtered + 0.05*RobotContainer.limelight_high.getHorizontalTargetOffsetAngle();
+      m_targetangle_filtered = 0.81*m_targetangle_filtered + 0.19*RobotContainer.limelight_high.getHorizontalTargetOffsetAngle();
     }
     else
     {
-      m_targetangle_filtered = 0.95*m_targetangle_filtered;
+      m_targetangle_filtered = 0.81*m_targetangle_filtered;
     }
     
     // determine lateral speed to get on path - determined by PID controller
@@ -105,6 +108,11 @@ public class DriveToShelfPickup extends CommandBase {
         if (xSpeed < 0.0)
           xSpeed = 0.0;
       }
+
+
+    // correct robot rotation according to gyro
+    //double omegaSpeed = m_omegaController.calculate(RobotContainer.gyro.getYaw());
+
 
     // drive robot according to x,y,rot PID controller speeds
     RobotContainer.swervedrive.drive(xSpeed, ySpeed, 0.0, false, false);  

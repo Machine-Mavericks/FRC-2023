@@ -28,6 +28,9 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_MotorSpeed;
   private GenericEntry m_SensorDistance;
   public GenericEntry m_Volts;
+  private GenericEntry m_TargetAreaHigh;
+  private GenericEntry m_TargetAreaMid;
+
 
   // spark max motor
   private CANSparkMax m_motor;
@@ -114,7 +117,7 @@ public class Grabber extends SubsystemBase {
           m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
         else { 
           // pulse gripper at 1Hz, 10% duty cycle to keep firm grip on cone
-          if (((t-1.2)%1.0)<=0.1){
+          if (((t-1.2)%1.0)<=0.05){
             m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
           } else {
             m_PIDController.setIAccum(0.0);
@@ -184,6 +187,19 @@ public class Grabber extends SubsystemBase {
   }
 
 
+  // return target area for high cone target
+  public double GetTargetAreaHigh()
+  {
+    return m_TargetAreaHigh.getDouble(0.3);
+  }
+
+  // return target area for mid cone target
+  public double GetTargetAreaMid()
+  {
+    return m_TargetAreaMid.getDouble(0.5);
+  }
+
+
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
 
@@ -194,7 +210,7 @@ public class Grabber extends SubsystemBase {
 
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Grabber", BuiltInLayouts.kList);
-    l1.withPosition(2, 0);
+    l1.withPosition(0, 0);
     l1.withSize(1, 4);
     m_GrabberPos= l1.add("Grabber Pos", 0.0).getEntry();
     m_MotorCurrent = l1.add("Current(A)", 0.0).getEntry(); 
@@ -203,10 +219,24 @@ public class Grabber extends SubsystemBase {
     m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
     
     m_Volts = Tab.addPersistent("Volts", 1.50)
-    .withPosition(3, 0)
+    .withPosition(1, 0)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
     .withProperties(Map.of("min", 0.00, "max", 2.5))
+    .getEntry();
+
+    m_TargetAreaHigh = Tab.addPersistent("Target Area High", 0.2)
+    .withPosition(1, 2)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.0, "max", 1.0))
+    .getEntry();
+
+    m_TargetAreaMid = Tab.addPersistent("Target Area Mid", 0.5)
+    .withPosition(1, 3)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.0, "max", 1.0))
     .getEntry();
   }
 
