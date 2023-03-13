@@ -3,12 +3,10 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.SemiAutonomous;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import edu.wpi.first.math.controller.PIDController;
-
-import javax.lang.model.util.ElementScanner14;
-import edu.wpi.first.math.MathUtil;
 
 
 public class AutoBalance extends CommandBase {

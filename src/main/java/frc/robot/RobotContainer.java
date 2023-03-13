@@ -4,40 +4,31 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.NavX;
-import frc.robot.subsystems.Pigeon;
-import frc.robot.subsystems.GamePieceTargeting;
-import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.SwerveOdometry;
-import frc.robot.subsystems.SwervePoseEstimator;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Grabber;
-import frc.robot.subsystems.AutoPathSelect;
-import frc.robot.subsystems.TargetSelect;
-import frc.robot.commands.ManualDriveCommand;
-import frc.robot.commands.DrivetoRelativePose;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.ManualArmSpeed;
+import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.Autonomous.CoopCubePath;
 import frc.robot.commands.Autonomous.LeftPath;
 import frc.robot.commands.Autonomous.RightPath;
-import frc.robot.commands.Autonomous.TwoConesPath;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
-import frc.robot.commands.SemiAutonomous.DriveToConeDropOff;
-import frc.robot.commands.SemiAutonomous.DriveToShelfPickup;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoShelfPickup;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.AutoPathSelect;
+import frc.robot.subsystems.GamePieceTargeting;
+import frc.robot.subsystems.Grabber;
 //import frc.robot.commands.LEDCommand;
 import frc.robot.subsystems.LEDBlinkin;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.NavX;
+import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.SwerveOdometry;
+import frc.robot.subsystems.TargetSelect;
 
 
 /**
