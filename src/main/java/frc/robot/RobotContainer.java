@@ -4,10 +4,21 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
@@ -82,6 +93,35 @@ public class RobotContainer {
     arm.setDefaultCommand(new ManualArmSpeed());
 
     //LEDStrip.setDefaultCommand(new LEDCommand());
+
+    File deployDir = Filesystem.getDeployDirectory(); 
+    File branchFile = new File(deployDir, "branch.txt"); 
+    File commitFile = new File(deployDir, "commit.txt");
+
+    ShuffleboardTab Tab = Shuffleboard.getTab("RobotContainer");
+    ShuffleboardLayout l1 = Tab.getLayout("Grabber", BuiltInLayouts.kList);
+    l1.withPosition(0, 0);
+    l1.withSize(1, 2);
+    GenericEntry m_branch = l1.add("Branch", "None").getEntry();
+    GenericEntry m_commit = l1.add("Commit", "None").getEntry();;
+
+    m_branch.setString(fileToString(branchFile));
+    m_commit.setString(fileToString(commitFile));
+  }
+
+  private static String fileToString(File file){
+    byte[] fileBytes = new byte[0];
+    String fileContents;
+    // Use the readAllBytes method of the Files class to read the contents of the file into a byte array 
+    try{
+      fileBytes = Files.readAllBytes(file.toPath());   
+      fileContents = new String(fileBytes, StandardCharsets.UTF_8);    
+    }
+    catch(IOException e){
+      e.printStackTrace();
+      fileContents = "Non existent";
+    }
+    return fileContents;
   }
 
   /**
