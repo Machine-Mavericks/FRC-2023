@@ -46,8 +46,8 @@ public class Grabber extends SubsystemBase {
   private double GrabberMotorSpeed = 6000.0;
 
   // grabber motor current limit (amps) (must be integer value)
-  private int GrabberMotorCurrentLimitStall = 4;
-  private int GrabberMotorCurrentLimitFree = 4;
+  private int GrabberMotorCurrentLimitStall = 5;
+  private int GrabberMotorCurrentLimitFree = 5;
 
   // function to open and close gripper
   public enum GrabberPos {
