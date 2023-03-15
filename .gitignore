@@ -160,3 +160,7 @@ bin/
 
 # Simulation GUI and other tools window save file
 *-window.json
+
+# Our branch and version information doesn't need to get published
+branch.txt
+commit.txt
