@@ -46,8 +46,8 @@ public class Grabber extends SubsystemBase {
   private double GrabberMotorSpeed = 6000.0;
 
   // grabber motor current limit (amps) (must be integer value)
-  private int GrabberMotorCurrentLimitStall = 4;
-  private int GrabberMotorCurrentLimitFree = 4;
+  private int GrabberMotorCurrentLimitStall = 6;
+  private int GrabberMotorCurrentLimitFree = 6;
 
   // function to open and close gripper
   public enum GrabberPos {
@@ -117,7 +117,7 @@ public class Grabber extends SubsystemBase {
           m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
         else { 
           // pulse gripper at 1Hz, 10% duty cycle to keep firm grip on cone
-          if (((t-1.2)%1.0)<=0.05){
+          if (((t-1.2)%1.0)<=0.075){
             m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
           } else {
             m_PIDController.setIAccum(0.0);

@@ -5,8 +5,13 @@
 // Other pages made by the individual subsystems as req'd
 
 package frc.robot.subsystems;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Map;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -30,7 +35,6 @@ public class AutoPathSelect extends SubsystemBase {
     /** Initializes the Shuffleboard
      * Creates the subsystem pages */
     public AutoPathSelect() {
-
         // add autonomous commands to shuffleboard
         initializeMainShuffleboardPage();
     }
@@ -55,10 +59,28 @@ public class AutoPathSelect extends SubsystemBase {
 
     // -------------------- Shuffboard Methods --------------------
 
+    private static String fileToString(File file){
+        byte[] fileBytes = new byte[0];
+        String fileContents;
+        // Use the readAllBytes method of the Files class to read the contents of the file into a byte array 
+        try{
+          fileBytes = Files.readAllBytes(file.toPath());   
+          fileContents = new String(fileBytes, StandardCharsets.UTF_8);    
+        }
+        catch(IOException e){
+          e.printStackTrace();
+          fileContents = "Non existent";
+        }
+        return fileContents;
+      }
 
     /** Create main shuffleboard page
      * Typically contains autonomous commands and other top-level robot controls*/
     private void initializeMainShuffleboardPage() {
+
+        File deployDir = Filesystem.getDeployDirectory(); 
+        File branchFile = new File(deployDir, "branch.txt"); 
+        File commitFile = new File(deployDir, "commit.txt");
 
         // Create Main Tab in Shuffleboard
         ShuffleboardTab tab = Shuffleboard.getTab("Auto");
@@ -79,7 +101,16 @@ public class AutoPathSelect extends SubsystemBase {
         l1.withPosition(0, 2);
         l1.withSize(1, 2);
         m_timeLeft = l1.add("TimeLeft", 0.0).getEntry();
-    }
+
+        ShuffleboardLayout l2 = tab.getLayout("Software version", BuiltInLayouts.kList);
+        l2.withPosition(6, 0);
+        l2.withSize(3, 2);
+        GenericEntry m_branch = l2.add("Branch", "None").getEntry();
+        GenericEntry m_commit = l2.add("Commit", "None").getEntry();;
+
+        m_branch.setString(fileToString(branchFile));
+        m_commit.setString(fileToString(commitFile));
+        }
 
     // returns position of autonomous commands on shuffleboard
     // typically called by Robot AutonomousInit to select auto path to be followed
