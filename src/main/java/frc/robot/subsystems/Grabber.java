@@ -116,8 +116,8 @@ public class Grabber extends SubsystemBase {
         if (t <1.2)
           m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
         else { 
-          // pulse gripper at 1Hz, 10% duty cycle to keep firm grip on cone
-          if (((t-1.2)%1.0)<=0.075){
+          // pulse gripper at 0.5Hz, 15% duty cycle (7.5% at 0.5s) to keep firm grip on cone
+          if (((t-1.2)%0.5)<=0.075){
             m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
           } else {
             m_PIDController.setIAccum(0.0);
