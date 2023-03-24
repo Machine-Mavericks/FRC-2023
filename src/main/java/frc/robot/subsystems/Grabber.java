@@ -118,7 +118,7 @@ public class Grabber extends SubsystemBase {
     if (m_enabled)
     {
       if (Open){
-        if (t<2) {
+        if (t<1) {
           // if motor is in close mode, apply full effort for limited time, after which, reduce to 1V
             m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
         } else {
@@ -126,8 +126,8 @@ public class Grabber extends SubsystemBase {
             m_motor.setVoltage(1); 
         }
       } else {
-        if (t <0.75) {
-          m_PIDController.setReference(-(GrabberMotorSpeed/2), CANSparkMax.ControlType.kVelocity);
+        if (t <1.5) {
+          m_PIDController.setReference(-(GrabberMotorSpeed/4), CANSparkMax.ControlType.kVelocity);
         } else { 
           m_PIDController.setIAccum(0.0); m_motor.setVoltage(0);  
       }
