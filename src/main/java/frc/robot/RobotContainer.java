@@ -4,33 +4,24 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX;
-import frc.robot.subsystems.Pigeon;
-import frc.robot.subsystems.GamePieceTargeting;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
-import frc.robot.subsystems.SwervePoseEstimator;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
 import frc.robot.subsystems.TargetSelect;
 import frc.robot.commands.ManualDriveCommand;
-import frc.robot.commands.DrivetoRelativePose;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.Autonomous.CoopCubePath;
 import frc.robot.commands.Autonomous.LeftPath;
 import frc.robot.commands.Autonomous.RightPath;
-import frc.robot.commands.Autonomous.TwoConesPath;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
-import frc.robot.commands.SemiAutonomous.DriveToConeDropOff;
-import frc.robot.commands.SemiAutonomous.DriveToShelfPickup;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoShelfPickup;
@@ -62,7 +53,6 @@ public class RobotContainer {
   //public static final SwervePoseEstimator poseestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
   public static final Grabber grabber = new Grabber();
-  public static final GamePieceTargeting gamepiecetargeting = new GamePieceTargeting(RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_X, RobotMap.LimelightOffsets.FLOOR_LIMELIGHT_OFFSET_Y);
   public static final LEDBlinkin LEDStrip = new LEDBlinkin();
   
 
@@ -110,7 +100,7 @@ public class RobotContainer {
     OI.OperatorButtons.shelf_pickup_Button.onTrue(new SetArmPosition(Arm.PICKUP_SHELF_DEG));
 
     // grabber open/close
-    OI.OperatorButtons.GrabberButton.onTrue(new InstantCommand(()-> grabber.setAlternatePosition()));
+    OI.OperatorButtons.GrabberButton.whileTrue(new InstantCommand(()-> grabber.setOpen()));
 
   }
 

@@ -32,13 +32,13 @@ public class SemiAutoShelfPickup extends SequentialCommandGroup {
       new DelayCommand(1.8),
 
       // open gripper
-      new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
+      new InstantCommand(() -> RobotContainer.grabber.setOpen()),
 
       // drive to pickup
       new DriveToShelfPickup(),
 
-      // close gripper
-      new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
+      // open gripper, change auto pickup so the gripper spins for longer. 3 sec instead of 1. 
+      new InstantCommand(() -> RobotContainer.grabber.setOpen()),
 
       // delay until arm gets back
       new DelayCommand(0.5),

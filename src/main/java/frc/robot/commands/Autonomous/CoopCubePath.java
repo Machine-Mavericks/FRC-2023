@@ -40,16 +40,16 @@ public class CoopCubePath extends SequentialCommandGroup {
     new DelayCommand(1.5),
     
     // open gripper
-    new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
+    new InstantCommand(() -> RobotContainer.grabber.setOpen()),
 
     // delay for gripper to open
-    new DelayCommand(0.35),
+    new DelayCommand(0.6),
     
     // close gripper
-    new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
+    new InstantCommand(() -> RobotContainer.grabber.setClose()),
     
     // delay for gripper to close
-    new DelayCommand(0.40),
+    new DelayCommand(0.7),
 
     // move arm to stow position - 25deg  (aka 'forward position' but inside robot bumper)
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG-25.0)),
