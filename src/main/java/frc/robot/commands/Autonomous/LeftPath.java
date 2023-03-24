@@ -32,13 +32,13 @@ public class LeftPath extends SequentialCommandGroup {
     new DelayCommand(2.0),
 
     // open gripper
-    new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Open)),
+    new InstantCommand(() -> RobotContainer.grabber.setOpen()),
 
     // delay for gripper to open
     new DelayCommand(0.5),
     
     // close gripper
-    new InstantCommand(() -> RobotContainer.grabber.setPosition(RobotContainer.grabber.getPosition().Close)),
+    new InstantCommand(() -> RobotContainer.grabber.setClose()),
     
     // delay for gripper to close
     new DelayCommand(0.40),

@@ -84,5 +84,7 @@ public class OI {
         return OI.driverController.getRightTriggerAxis();
     }
 
-
+    public static boolean closeGripper(){
+        return OI.operatorController.getLeftTriggerAxis()>=0.05;
+    }
 }

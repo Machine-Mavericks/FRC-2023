@@ -17,6 +17,8 @@ import java.util.Map;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import frc.robot.OI;
 import frc.robot.RobotMap;
 
 public class Grabber extends SubsystemBase {
@@ -46,15 +48,16 @@ public class Grabber extends SubsystemBase {
   private double GrabberMotorSpeed = 6000.0;
 
   // grabber motor current limit (amps) (must be integer value)
-  private int GrabberMotorCurrentLimitStall = 6;
-  private int GrabberMotorCurrentLimitFree = 6;
+  private int GrabberMotorCurrentLimitStall = 8;
+  private int GrabberMotorCurrentLimitFree = 8;
 
   // function to open and close gripper
-  public enum GrabberPos {
-    Close,
-    Open
-  };
-  GrabberPos m_targetPos;
+  //public enum GrabberPos {
+  //  Close,
+  //  Open
+  //};
+
+  private boolean Open;
 
   // create range sensor
   AnalogInput m_sensor;
@@ -94,12 +97,17 @@ public class Grabber extends SubsystemBase {
     AnalogInput.setGlobalSampleRate(250000.0);
     m_sensor = new AnalogInput(0);
     m_sensor.setOversampleBits(5);
+
   }
 
   // This method will be called once per scheduler run
   @Override
   public void periodic() {
-  
+    
+    if (OI.closeGripper()){
+      setClose();
+    }
+
     // update shuffleboard values
     updateShuffleboard();
 
@@ -109,31 +117,22 @@ public class Grabber extends SubsystemBase {
     // if motor is enabled, then set voltage according to mode
     if (m_enabled)
     {
-      // control motor based on target position
-      if (m_targetPos==GrabberPos.Close)
-      {
-        // if motor is in close mode, apply full effort for limited time, after which, reduce to 0V
-        if (t <1.2)
-          m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
-        else { 
-          // pulse gripper at 0.5Hz, 15% duty cycle (7.5% at 0.5s) to keep firm grip on cone
-          if (((t-1.2)%0.5)<=0.075){
+      if (Open){
+        if (t<2) {
+          // if motor is in close mode, apply full effort for limited time, after which, reduce to 1V
             m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
-          } else {
+        } else {
             m_PIDController.setIAccum(0.0);
-            m_motor.setVoltage(0); 
-          } 
+            m_motor.setVoltage(1); 
         }
+      } else {
+        if (t <0.75) {
+          m_PIDController.setReference(-(GrabberMotorSpeed/2), CANSparkMax.ControlType.kVelocity);
+        } else { 
+          m_PIDController.setIAccum(0.0); m_motor.setVoltage(0);  
       }
-      else
-      {
-        if (t <0.75)
-          m_PIDController.setReference(-GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
-        else
-          { m_PIDController.setIAccum(0.0); m_motor.setVoltage(0);  }
       }
     }
-
     else
       // we are disabled - turn motor off
       m_motor.setVoltage(0.0);
@@ -144,32 +143,26 @@ public class Grabber extends SubsystemBase {
   // -------------------- Open / Close Methods --------------------
 
   // sets target position of arm
-  public void setPosition (GrabberPos pos)
+  public void setOpen ()
   {
     // set our position and restart timer
-    m_targetPos = pos;
     m_timer.restart();
     
     // enable grabber motor
     Enable();
-  }
-  
-  // function to alternate grabber position from current state
-  // useful to use if single joystick button to be used to open/close gripper
-  public void setAlternatePosition()
-  {
-    if (m_targetPos == GrabberPos.Close)
-      setPosition(GrabberPos.Open);
-    else
-      setPosition(GrabberPos.Close);
+
+    Open = true;
   }
 
-  // gets gripepr target position
-  public GrabberPos getPosition()
-  {
-    return m_targetPos;
-  }
+  public void setClose () {
+    // set our position and restart timer
+    m_timer.restart();
+    
+    // enable grabber motor
+    Enable();
 
+    Open = false;
+  }
 
   // disable / enable grabber motor
   public void Disable()
@@ -243,12 +236,7 @@ public class Grabber extends SubsystemBase {
 
   /** Update subsystem shuffle board page with current odometry values */
   private void updateShuffleboard() {
-    // update gripper position
-    if (m_targetPos==GrabberPos.Open)
-       m_GrabberPos.setDouble(0.0);
-    else
-       m_GrabberPos.setDouble(1.0);
-    
+
     // update motor voltage and current
     m_MotorCurrent.setDouble(m_motor.getOutputCurrent());
     m_MotorVoltage.setDouble(m_motor.getAppliedOutput()*12.0);
