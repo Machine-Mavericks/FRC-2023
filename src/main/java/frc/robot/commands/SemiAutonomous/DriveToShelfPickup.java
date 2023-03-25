@@ -11,13 +11,17 @@ public class DriveToShelfPickup extends CommandBase {
   
     // y PID controllers to get us to the intended destination
     private PIDController m_yController; 
+    private PIDController m_xController; 
     //private PIDController m_omegaController;
 
     // maximum drive speed to use during command (m/s)
     private double m_maxspeed = 1.4;
 
+    // Distance from the wall the robot should aim to be at the end of this command
+    private double m_targetDistance = 1.0; 
+
     // target distance - low-pass filtered
-    private double m_targetdist_filtered;
+    //private double m_targetdist_filtered;
 
     // camera target angle - low-pass filtered
     private double m_targetangle_filtered;
@@ -42,6 +46,8 @@ public class DriveToShelfPickup extends CommandBase {
 
     // set up PIDs
     m_yController = new PIDController(0.03, 0.001, 0.0);  // was 0.022
+
+    m_yController = new PIDController(0.03, 0.001, 0.0); 
     //m_omegaController = new PIDController(0.001, 0.0, 0.0);
 
     // change pipeline of high camera
@@ -51,8 +57,7 @@ public class DriveToShelfPickup extends CommandBase {
     //else
     //  RobotContainer.limelight_high.setPipeline(1);
 
-    // reset filtered values
-    m_targetdist_filtered = 0.0;
+    // reset filtered value
     m_targetangle_filtered = 0.0;
 
     // reset target x speed
@@ -66,9 +71,9 @@ public class DriveToShelfPickup extends CommandBase {
   @Override
   public void execute() {
 
-    // get distance sensor reading (in volts) and low pass filter it
-    double dist = RobotContainer.grabber.GetSensorDistance();
-    m_targetdist_filtered = 0.65*m_targetdist_filtered + 0.35*dist;     // 0.8 and 0.2
+    // get distance sensor reading
+    double dist = 0.0f;
+    
     
     // low pass filter camera target
     // note: camera filter corner frequency must be sufficiently low to filter out natural wobble frequency of arm (with camera on it)
@@ -84,6 +89,9 @@ public class DriveToShelfPickup extends CommandBase {
     
     // determine lateral speed to get on path - determined by PID controller
     double ySpeed = m_yController.calculate(m_targetangle_filtered);
+
+    // calculate speed with a PID controller to hit the target distance
+    double xSpeed = m_yController.calculate(dist, m_targetDistance);
     
     // limit x and y speeds
     if (xSpeed > m_maxspeed)
@@ -96,18 +104,19 @@ public class DriveToShelfPickup extends CommandBase {
       ySpeed = -0.5;  
     
 
-    // have we reached point (indicated by sensor) where we need to slow down to a stop?
-    // deceleration used to reduce unintended longitudinal movement of arm when robot stops to pick up cone
-    if (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(1.50))
-      m_targetxSpeed = 0;
+    
+    // // have we reached point (indicated by sensor) where we need to slow down to a stop?
+    // // deceleration used to reduce unintended longitudinal movement of arm when robot stops to pick up cone
+    // if (dist > RobotContainer.grabber.m_Volts.getDouble(1.50))
+    //   m_targetxSpeed = 0;
 
    
-    // if we are to decelerate, then reduce speed in controlled fashion (limit deceleration) until robot is stopped
-    if (xSpeed > m_targetxSpeed)
-      { xSpeed = xSpeed - 0.05;
-        if (xSpeed < 0.0)
-          xSpeed = 0.0;
-      }
+    // // if we are to decelerate, then reduce speed in controlled fashion (limit deceleration) until robot is stopped
+    // if (xSpeed > m_targetxSpeed)
+    //   { xSpeed = xSpeed - 0.05;
+    //     if (xSpeed < 0.0)
+    //       xSpeed = 0.0;
+    //   }
 
 
     // correct robot rotation according to gyro
