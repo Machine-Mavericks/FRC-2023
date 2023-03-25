@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_MotorVoltage;
   private GenericEntry m_GrabberPos;
   private GenericEntry m_MotorSpeed;
-  private GenericEntry m_SensorDistance;
+  //private GenericEntry m_SensorDistance;
   public GenericEntry m_Volts;
   private GenericEntry m_TargetAreaHigh;
   private GenericEntry m_TargetAreaMid;
@@ -59,14 +60,20 @@ public class Grabber extends SubsystemBase {
 
   private boolean Open;
 
-  // create range sensor
-  AnalogInput m_sensor;
+  private GenericEntry m_UltrasonicDistance;
+// ultrasonic distance sensor
+  Ultrasonic m_ultrasonicsensor;
 
   /** Creates a new Grabber. */
   public Grabber() {
 
     // create shuffleboard
     initializeShuffleboard();
+
+    // ultrasonic distance sensor
+    m_ultrasonicsensor = new Ultrasonic(3, 4);
+    m_ultrasonicsensor.setAutomaticMode(true);
+    m_ultrasonicsensor.setEnabled(true);
 
     // create revmax spark object, set factory defaults
     m_motor = new CANSparkMax(RobotMap.CANID.GRABBER_MOTOR, MotorType.kBrushless);
@@ -92,12 +99,6 @@ public class Grabber extends SubsystemBase {
     m_timer.start();
 
     Disable();
-
-    // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
-    AnalogInput.setGlobalSampleRate(250000.0);
-    m_sensor = new AnalogInput(0);
-    m_sensor.setOversampleBits(5);
-
   }
 
   // This method will be called once per scheduler run
@@ -172,11 +173,10 @@ public class Grabber extends SubsystemBase {
   { m_enabled = true; }
 
 
-  // get sensor distance (mmm)
-  // returns voltage of GP2Y0A41SK0F sensor
-  public double GetSensorDistance()
+  // get sensor distance (In)
+  public double GetSensorDistanceInches()
   {
-    return m_sensor.getAverageVoltage();
+    return m_ultrasonicsensor.getRangeInches();
   }
 
 
@@ -209,7 +209,8 @@ public class Grabber extends SubsystemBase {
     m_MotorCurrent = l1.add("Current(A)", 0.0).getEntry(); 
     m_MotorVoltage = l1.add("Volts(V)", 0.0).getEntry();
     m_MotorSpeed = l1.add("Speed(rpm)", 0.0).getEntry();
-    m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
+    m_UltrasonicDistance = l1.add("Sensor Distance (In)", 0.0).getEntry();
+    
     
     m_Volts = Tab.addPersistent("Volts", 1.50)
     .withPosition(1, 0)
@@ -242,8 +243,7 @@ public class Grabber extends SubsystemBase {
     m_MotorVoltage.setDouble(m_motor.getAppliedOutput()*12.0);
     m_MotorSpeed.setDouble(m_motor.getEncoder().getVelocity());
 
-    // update distance
-    m_SensorDistance.setDouble(GetSensorDistance());
+    m_UltrasonicDistance.setDouble(m_ultrasonicsensor.getRangeInches());
   }
 
 }

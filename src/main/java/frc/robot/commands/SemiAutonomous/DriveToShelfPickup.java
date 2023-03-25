@@ -17,8 +17,9 @@ public class DriveToShelfPickup extends CommandBase {
     // maximum drive speed to use during command (m/s)
     private double m_maxspeed = 1.4;
 
-    // Distance from the wall the robot should aim to be at the end of this command
-    private double m_targetDistance = 1.0; 
+    // Distance from the wall the robot should aim to be at the end of this command (in)
+    private double m_targetDistance = 20; 
+    private double m_acceptableError = 0.5;
 
     // target distance - low-pass filtered
     //private double m_targetdist_filtered;
@@ -26,11 +27,8 @@ public class DriveToShelfPickup extends CommandBase {
     // camera target angle - low-pass filtered
     private double m_targetangle_filtered;
 
-    // target longitudinal speed
-    private double m_targetxSpeed;
-
-    // current speed to move forward at
-    private double xSpeed;
+    // current distance (in)
+    private double m_distance;
 
   /** Creates a new DriveToShelfPickup. */
   public DriveToShelfPickup() {
@@ -59,12 +57,6 @@ public class DriveToShelfPickup extends CommandBase {
 
     // reset filtered value
     m_targetangle_filtered = 0.0;
-
-    // reset target x speed
-    m_targetxSpeed = 0.9;
-
-    // reset [initial] forward speed
-    xSpeed = m_targetxSpeed;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -72,7 +64,7 @@ public class DriveToShelfPickup extends CommandBase {
   public void execute() {
 
     // get distance sensor reading
-    double dist = 0.0f;
+    m_distance = RobotContainer.grabber.GetSensorDistanceInches();
     
     
     // low pass filter camera target
@@ -90,8 +82,15 @@ public class DriveToShelfPickup extends CommandBase {
     // determine lateral speed to get on path - determined by PID controller
     double ySpeed = m_yController.calculate(m_targetangle_filtered);
 
-    // calculate speed with a PID controller to hit the target distance
-    double xSpeed = m_yController.calculate(dist, m_targetDistance);
+    // // Only begin moving towards the target if aiming the correct direction 
+    // if (Math.abs(RobotContainer.gyro.getYaw()) < 5){
+    //   System.out.println("DEBUG:  WITHIN ANGLE RANGE");
+    //   // calculate speed with a PID controller to hit the target distance
+      
+    // }
+
+    double xSpeed = m_yController.calculate(m_distance, m_targetDistance);
+    
     
     // limit x and y speeds
     if (xSpeed > m_maxspeed)
@@ -102,26 +101,6 @@ public class DriveToShelfPickup extends CommandBase {
       ySpeed = 0.5; 
     if (ySpeed < -0.5)
       ySpeed = -0.5;  
-    
-
-    
-    // // have we reached point (indicated by sensor) where we need to slow down to a stop?
-    // // deceleration used to reduce unintended longitudinal movement of arm when robot stops to pick up cone
-    // if (dist > RobotContainer.grabber.m_Volts.getDouble(1.50))
-    //   m_targetxSpeed = 0;
-
-   
-    // // if we are to decelerate, then reduce speed in controlled fashion (limit deceleration) until robot is stopped
-    // if (xSpeed > m_targetxSpeed)
-    //   { xSpeed = xSpeed - 0.05;
-    //     if (xSpeed < 0.0)
-    //       xSpeed = 0.0;
-    //   }
-
-
-    // correct robot rotation according to gyro
-    //double omegaSpeed = m_omegaController.calculate(RobotContainer.gyro.getYaw());
-
 
     // drive robot according to x,y,rot PID controller speeds
     RobotContainer.swervedrive.drive(xSpeed, ySpeed, 0.0, false, false);  
@@ -137,7 +116,7 @@ public class DriveToShelfPickup extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // we are finished command when robot has detected destination, and then finished decelerating to 0m/s speed
-    return (xSpeed <=0.0);
+    // we are finished once the distance is close to the target distance
+    return (Math.abs(m_distance - m_targetDistance) < m_acceptableError);
   }
 }
