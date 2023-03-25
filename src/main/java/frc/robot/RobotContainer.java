@@ -38,19 +38,15 @@ import frc.robot.subsystems.LEDBlinkin;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-
   // Create robot's shuffboard operator interface
   public static final AutoPathSelect autopathselect = new AutoPathSelect();
-  public static final TargetSelect targetselector = new TargetSelect();
   
   // Create instances of robot subsystems
   public static final NavX gyro = new NavX();
-  // public static final Pigeon gyro2 = new Pigeon();
   public static final Limelight limelight_high = new Limelight("high");
   public static final Limelight limelight_med = new Limelight("med"); 
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
-  //public static final SwervePoseEstimator poseestimator = new SwervePoseEstimator();
   public static final Arm arm = new Arm();  
   public static final Grabber grabber = new Grabber();
   public static final LEDBlinkin LEDStrip = new LEDBlinkin();
