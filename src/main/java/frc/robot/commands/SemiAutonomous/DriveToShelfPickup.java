@@ -56,7 +56,7 @@ public class DriveToShelfPickup extends CommandBase {
     m_targetangle_filtered = 0.0;
 
     // reset target x speed
-    m_targetxSpeed = 0.9;
+    m_targetxSpeed = 0.5;
 
     // reset [initial] forward speed
     xSpeed = m_targetxSpeed;
@@ -129,6 +129,8 @@ public class DriveToShelfPickup extends CommandBase {
   @Override
   public boolean isFinished() {
     // we are finished command when robot has detected destination, and then finished decelerating to 0m/s speed
-    return (xSpeed <=0.0);
+    //return (xSpeed <=0.0);
+    return RobotContainer.grabber.GetTargetGrabbedStatus() ||
+          (RobotContainer.grabber.GetUltrasonicDistance() < RobotContainer.grabber.GetUltrasonicDistSelection());
   }
 }

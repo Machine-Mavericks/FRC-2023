@@ -68,7 +68,7 @@ public class ManualDriveCommand extends CommandBase {
     double speedfactor = OI.getGoFast();
     
     // override go fast if arm is not stowed. Force slow mode
-    if (RobotContainer.arm.GetArmPosition() < 115.0 || RobotContainer.arm.GetArmPosition() > 150.0)
+    if (RobotContainer.arm.GetArmPosition() < 142.0 || RobotContainer.arm.GetArmPosition() > 156.0)
       speedfactor = 0.0;
 
 

@@ -18,7 +18,8 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-       // move arm back to drop off cone
+    
+    // move arm back to drop off cone
     //new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.MID_DEG)),
    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)), // was 208.0
 
@@ -29,6 +30,7 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
     new DelayCommand(0.05),
 
     // move to drop off cone
+    new DriveSidewaysToConeDropOff(1),
     new DriveToConeDropOff(1),
 
     // delay until arm gets back

@@ -19,7 +19,7 @@ public class SemiAutoConeDropOffHigh extends SequentialCommandGroup {
     addCommands(
 
       
-       // move arm back to drop off cone
+    // move arm back to drop off cone
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
 
     // change camera pipeline
@@ -29,6 +29,7 @@ public class SemiAutoConeDropOffHigh extends SequentialCommandGroup {
     new DelayCommand(0.05),
 
     // move to drop off cone
+    new DriveSidewaysToConeDropOff(0),
     new DriveToConeDropOff(0),
 
     // delay until arm gets back

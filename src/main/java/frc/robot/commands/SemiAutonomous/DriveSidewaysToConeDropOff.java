@@ -8,16 +8,13 @@ import edu.wpi.first.math.controller.PIDController;
 import frc.robot.RobotContainer;
 
 
-public class DriveToConeDropOff extends CommandBase {
+public class DriveSidewaysToConeDropOff extends CommandBase {
   
   // y PID controllers to get us to the intended destination
   private PIDController m_yController; 
   
   // maximum speed
   private double m_maxspeed;
-  
-  // target distance - low pass filtered
-  private double m_targetarea_filtered;
 
   // target horizontal angle - low pass filtered
   private double m_targethorangle_filtered;
@@ -26,10 +23,11 @@ public class DriveToConeDropOff extends CommandBase {
   private int m_camerapipeline;
 
   /** Creates a new DriveToConeDropOff. */
-  public DriveToConeDropOff(int pipeline) {
+  public DriveSidewaysToConeDropOff(int pipeline) {
     // this command requires use of swervedrive subsystem
     addRequirements(RobotContainer.swervedrive);
 
+    // save copy of the provided camera pipeline to use
     m_camerapipeline = pipeline;
   }
 
@@ -38,16 +36,13 @@ public class DriveToConeDropOff extends CommandBase {
   @Override
   public void initialize() {
     // set up PIDs
-    m_yController = new PIDController(0.04, 0.00, 0.0);
+    m_yController = new PIDController(0.05, 0.00, 0.0);
 
-    // change pipeline of high camera
-    
+    // change pipeline of camera
     RobotContainer.limelight_med.setPipeline(m_camerapipeline);
 
     // set maximum speed used during this command
     m_maxspeed = 0.6; 
-
-    m_targetarea_filtered = 0.0;
 
     // initialize filtered horizontal target
     if (RobotContainer.limelight_med.isTargetPresent())
@@ -61,10 +56,7 @@ public class DriveToConeDropOff extends CommandBase {
   @Override
   public void execute() {
      // forward speed
-     double xSpeed = 0.3;
-
-     if (m_camerapipeline==1)
-      xSpeed = 0.3;
+     double xSpeed = 0.0;
 
      // assume sideways speed is 0 unless target is detected in camera
      double ySpeed =0.0;
@@ -91,25 +83,19 @@ public class DriveToConeDropOff extends CommandBase {
        
      // drive robot according to x,y,rot PID controller speeds
      RobotContainer.swervedrive.drive(xSpeed, ySpeed, 0.0, false, false); 
-
-     // update target area
-     if (RobotContainer.limelight_med.isTargetPresent())
-      m_targetarea_filtered = 0.95*m_targetarea_filtered+ 0.05*RobotContainer.limelight_med.getTargetArea();
-     else
-      m_targetarea_filtered = 0.95*m_targetarea_filtered;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     // turn off drive
-    RobotContainer.swervedrive.drive(0.0, 0.0, 0.0, false, false);  
+    //RobotContainer.swervedrive.drive(0.0, 0.0, 0.0, false, false);  
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((m_camerapipeline==0 && m_targetarea_filtered > RobotContainer.grabber.GetTargetAreaHigh()) ||   // 0.20
-            (m_camerapipeline==1 && m_targetarea_filtered > RobotContainer.grabber.GetTargetAreaMid()));   // 0.52 is good! keep    0.32
+    // finished when <2deg in front of target
+    return Math.abs(m_targethorangle_filtered) < 5.0;
   }
 }
