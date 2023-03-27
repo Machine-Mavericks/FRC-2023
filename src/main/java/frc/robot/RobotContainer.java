@@ -25,6 +25,8 @@ import frc.robot.commands.Autonomous.RightPath;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffHigh;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoShelfPickup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
@@ -49,6 +51,7 @@ public class RobotContainer {
   public static final Pigeon gyro2 = new Pigeon();
   public static final Limelight limelight_high = new Limelight("high");
   public static final Limelight limelight_med = new Limelight("med"); 
+  public static final Limelight limelight_low = new Limelight("low");
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
   //public static final SwervePoseEstimator poseestimator = new SwervePoseEstimator();
@@ -91,7 +94,8 @@ public class RobotContainer {
     OI.DriverButtons.DropoffHigh_Button.whileTrue(new SemiAutoConeDropOffHigh());
     OI.DriverButtons.DropoffMed_Button.whileTrue(new SemiAutoConeDropOffMed());
     OI.DriverButtons.auto_balance_Button.whileTrue(new AutoBalance());
-    
+    OI.DriverButtons.CubeDropoffHigh_Button.whileTrue(new SemiAutoCubeDropOffHigh());
+    OI.DriverButtons.CubeDropoffMed_Button.whileTrue(new SemiAutoCubeDropOffMed());
 
     // arrm movement buttons
     OI.OperatorButtons.ground_Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));

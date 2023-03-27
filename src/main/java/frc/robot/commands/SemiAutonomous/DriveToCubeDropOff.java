@@ -8,7 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import frc.robot.RobotContainer;
 
 
-public class DriveToConeDropOff extends CommandBase {
+public class DriveToCubeDropOff extends CommandBase {
   
   // y PID controllers to get us to the intended destination
   private PIDController m_yController; 
@@ -34,7 +34,7 @@ public class DriveToConeDropOff extends CommandBase {
 
 
   /** Creates a new DriveToConeDropOff. */
-  public DriveToConeDropOff(int pipeline) {
+  public DriveToCubeDropOff(int pipeline) {
     // this command requires use of swervedrive subsystem
     addRequirements(RobotContainer.swervedrive);
 
@@ -49,9 +49,8 @@ public class DriveToConeDropOff extends CommandBase {
     m_yController = new PIDController(0.04, 0.00, 0.0);
     m_rotController = new PIDController(0.05, 0.001, 0.0000);
 
-    // change pipeline of high camera
-    
-    RobotContainer.limelight_med.setPipeline(m_camerapipeline);
+    // change pipeline of low camera
+    RobotContainer.limelight_low.setPipeline(0);
 
     // set maximum speed used during this command
     m_maxspeed = 0.6; 
@@ -59,8 +58,8 @@ public class DriveToConeDropOff extends CommandBase {
     m_targetarea_filtered = 0.0;
 
     // initialize filtered horizontal target
-    if (RobotContainer.limelight_med.isTargetPresent())
-      m_targethorangle_filtered = RobotContainer.limelight_med.getHorizontalTargetOffsetAngle();
+    if (RobotContainer.limelight_low.isTargetPresent())
+      m_targethorangle_filtered = RobotContainer.limelight_low.getHorizontalTargetOffsetAngle();
     else
       m_targethorangle_filtered = 0.0;
 
@@ -77,9 +76,9 @@ public class DriveToConeDropOff extends CommandBase {
 
      // assume sideways speed is 0 unless target is detected in camera
      double ySpeed =0.0;
-     if (RobotContainer.limelight_med.isTargetPresent())
+     if (RobotContainer.limelight_low.isTargetPresent())
      {
-        m_targethorangle_filtered =  0.85*m_targethorangle_filtered + 0.15*RobotContainer.limelight_med.getHorizontalTargetOffsetAngle();
+        m_targethorangle_filtered =  0.85*m_targethorangle_filtered + 0.15*RobotContainer.limelight_low.getHorizontalTargetOffsetAngle();
      }
      else
      {
@@ -118,10 +117,10 @@ public class DriveToConeDropOff extends CommandBase {
      RobotContainer.swervedrive.drive(xSpeed, ySpeed, rotSpeed, false, false); 
 
      // update target area
-     if (RobotContainer.limelight_med.isTargetPresent())
-      m_targetarea_filtered = 0.95*m_targetarea_filtered+ 0.05*RobotContainer.limelight_med.getTargetArea();
-     else
-      m_targetarea_filtered = 0.95*m_targetarea_filtered;
+     if (RobotContainer.limelight_low.isTargetPresent())
+      m_targetarea_filtered = 0.95*m_targetarea_filtered+ 0.05*RobotContainer.limelight_low.getTargetArea();
+     //else
+      //m_targetarea_filtered = 0.95*m_targetarea_filtered;
   }
 
   // Called once the command ends or is interrupted.
@@ -134,7 +133,7 @@ public class DriveToConeDropOff extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((m_camerapipeline==0 && m_targetarea_filtered > RobotContainer.grabber.GetConeTargetAreaHigh()) ||
-            (m_camerapipeline==1 && m_targetarea_filtered > RobotContainer.grabber.GetConeTargetAreaMid()));
+    return ((m_camerapipeline==0 && m_targetarea_filtered > RobotContainer.grabber.GetCubeTargetAreaHigh()) ||
+            (m_camerapipeline==1 && m_targetarea_filtered > RobotContainer.grabber.GetCubeTargetAreaMid()));
   }
 }

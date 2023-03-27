@@ -32,8 +32,10 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_MotorSpeed;
   private GenericEntry m_SensorDistance;
   public GenericEntry m_Volts;
-  private GenericEntry m_TargetAreaHigh;
-  private GenericEntry m_TargetAreaMid;
+  private GenericEntry m_ConeTargetAreaHigh;
+  private GenericEntry m_ConeTargetAreaMid;
+  private GenericEntry m_CubeTargetAreaHigh;
+  private GenericEntry m_CubeTargetAreaMid;
   private GenericEntry m_ObjectGrabbed;
   private GenericEntry m_UltrasonicDistance;
   private GenericEntry m_UltrasonicDistSelect;
@@ -210,16 +212,20 @@ public class Grabber extends SubsystemBase {
 
 
   // return target area for high cone target
-  public double GetTargetAreaHigh()
-  {
-    return m_TargetAreaHigh.getDouble(0.3);
-  }
+  public double GetConeTargetAreaHigh()
+  { return m_ConeTargetAreaHigh.getDouble(0.3); }
 
   // return target area for mid cone target
-  public double GetTargetAreaMid()
-  {
-    return m_TargetAreaMid.getDouble(0.5);
-  }
+  public double GetConeTargetAreaMid()
+  { return m_ConeTargetAreaMid.getDouble(0.5); }
+
+  // return target area for high cone target
+  public double GetCubeTargetAreaHigh()
+  { return m_CubeTargetAreaHigh.getDouble(0.3); }
+
+  // return target area for mid cone target
+  public double GetCubeTargetAreaMid()
+  { return m_CubeTargetAreaMid.getDouble(0.5); }
 
   // get ultrasonic distance selection
   public double GetUltrasonicDistSelection()
@@ -258,37 +264,51 @@ public class Grabber extends SubsystemBase {
     m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
     m_UltrasonicDistance = l1.add("Ultrasonic Dist(m)", 0.0).getEntry();
 
-    m_Volts = Tab.addPersistent("Volts", 1.50)
+    
+    m_ConeTargetAreaHigh = Tab.addPersistent("Target Area High", 0.2)
     .withPosition(1, 0)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.00, "max", 2.5))
+    .withProperties(Map.of("min", 0.0, "max", 1.0))
     .getEntry();
 
-    m_TargetAreaHigh = Tab.addPersistent("Target Area High", 0.2)
+    m_ConeTargetAreaMid = Tab.addPersistent("Target Area Mid", 0.5)
+    .withPosition(1, 1)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.0, "max", 1.0))
+    .getEntry();
+
+    m_CubeTargetAreaHigh = Tab.addPersistent("Cube Area High", 0.2)
     .withPosition(1, 2)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.0, "max", 1.0))
+    .withProperties(Map.of("min", 0.0, "max", 7.5))
     .getEntry();
 
-    m_TargetAreaMid = Tab.addPersistent("Target Area Mid", 0.5)
+    m_CubeTargetAreaMid = Tab.addPersistent("Cube Area Mid", 0.5)
     .withPosition(1, 3)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.0, "max", 1.0))
+    .withProperties(Map.of("min", 0.0, "max", 7.5))
     .getEntry();
 
-
     m_UltrasonicDistSelect = Tab.addPersistent("Ultrasonic Dist Select", 24.0)
-    .withPosition(1, 4)
+    .withPosition(4, 0)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
     .withProperties(Map.of("min", 0.0, "max", 50.0))
     .getEntry();
 
+    m_Volts = Tab.addPersistent("Volts", 1.50)
+    .withPosition(4, 1)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.00, "max", 2.5))
+    .getEntry();
+
     // add sensor
-    m_ObjectGrabbed = Tab.add("Cone Grabbed", false).withPosition(1,4).getEntry();
+    m_ObjectGrabbed = Tab.add("Cone Grabbed", false).withPosition(4,2).getEntry();
 
   }
 

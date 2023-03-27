@@ -29,7 +29,7 @@ public class SafetyCheckStowPosition extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (RobotContainer.arm.GetArmPosition() > 115.0 && RobotContainer.arm.GetArmPosition() < 135.0 &&
-    RobotContainer.arm.GetArmPositionCANCoder() > 115.0 && RobotContainer.arm.GetArmPositionCANCoder() <135);
+    return (RobotContainer.arm.GetArmPosition() > 125.0 && RobotContainer.arm.GetArmPosition() < 145.0 &&
+    RobotContainer.arm.GetArmPositionCANCoder() > 125.0 && RobotContainer.arm.GetArmPositionCANCoder() <145.0);
   }
 }

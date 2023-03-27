@@ -55,9 +55,8 @@ public Pigeon() {
   /** Gets the pitch of the robot
    * @return current pitch value in deg */
   public double getPitch() {
-    //gyro.get
     
-    return gyro.getPitch();
+    return -gyro.getPitch();
   }
 
   /** Resets yaw to zero */

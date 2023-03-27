@@ -6,8 +6,6 @@ package frc.robot.commands.SemiAutonomous;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import edu.wpi.first.math.controller.PIDController;
-
-import javax.lang.model.util.ElementScanner14;
 import edu.wpi.first.math.MathUtil;
 
 
