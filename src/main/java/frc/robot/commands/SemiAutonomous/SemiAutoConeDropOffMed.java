@@ -30,11 +30,10 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
     new DelayCommand(0.05),
 
     // move to drop off cone
-    new DriveSidewaysToConeDropOff(1),
     new DriveToConeDropOff(1),
 
     // delay until arm gets back
-    new DelayCommand(1.0),
+    //new DelayCommand(1.0),
     
     // open gripper
     new InstantCommand(() -> RobotContainer.grabber.setOpen()),

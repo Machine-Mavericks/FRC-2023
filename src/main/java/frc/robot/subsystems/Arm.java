@@ -137,7 +137,7 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.configMaxIntegralAccumulator(0, 1000.0*DEG_TO_ENCODERPULSE);
 
     // set arm motor peak output and closed loop ramp rate
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.45);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
     m_ArmMotor.configClosedloopRamp(0.6);
   
     // The other code already is supposed to do this, but keep this as a backup
@@ -276,12 +276,12 @@ public void EnableFast(boolean enable)
 {
   if (enable)
   {
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.55);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
     m_ArmMotor.configClosedloopRamp(0.5);
   }
   else
   {
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.45);
+    m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
     m_ArmMotor.configClosedloopRamp(0.6);
   }
 

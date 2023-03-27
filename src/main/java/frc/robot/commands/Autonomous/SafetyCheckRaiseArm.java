@@ -28,6 +28,6 @@ public class SafetyCheckRaiseArm extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (RobotContainer.grabber.GetUltrasonicDistance() > 70.0);
+    return (RobotContainer.grabber.GetUltrasonicDistance() > 50.0);
   }
 }

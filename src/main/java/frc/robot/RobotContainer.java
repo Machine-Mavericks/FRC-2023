@@ -15,6 +15,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
 import frc.robot.subsystems.TargetSelect;
+import frc.robot.subsystems.Pigeon;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.SetArmPosition;
@@ -44,8 +45,8 @@ public class RobotContainer {
   public static final TargetSelect targetselector = new TargetSelect();
   
   // Create instances of robot subsystems
-  public static final NavX gyro = new NavX();
-  // public static final Pigeon gyro2 = new Pigeon();
+  //public static final NavX gyro = new NavX();
+  public static final Pigeon gyro2 = new Pigeon();
   public static final Limelight limelight_high = new Limelight("high");
   public static final Limelight limelight_med = new Limelight("med"); 
   public static final SwerveDrive swervedrive = new SwerveDrive();
@@ -83,7 +84,7 @@ public class RobotContainer {
   private static void configureButtonBindings() {
 
     // reset gyro button
-    OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro.resetGyro()));
+    OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro2.resetGyro()));
     
     // shelf pickup semi-auto routine
     OI.DriverButtons.shelfpickup_Button.whileTrue(new SemiAutoShelfPickup());

@@ -12,6 +12,7 @@ public class DriveToConeDropOff extends CommandBase {
   
   // y PID controllers to get us to the intended destination
   private PIDController m_yController; 
+  private PIDController m_rotController;
   
   // maximum speed
   private double m_maxspeed;
@@ -24,6 +25,13 @@ public class DriveToConeDropOff extends CommandBase {
 
   // pipeline to use
   private int m_camerapipeline;
+
+  public static double AngleDifference(double angle1, double angle2)
+  {
+    double diff = ( angle2 - angle1 + 180 ) % 360 - 180;
+    return diff < -180 ? diff + 360 : diff;
+  }
+
 
   /** Creates a new DriveToConeDropOff. */
   public DriveToConeDropOff(int pipeline) {
@@ -39,6 +47,7 @@ public class DriveToConeDropOff extends CommandBase {
   public void initialize() {
     // set up PIDs
     m_yController = new PIDController(0.04, 0.00, 0.0);
+    m_rotController = new PIDController(0.05, 0.001, 0.0000);
 
     // change pipeline of high camera
     
@@ -61,10 +70,10 @@ public class DriveToConeDropOff extends CommandBase {
   @Override
   public void execute() {
      // forward speed
-     double xSpeed = 0.3;
+     double xSpeed = 0.5;
 
      if (m_camerapipeline==1)
-      xSpeed = 0.3;
+      xSpeed = 0.5;
 
      // assume sideways speed is 0 unless target is detected in camera
      double ySpeed =0.0;
@@ -78,6 +87,22 @@ public class DriveToConeDropOff extends CommandBase {
      }
  
      ySpeed = m_yController.calculate(m_targethorangle_filtered);
+     
+     double rotSpeed = m_rotController.calculate(AngleDifference(0.0, RobotContainer.gyro2.getYaw()));
+     // for safety, bound rotational speed to safe maximum
+     // robot arm is out so can be easy to lose balance
+     // limit to 0.4 rad/s
+     if (rotSpeed>0.4)
+      rotSpeed=0.4;
+     else if (rotSpeed<-0.4)
+      rotSpeed=-0.4;
+
+     // give preference to sideways speed over approach speed
+     // note the 1.0x factor can be adjusted to change amount of
+     // preference robot gives to sideway over approach speed
+     xSpeed = xSpeed - Math.abs(1.5*ySpeed);
+     if (xSpeed < 0.0)
+      xSpeed = 0.0;
 
      // limit x and y speeds
        if (xSpeed > m_maxspeed)
@@ -90,7 +115,7 @@ public class DriveToConeDropOff extends CommandBase {
        ySpeed = -m_maxspeed;  
        
      // drive robot according to x,y,rot PID controller speeds
-     RobotContainer.swervedrive.drive(xSpeed, ySpeed, 0.0, false, false); 
+     RobotContainer.swervedrive.drive(xSpeed, ySpeed, rotSpeed, false, false); 
 
      // update target area
      if (RobotContainer.limelight_med.isTargetPresent())
