@@ -55,9 +55,9 @@ public class SwervePoseEstimator extends SubsystemBase {
     // initialize swerve drive odometry
     m_estimator = new SwerveDrivePoseEstimator(
                       RobotContainer.swervedrive.getKinematics(),
-                      new Rotation2d(0.0),
+                      Rotation2d.fromRadians(0.0),
                       RobotContainer.swervedrive.GetSwerveDistances(),
-                      new Pose2d(0.0, 0.0, new Rotation2d(0.0)),
+                      new Pose2d(0.0, 0.0, Rotation2d.fromRadians(0.0)),
                       VecBuilder.fill(0.02, 0.02, 0.02),
                       VecBuilder.fill(0.2, 0.2, 0.3));
 
@@ -93,10 +93,10 @@ public class SwervePoseEstimator extends SubsystemBase {
   public void setPosition(double x, double y, double robotangle, double gyroangle) {
 
     // make robot position vector
-    Pose2d position = new Pose2d(x, y, new Rotation2d(robotangle * DEGtoRAD));
+    Pose2d position = new Pose2d(x, y, Rotation2d.fromRadians(robotangle * DEGtoRAD));
 
     // set robot odometry
-    m_estimator.resetPosition(new Rotation2d(gyroangle * DEGtoRAD),
+    m_estimator.resetPosition(Rotation2d.fromRadians(gyroangle * DEGtoRAD),
                               RobotContainer.swervedrive.GetSwerveDistances(),
                               position);
   }
@@ -106,7 +106,7 @@ public class SwervePoseEstimator extends SubsystemBase {
   public void periodic() {
 
     // get gyro angle (in degrees) and make rotation vector
-    Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro.getYaw() * DEGtoRAD);
+    Rotation2d gyroangle = Rotation2d.fromRadians(RobotContainer.gyro.getYaw() * DEGtoRAD);
 
     // update odometry with wheel drive and gyro
     m_estimator.update(gyroangle, RobotContainer.swervedrive.GetSwerveDistances());
