@@ -18,7 +18,7 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
     
     // move arm back to drop off cone
     //new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.MID_DEG)),
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)), // was 208.0
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)),
 
     // change camera pipeline
     new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(1)),

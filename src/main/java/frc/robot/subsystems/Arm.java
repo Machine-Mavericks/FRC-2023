@@ -57,9 +57,6 @@ public class Arm extends SubsystemBase {
   private GenericEntry m_ArmPositionSP;
   private GenericEntry m_ArmMotorPositionSP;
 
-  //private GenericEntry m_SetSelMP;
-  //private GenericEntry m_GetSelMP;
-
   private GenericEntry m_ArmEnabledFB;
   private GenericEntry m_ArmForwardLimit;
   private GenericEntry m_ArmReverseLimit;
@@ -83,7 +80,7 @@ public class Arm extends SubsystemBase {
   public static final double PICKUP_DEG = 92;
   public static final double LOW_DEG = 107;
   public static final double STOW_DEG = 146;  // was 120
-  public static final double MID_DEG = 210.2;
+  public static final double MID_DEG = 215.2;
   public static final double PICKUP_SHELF_DEG = 213.0;
   public static final double HIGH_DEG = 260;
 
@@ -272,20 +269,20 @@ private void GetArmPositions() {
 }
 
 
-public void EnableFast(boolean enable)
-{
-  if (enable)
-  {
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
-    m_ArmMotor.configClosedloopRamp(0.5);
-  }
-  else
-  {
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
-    m_ArmMotor.configClosedloopRamp(0.6);
-  }
+// public void EnableFast(boolean enable)
+// {
+//   if (enable)
+//   {
+//     m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
+//     m_ArmMotor.configClosedloopRamp(0.5);
+//   }
+//   else
+//   {
+//     m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
+//     m_ArmMotor.configClosedloopRamp(0.6);
+//   }
 
-}
+// }
 
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
