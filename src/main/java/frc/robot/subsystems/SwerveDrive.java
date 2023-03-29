@@ -85,14 +85,6 @@ public class SwerveDrive extends SubsystemBase {
   private GenericEntry m_RFDriveMotorSpeed;
   private GenericEntry m_LRDriveMotorSpeed;
   private GenericEntry m_RRDriveMotorSpeed;
-  private GenericEntry m_LFDriveMotorVolts;
-  private GenericEntry m_RFDriveMotorVolts;
-  private GenericEntry m_LRDriveMotorVolts;
-  private GenericEntry m_RRDriveMotorVolts;
-  private GenericEntry m_LFDriveMotorTemp;
-  private GenericEntry m_RFDriveMotorTemp;
-  private GenericEntry m_LRDriveMotorTemp;
-  private GenericEntry m_RRDriveMotorTemp;
   private GenericEntry m_BattVolts;
   private GenericEntry m_SpeedLimit;
   private GenericEntry m_AccelLimit;
@@ -318,13 +310,13 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
-  private int updateCounter=0;
+  private int updateCounter=2;
   @Override
   public void periodic() {
     
     // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
     updateCounter+=1;
-    if (updateCounter>=5)
+    if (updateCounter>=10)
     { updateCounter=0; updateShuffleboard(); }
     else if (updateCounter<0)
       updateCounter=0;
@@ -357,7 +349,8 @@ public class SwerveDrive extends SubsystemBase {
     if (fieldOriented) {
       // convert speeds from field relative according to current gyro angle 
       // note negative sign for gyro angle to have robot drive in correct direction
-      s= ChassisSpeeds.fromFieldRelativeSpeeds(s, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
+      //s= ChassisSpeeds.fromFieldRelativeSpeeds(s, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
+      s= ChassisSpeeds.fromFieldRelativeSpeeds(s, Rotation2d.fromDegrees(RobotContainer.gyro2.getYaw()));
     }
       
     // determine desired swerve module states from desired chassis speeds
@@ -544,8 +537,6 @@ public SwerveDriveKinematics getKinematics() {
     m_LFDriveMotorPos = l1.add("Drive Pos'n", 0.0).getEntry();
     m_LFDriveMotorSpeed = l1.add("Drive Speed", 0.0).getEntry();
     m_LFDriveMotorTargetSpeed = l1.add("Drive Target Spd", 0.0).getEntry();
-    m_LFDriveMotorVolts = l1.add("Volts", 0.0).getEntry();
-    m_LFDriveMotorTemp = l1.add("Dr Mtr(degC)", 0.0).getEntry();
 
     // create controls to right-front swerve data
     ShuffleboardLayout l2 = Tab.getLayout("Right-Front", BuiltInLayouts.kList);
@@ -557,8 +548,6 @@ public SwerveDriveKinematics getKinematics() {
     m_RFDriveMotorPos = l2.add("Drive Pos'n", 0.0).getEntry();
     m_RFDriveMotorSpeed = l2.add("Drive Speed", 0.0).getEntry();
     m_RFDriveMotorTargetSpeed = l2.add("Drive Target Spd", 0.0).getEntry();
-    m_RFDriveMotorVolts = l2.add("Volts", 0.0).getEntry();
-    m_RFDriveMotorTemp = l2.add("Dr Mtr(degC)", 0.0).getEntry();
 
     // create controls to left-rear swerve data
     ShuffleboardLayout l3 = Tab.getLayout("Left-Rear", BuiltInLayouts.kList);
@@ -570,8 +559,6 @@ public SwerveDriveKinematics getKinematics() {
     m_LRDriveMotorPos = l3.add("Drive Pos'n", 0.0).getEntry();
     m_LRDriveMotorSpeed = l3.add("Drive Speed", 0.0).getEntry();
     m_LRDriveMotorTargetSpeed = l3.add("Drive Target Spd", 0.0).getEntry();
-    m_LRDriveMotorVolts = l3.add("Volts", 0.0).getEntry();
-    m_LRDriveMotorTemp = l3.add("Dr Mtr(degC)", 0.0).getEntry();
 
     // create controls to right-rear swerve data
     ShuffleboardLayout l4 = Tab.getLayout("Right-Rear", BuiltInLayouts.kList);
@@ -583,8 +570,6 @@ public SwerveDriveKinematics getKinematics() {
     m_RRDriveMotorPos = l4.add("Drive Pos'n", 0.0).getEntry();
     m_RRDriveMotorSpeed = l4.add("Drive Speed", 0.0).getEntry();
     m_RRDriveMotorTargetSpeed = l4.add("Drive Target Spd", 0.0).getEntry();
-    m_RRDriveMotorVolts = l4.add("Volts", 0.0).getEntry();
-    m_RRDriveMotorTemp = l4.add("Dr Mtr(degC)", 0.0).getEntry();
 
     // create controls to bus voltage
     ShuffleboardLayout l5 = Tab.getLayout("Battery", BuiltInLayouts.kList);
@@ -631,18 +616,6 @@ public SwerveDriveKinematics getKinematics() {
     m_RFDriveMotorTargetSpeed.setDouble(m_RFDriveMotor.getClosedLoopTarget());
     m_LRDriveMotorTargetSpeed.setDouble(m_LRDriveMotor.getClosedLoopTarget());
     m_RRDriveMotorTargetSpeed.setDouble(m_RRDriveMotor.getClosedLoopTarget());
-
-    // update drive motor volts
-    m_LFDriveMotorVolts.setDouble(m_LFDriveMotor.getMotorOutputVoltage());
-    m_RFDriveMotorVolts.setDouble(m_RFDriveMotor.getMotorOutputVoltage());
-    m_LRDriveMotorVolts.setDouble(m_LRDriveMotor.getMotorOutputVoltage());
-    m_RRDriveMotorVolts.setDouble(m_RRDriveMotor.getMotorOutputVoltage());
-
-    // update drive motor temperatures (degC)
-    m_LFDriveMotorTemp.setDouble(m_LFDriveMotor.getTemperature());
-    m_RFDriveMotorTemp.setDouble(m_RFDriveMotor.getTemperature());
-    m_LRDriveMotorTemp.setDouble(m_LRDriveMotor.getTemperature());
-    m_RRDriveMotorTemp.setDouble(m_RRDriveMotor.getTemperature());
 
     // update battery voltage (volts)
     m_BattVolts.setDouble(m_LFDriveMotor.getBusVoltage());

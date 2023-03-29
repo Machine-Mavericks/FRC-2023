@@ -15,6 +15,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
 import frc.robot.subsystems.TargetSelect;
+import frc.robot.subsystems.Pigeon;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.SetArmPosition;
@@ -24,6 +25,8 @@ import frc.robot.commands.Autonomous.RightPath;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffHigh;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoShelfPickup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
@@ -42,9 +45,11 @@ public class RobotContainer {
   public static final AutoPathSelect autopathselect = new AutoPathSelect();
   
   // Create instances of robot subsystems
-  public static final NavX gyro = new NavX();
+  //public static final NavX gyro = new NavX();
+  public static final Pigeon gyro2 = new Pigeon();
   public static final Limelight limelight_high = new Limelight("high");
   public static final Limelight limelight_med = new Limelight("med"); 
+  public static final Limelight limelight_low = new Limelight("low");
   public static final SwerveDrive swervedrive = new SwerveDrive();
   public static final SwerveOdometry swerveodometry = new SwerveOdometry();
   public static final Arm arm = new Arm();  
@@ -79,14 +84,15 @@ public class RobotContainer {
   private static void configureButtonBindings() {
 
     // reset gyro button
-    OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro.resetGyro()));
+    OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro2.resetGyro()));
     
     // shelf pickup semi-auto routine
     OI.DriverButtons.shelfpickup_Button.whileTrue(new SemiAutoShelfPickup());
     OI.DriverButtons.DropoffHigh_Button.whileTrue(new SemiAutoConeDropOffHigh());
     OI.DriverButtons.DropoffMed_Button.whileTrue(new SemiAutoConeDropOffMed());
     OI.DriverButtons.auto_balance_Button.whileTrue(new AutoBalance());
-    
+    OI.DriverButtons.CubeDropoffHigh_Button.whileTrue(new SemiAutoCubeDropOffHigh());
+    OI.DriverButtons.CubeDropoffMed_Button.whileTrue(new SemiAutoCubeDropOffMed());
 
     // arrm movement buttons
     OI.OperatorButtons.ground_Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));

@@ -90,7 +90,8 @@ public class SwerveOdometry extends SubsystemBase {
   public void periodic() {
 
     // get gyro angle (in degrees) and make rotation vector
-    Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro.getYaw() * DEGtoRAD);
+    //Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro.getYaw() * DEGtoRAD);
+    Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro2.getYaw() * DEGtoRAD);
 
     // update odometry
     m_odometry.update(gyroangle, RobotContainer.swervedrive.GetSwerveDistances());

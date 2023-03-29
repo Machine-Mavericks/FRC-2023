@@ -7,11 +7,10 @@ package frc.robot.commands.Autonomous;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
-public class SafetyCheckStowPosition extends CommandBase {
+public class SafetyCheckRaiseArm extends CommandBase {
   /** Creates a new SafetyCheckStowPosition. */
-  public SafetyCheckStowPosition() {
+  public SafetyCheckRaiseArm() {
     
-    addRequirements(RobotContainer.arm);
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +28,6 @@ public class SafetyCheckStowPosition extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (RobotContainer.arm.GetArmPosition() > 125.0 && RobotContainer.arm.GetArmPosition() < 145.0 &&
-    RobotContainer.arm.GetArmPositionCANCoder() > 125.0 && RobotContainer.arm.GetArmPositionCANCoder() <145.0);
+    return (RobotContainer.grabber.GetUltrasonicDistance() > 50.0);
   }
 }

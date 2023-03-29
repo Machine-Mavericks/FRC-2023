@@ -56,15 +56,25 @@ public class DriveToShelfPickup extends CommandBase {
     m_targetangle_filtered = 0.0;
 
     // reset target x speed
-    m_targetxSpeed = 0.9;
+    m_targetxSpeed = 1.0;
 
     // reset [initial] forward speed
-    xSpeed = m_targetxSpeed;
+    //xSpeed = m_targetxSpeed;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    // set forward speed
+    xSpeed = m_targetxSpeed;
+
+    if (RobotContainer.grabber.GetUltrasonicDistance() < 50.0)
+    {
+      xSpeed = (xSpeed-0.5)+ 0.5* (RobotContainer.grabber.GetUltrasonicDistance()-20.0)/30.0;
+      if (xSpeed < 0.5)
+        xSpeed = 0.5;
+    }
 
     // get distance sensor reading (in volts) and low pass filter it
     double dist = RobotContainer.grabber.GetSensorDistance();
@@ -85,6 +95,13 @@ public class DriveToShelfPickup extends CommandBase {
     // determine lateral speed to get on path - determined by PID controller
     double ySpeed = m_yController.calculate(m_targetangle_filtered);
     
+    // give preference to sideways speed over approach speed
+     // note the 1.0x factor can be adjusted to change amount of
+     // preference robot gives to sideway over approach speed
+     xSpeed = xSpeed - Math.abs(1.0*ySpeed);
+     if (xSpeed < 0.0)
+      xSpeed = 0.0;
+
     // limit x and y speeds
     if (xSpeed > m_maxspeed)
       xSpeed = m_maxspeed;
@@ -98,16 +115,16 @@ public class DriveToShelfPickup extends CommandBase {
 
     // have we reached point (indicated by sensor) where we need to slow down to a stop?
     // deceleration used to reduce unintended longitudinal movement of arm when robot stops to pick up cone
-    if (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(1.50))
-      m_targetxSpeed = 0;
+    //if (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(1.50))
+    //  m_targetxSpeed = 0;
 
    
     // if we are to decelerate, then reduce speed in controlled fashion (limit deceleration) until robot is stopped
-    if (xSpeed > m_targetxSpeed)
-      { xSpeed = xSpeed - 0.05;
-        if (xSpeed < 0.0)
-          xSpeed = 0.0;
-      }
+    //if (xSpeed > m_targetxSpeed)
+    //  { xSpeed = xSpeed - 0.05;
+    //    if (xSpeed < 0.0)
+    //      xSpeed = 0.0;
+    //  }
 
 
     // correct robot rotation according to gyro
@@ -129,6 +146,8 @@ public class DriveToShelfPickup extends CommandBase {
   @Override
   public boolean isFinished() {
     // we are finished command when robot has detected destination, and then finished decelerating to 0m/s speed
-    return (xSpeed <=0.0);
+    //return (xSpeed <=0.0);
+    return RobotContainer.grabber.GetTargetGrabbedStatus() ||
+          (RobotContainer.grabber.GetUltrasonicDistance() < RobotContainer.grabber.GetUltrasonicDistSelection());
   }
 }

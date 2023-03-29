@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import java.util.Map;
@@ -30,8 +32,13 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_MotorSpeed;
   private GenericEntry m_SensorDistance;
   public GenericEntry m_Volts;
-  private GenericEntry m_TargetAreaHigh;
-  private GenericEntry m_TargetAreaMid;
+  private GenericEntry m_ConeTargetAreaHigh;
+  private GenericEntry m_ConeTargetAreaMid;
+  private GenericEntry m_CubeTargetAreaHigh;
+  private GenericEntry m_CubeTargetAreaMid;
+  private GenericEntry m_ObjectGrabbed;
+  private GenericEntry m_UltrasonicDistance;
+  private GenericEntry m_UltrasonicDistSelect;
 
 
   // spark max motor
@@ -45,22 +52,24 @@ public class Grabber extends SubsystemBase {
   private boolean m_enabled;
 
   // grabber motor speed (rpm)
-  private double GrabberMotorSpeed = 6000.0;
+  private double GrabberMotorSpeedLoad = 16000.0;
+  private double GrabberMotorSpeedDrop = 1500.0;
 
   // grabber motor current limit (amps) (must be integer value)
   private int GrabberMotorCurrentLimitStall = 8;
   private int GrabberMotorCurrentLimitFree = 8;
 
-  // function to open and close gripper
-  //public enum GrabberPos {
-  //  Close,
-  //  Open
-  //};
-
   private boolean Open;
 
   // create range sensor
-  AnalogInput m_sensor;
+  private AnalogInput m_sensor;
+
+  // grabber sensor
+ private  DigitalInput m_grabsensor;
+
+  // ultrasonic distance sensor
+  private Ultrasonic m_ultrasonicsensor;
+
 
   /** Creates a new Grabber. */
   public Grabber() {
@@ -94,13 +103,22 @@ public class Grabber extends SubsystemBase {
     Disable();
 
     // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
-    AnalogInput.setGlobalSampleRate(250000.0);
+    AnalogInput.setGlobalSampleRate(100000.0);
     m_sensor = new AnalogInput(0);
     m_sensor.setOversampleBits(5);
 
+    // set up digital switch - to detect when something is grabbed
+    m_grabsensor = new DigitalInput(0);
+    
+    // ultrasonic distance sensor
+    m_ultrasonicsensor = new Ultrasonic(3, 4);
+    m_ultrasonicsensor.setAutomaticMode(true);
+    m_ultrasonicsensor.setEnabled(true);
+    
   }
 
   // This method will be called once per scheduler run
+  double stalltimer=0.0;
   @Override
   public void periodic() {
     
@@ -117,17 +135,24 @@ public class Grabber extends SubsystemBase {
     // if motor is enabled, then set voltage according to mode
     if (m_enabled)
     {
-      if (Open){
-        if (t<1) {
+      // is motor stalling because it has a cone/cube in it? if so, add to time
+      if (m_motor.getOutputCurrent()>20.0)
+        stalltimer +=0.02;
+      if (GetTargetGrabbedStatus())
+        stalltimer = 1.0;
+
+      if (Open){   
+        // apply full speed for 5s or until motor stalled for 1.0s.
+        if (t<5.0 && stalltimer<1.0) {
           // if motor is in close mode, apply full effort for limited time, after which, reduce to 1V
-            m_PIDController.setReference(GrabberMotorSpeed, CANSparkMax.ControlType.kVelocity);
+            m_PIDController.setReference(GrabberMotorSpeedLoad, CANSparkMax.ControlType.kVelocity);
         } else {
             m_PIDController.setIAccum(0.0);
             m_motor.setVoltage(1); 
         }
       } else {
         if (t <1.5) {
-          m_PIDController.setReference(-(GrabberMotorSpeed/4), CANSparkMax.ControlType.kVelocity);
+          m_PIDController.setReference(-(GrabberMotorSpeedDrop), CANSparkMax.ControlType.kVelocity);
         } else { 
           m_PIDController.setIAccum(0.0); m_motor.setVoltage(0);  
       }
@@ -135,7 +160,7 @@ public class Grabber extends SubsystemBase {
     }
     else
       // we are disabled - turn motor off
-      m_motor.setVoltage(0.0);
+      { m_motor.setVoltage(0.0); stalltimer=0.0; }
 
   }
 
@@ -148,6 +173,9 @@ public class Grabber extends SubsystemBase {
     // set our position and restart timer
     m_timer.restart();
     
+    // reset motor stall timer
+    stalltimer = 0.0;
+    
     // enable grabber motor
     Enable();
 
@@ -158,6 +186,9 @@ public class Grabber extends SubsystemBase {
     // set our position and restart timer
     m_timer.restart();
     
+    // reset motor stall timer
+    stalltimer = 0.0;
+
     // enable grabber motor
     Enable();
 
@@ -181,15 +212,36 @@ public class Grabber extends SubsystemBase {
 
 
   // return target area for high cone target
-  public double GetTargetAreaHigh()
-  {
-    return m_TargetAreaHigh.getDouble(0.3);
-  }
+  public double GetConeTargetAreaHigh()
+  { return m_ConeTargetAreaHigh.getDouble(0.3); }
 
   // return target area for mid cone target
-  public double GetTargetAreaMid()
+  public double GetConeTargetAreaMid()
+  { return m_ConeTargetAreaMid.getDouble(0.5); }
+
+  // return target area for high cone target
+  public double GetCubeTargetAreaHigh()
+  { return m_CubeTargetAreaHigh.getDouble(0.3); }
+
+  // return target area for mid cone target
+  public double GetCubeTargetAreaMid()
+  { return m_CubeTargetAreaMid.getDouble(0.5); }
+
+  // get ultrasonic distance selection
+  public double GetUltrasonicDistSelection()
   {
-    return m_TargetAreaMid.getDouble(0.5);
+    return m_UltrasonicDistSelect.getDouble(24.0);
+  }
+
+  // get ultrasonic snesor distance (in)
+  public double GetUltrasonicDistance()
+  {
+    return m_ultrasonicsensor.getRangeInches();
+  }
+  // returns true if switch says cone is grabbed
+  public boolean GetTargetGrabbedStatus()
+  {
+    return !m_grabsensor.get();
   }
 
 
@@ -204,33 +256,60 @@ public class Grabber extends SubsystemBase {
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Grabber", BuiltInLayouts.kList);
     l1.withPosition(0, 0);
-    l1.withSize(1, 4);
+    l1.withSize(1, 5);
     m_GrabberPos= l1.add("Grabber Pos", 0.0).getEntry();
     m_MotorCurrent = l1.add("Current(A)", 0.0).getEntry(); 
     m_MotorVoltage = l1.add("Volts(V)", 0.0).getEntry();
     m_MotorSpeed = l1.add("Speed(rpm)", 0.0).getEntry();
     m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
+    m_UltrasonicDistance = l1.add("Ultrasonic Dist(m)", 0.0).getEntry();
+
     
-    m_Volts = Tab.addPersistent("Volts", 1.50)
+    m_ConeTargetAreaHigh = Tab.addPersistent("Target Area High", 0.2)
     .withPosition(1, 0)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.0, "max", 1.0))
+    .getEntry();
+
+    m_ConeTargetAreaMid = Tab.addPersistent("Target Area Mid", 0.5)
+    .withPosition(1, 1)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.0, "max", 1.0))
+    .getEntry();
+
+    m_CubeTargetAreaHigh = Tab.addPersistent("Cube Area High", 0.2)
+    .withPosition(1, 2)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.0, "max", 7.5))
+    .getEntry();
+
+    m_CubeTargetAreaMid = Tab.addPersistent("Cube Area Mid", 0.5)
+    .withPosition(1, 3)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.0, "max", 7.5))
+    .getEntry();
+
+    m_UltrasonicDistSelect = Tab.addPersistent("Ultrasonic Dist Select", 24.0)
+    .withPosition(4, 0)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0.0, "max", 50.0))
+    .getEntry();
+
+    m_Volts = Tab.addPersistent("Volts", 1.50)
+    .withPosition(4, 1)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
     .withProperties(Map.of("min", 0.00, "max", 2.5))
     .getEntry();
 
-    m_TargetAreaHigh = Tab.addPersistent("Target Area High", 0.2)
-    .withPosition(1, 2)
-    .withSize(3, 1)
-    .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.0, "max", 1.0))
-    .getEntry();
+    // add sensor
+    m_ObjectGrabbed = Tab.add("Cone Grabbed", false).withPosition(4,2).getEntry();
 
-    m_TargetAreaMid = Tab.addPersistent("Target Area Mid", 0.5)
-    .withPosition(1, 3)
-    .withSize(3, 1)
-    .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.0, "max", 1.0))
-    .getEntry();
   }
 
 
@@ -244,6 +323,12 @@ public class Grabber extends SubsystemBase {
 
     // update distance
     m_SensorDistance.setDouble(GetSensorDistance());
+
+    // update sensor
+    m_ObjectGrabbed.setBoolean(GetTargetGrabbedStatus());
+
+    // ultrasonic distance
+    m_UltrasonicDistance.setDouble(m_ultrasonicsensor.getRangeInches());
   }
 
 }

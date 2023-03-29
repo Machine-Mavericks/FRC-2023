@@ -69,8 +69,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     
     // Reset gyro
-    RobotContainer.gyro.resetGyro();
-    //RobotContainer.gyro2.resetGyro();
+    //RobotContainer.gyro.resetGyro();
+    RobotContainer.gyro2.resetGyro();
 
     // Reset swerve drive encoders
     RobotContainer.swervedrive.ResetSteerEncoders();
@@ -94,8 +94,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     
     // Reset gyro - temporary - code likely to be moved later
-    RobotContainer.gyro.resetGyro();
-    //RobotContainer.gyro2.resetGyro();
+    //RobotContainer.gyro.resetGyro();
+    RobotContainer.gyro2.resetGyro();
 
     // Reset swerve drive encoders - temporary - code likely to be moved later.
     RobotContainer.swervedrive.ResetSteerEncoders();
