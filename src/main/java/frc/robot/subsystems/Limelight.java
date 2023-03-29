@@ -35,7 +35,7 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_AprilTagID;
 
     private GenericEntry m_Distance; // For cones & Cubes only
-    private DoubleArraySubscriber m_llpythonSub;
+    //private DoubleArraySubscriber m_llpythonSub;
 
     private GenericEntry m_AngleX;
     private GenericEntry m_AngleY;
@@ -89,7 +89,7 @@ public class Limelight extends SubsystemBase {
       
       // record fiducial enable
       m_FiducialEnable = FiducialEnable;
-      
+    
       // set pointer to limelight network table
       m_table = NetworkTableInstance.getDefault().getTable("limelight-"+name);
 
@@ -100,8 +100,8 @@ public class Limelight extends SubsystemBase {
       // side-by-side
       m_table.getEntry("stream").setNumber(0);
 
-      m_llpythonSub = m_table.getDoubleArrayTopic("llpython").subscribe(new double[] {});
-
+      //m_llpythonSub = m_table.getDoubleArrayTopic("llpython").subscribe(new double[] {});
+    
       // set initial pipeline to 0
       setPipeline(0);
   
@@ -118,7 +118,7 @@ public class Limelight extends SubsystemBase {
       m_UpdateTimer++;
       if (m_UpdateTimer>=10)
       {
-        updateShuffleboard();
+        //updateShuffleboard();
         m_UpdateTimer=0;
       }
     }
@@ -215,10 +215,10 @@ public class Limelight extends SubsystemBase {
       // }
 
       
-      double[] llpython = m_llpythonSub.get();
-      if (llpython.length > 0){
-        return llpython[0];
-      } 
+      //double[] llpython = m_llpythonSub.get();
+      //if (llpython.length > 0){
+      //  return llpython[0];
+      //} 
       return 0;
     }
 

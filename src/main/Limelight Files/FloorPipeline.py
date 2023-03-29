@@ -21,7 +21,7 @@ def pixelInRange(centerPixelColor, lower_bound, upper_bound):
 
 # runPipeline() is called every frame by Limelight's backend.
 def runPipeline(image, llrobot):
-    #return
+    return
     llpython = []
     largestContour = np.array([[]])
 
