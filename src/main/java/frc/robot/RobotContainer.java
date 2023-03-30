@@ -14,6 +14,7 @@ import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
+import frc.robot.subsystems.CameraTilt;
 import frc.robot.subsystems.TargetSelect;
 import frc.robot.subsystems.Pigeon;
 import frc.robot.commands.ManualDriveCommand;
@@ -27,6 +28,7 @@ import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffMed;
+import frc.robot.commands.SemiAutonomous.SemiAutoFloorCubePickup;
 import frc.robot.commands.SemiAutonomous.SemiAutoShelfPickup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
@@ -49,6 +51,7 @@ public class RobotContainer {
   // Create instances of robot subsystems
   //public static final NavX gyro = new NavX();
   public static final Pigeon gyro2 = new Pigeon();
+  public static final CameraTilt cameratilt = new CameraTilt();
   public static final Limelight limelight_high = new Limelight("high");
   public static final Limelight limelight_med = new Limelight("med"); 
   public static final Limelight limelight_low = new Limelight("low");
@@ -96,8 +99,9 @@ public class RobotContainer {
     OI.DriverButtons.auto_balance_Button.whileTrue(new AutoBalance());
     OI.DriverButtons.CubeDropoffHigh_Button.whileTrue(new SemiAutoCubeDropOffHigh());
     OI.DriverButtons.CubeDropoffMed_Button.whileTrue(new SemiAutoCubeDropOffMed());
+    OI.DriverButtons.CubeFloorPickup_Button.whileTrue(new SemiAutoFloorCubePickup());
 
-    // arrm movement buttons
+    // arm movement buttons
     OI.OperatorButtons.ground_Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
     OI.OperatorButtons.mid_Button.onTrue(new SetArmPosition(Arm.MID_DEG));
     OI.OperatorButtons.high_Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));

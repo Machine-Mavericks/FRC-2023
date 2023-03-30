@@ -16,7 +16,10 @@ public class SemiAutoCubeDropOffMed extends SequentialCommandGroup {
     // Add your commands in the addCommands() call
     addCommands(
     
-    // move arm back to drop off cone
+    // tilt camera angle
+    new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_CUBEDROPOFF_POS))
+
+    /*// move arm back to drop off cone
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)),
 
     // change camera pipeline
@@ -36,7 +39,7 @@ public class SemiAutoCubeDropOffMed extends SequentialCommandGroup {
 
     // move arm to stow position
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG))
-    
+    */
     );
   }
 }

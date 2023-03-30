@@ -92,7 +92,7 @@ public class Limelight extends SubsystemBase {
       
       // set pointer to limelight network table
       m_table = NetworkTableInstance.getDefault().getTable("limelight-"+name);
-
+      
       // initialize camera to use LED mode set in the current pipeline setup
       m_table.getEntry("ledMode").setNumber(0);
 

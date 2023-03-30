@@ -66,11 +66,13 @@ public class RobotMap {
         /** CAN ID of right talon 2. */
         public static final int RIGHT_CONTROLLER_2 = 3;
     }
-//LED's
+
     public static class PWMPorts {
         /** PWM Port for led strip */
-        //public static final int LED_STRIP1 = 0;
         public static final int LED_BLINKIN = 0;
+
+        // PWM port for camera tilting subsystem
+        public static final int CAMERA_SERVO_ID = 1;
     } 
 
 }
