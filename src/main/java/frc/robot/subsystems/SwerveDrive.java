@@ -5,7 +5,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.GenericPublisher;
+import edu.wpi.first.networktables.GenericSubscriber;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -61,34 +62,34 @@ public class SwerveDrive extends SubsystemBase {
   //static final double MAX_VELOCITY_METERS_PER_SECOND = 1.75;
 
   // shuffboard entries - used to display swerve drive data
-  private GenericEntry m_LFCanCoderPos;
-  private GenericEntry m_RFCanCoderPos;
-  private GenericEntry m_LRCanCoderPos;
-  private GenericEntry m_RRCanCoderPos;
-  private GenericEntry m_LFSteerMotorPos;
-  private GenericEntry m_RFSteerMotorPos;
-  private GenericEntry m_LRSteerMotorPos;
-  private GenericEntry m_RRSteerMotorPos;
-  private GenericEntry m_LFSteerMotorTarget;
-  private GenericEntry m_RFSteerMotorTarget;
-  private GenericEntry m_LRSteerMotorTarget;
-  private GenericEntry m_RRSteerMotorTarget;
-  private GenericEntry m_LFDriveMotorPos;
-  private GenericEntry m_RFDriveMotorPos;
-  private GenericEntry m_LRDriveMotorPos;
-  private GenericEntry m_RRDriveMotorPos;
-  private GenericEntry m_LFDriveMotorTargetSpeed;
-  private GenericEntry m_RFDriveMotorTargetSpeed;
-  private GenericEntry m_LRDriveMotorTargetSpeed;
-  private GenericEntry m_RRDriveMotorTargetSpeed;
-  private GenericEntry m_LFDriveMotorSpeed;
-  private GenericEntry m_RFDriveMotorSpeed;
-  private GenericEntry m_LRDriveMotorSpeed;
-  private GenericEntry m_RRDriveMotorSpeed;
-  private GenericEntry m_BattVolts;
-  private GenericEntry m_SpeedLimit;
-  private GenericEntry m_AccelLimit;
-  private GenericEntry m_RotateSpeedLimit;
+  private GenericPublisher m_LFCanCoderPos;
+  private GenericPublisher m_RFCanCoderPos;
+  private GenericPublisher m_LRCanCoderPos;
+  private GenericPublisher m_RRCanCoderPos;
+  private GenericPublisher m_LFSteerMotorPos;
+  private GenericPublisher m_RFSteerMotorPos;
+  private GenericPublisher m_LRSteerMotorPos;
+  private GenericPublisher m_RRSteerMotorPos;
+  private GenericPublisher m_LFSteerMotorTarget;
+  private GenericPublisher m_RFSteerMotorTarget;
+  private GenericPublisher m_LRSteerMotorTarget;
+  private GenericPublisher m_RRSteerMotorTarget;
+  private GenericPublisher m_LFDriveMotorPos;
+  private GenericPublisher m_RFDriveMotorPos;
+  private GenericPublisher m_LRDriveMotorPos;
+  private GenericPublisher m_RRDriveMotorPos;
+  private GenericPublisher m_LFDriveMotorTargetSpeed;
+  private GenericPublisher m_RFDriveMotorTargetSpeed;
+  private GenericPublisher m_LRDriveMotorTargetSpeed;
+  private GenericPublisher m_RRDriveMotorTargetSpeed;
+  private GenericPublisher m_LFDriveMotorSpeed;
+  private GenericPublisher m_RFDriveMotorSpeed;
+  private GenericPublisher m_LRDriveMotorSpeed;
+  private GenericPublisher m_RRDriveMotorSpeed;
+  private GenericPublisher m_BattVolts;
+  private GenericSubscriber m_SpeedLimit;
+  private GenericSubscriber m_AccelLimit;
+  private GenericSubscriber m_RotateSpeedLimit;
 
 
   // create CANCoder sensor objects

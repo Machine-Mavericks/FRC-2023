@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -45,25 +44,7 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_Long;
     private GenericEntry m_Hor;
     private GenericEntry m_Vert;
-    private GenericEntry m_X;
-    private GenericEntry m_Y;
-    private GenericEntry m_Z;
-    private GenericEntry m_Pitch;
-    private GenericEntry m_Yaw;
-    private GenericEntry m_Roll;
-
-    private GenericEntry m_Xfs;
-    private GenericEntry m_Yfs;
-    private GenericEntry m_Zfs;
-    private GenericEntry m_Pitchfs;
-    private GenericEntry m_Yawfs;
-    private GenericEntry m_Rollfs;
-    private GenericEntry m_Xrs;
-    private GenericEntry m_Yrs;
-    private GenericEntry m_Zrs;
-    private GenericEntry m_Pitchrs;
-    private GenericEntry m_Yawrs;
-    private GenericEntry m_Rollrs;
+    
 
     private GenericEntry m_BotPose[] = new GenericEntry[6];
     private GenericEntry m_BotPoseRed[] = new GenericEntry[6];

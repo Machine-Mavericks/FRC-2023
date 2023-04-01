@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.GenericSubscriber;
 
 
 /** Contains shuffleboard setup for generic main page not belonging to any subsubsystem
@@ -25,7 +26,7 @@ public class AutoPathSelect extends SubsystemBase {
     // example autonomous path shuffleboard selection boxes
     // true if selected, false if not
     // <add any other controls here that go on main shufflebard page
-    private GenericEntry m_delayTime;
+    private GenericSubscriber m_delayTime;
     private SendableChooser<Integer> m_autonomousPath;
 
     // other controls on main page
