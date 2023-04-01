@@ -57,9 +57,6 @@ public class Arm extends SubsystemBase {
   private GenericEntry m_ArmPositionSP;
   private GenericEntry m_ArmMotorPositionSP;
 
-  //private GenericEntry m_SetSelMP;
-  //private GenericEntry m_GetSelMP;
-
   private GenericEntry m_ArmEnabledFB;
   private GenericEntry m_ArmForwardLimit;
   private GenericEntry m_ArmReverseLimit;
@@ -80,12 +77,13 @@ public class Arm extends SubsystemBase {
   static final double MIN_MID_ARM_POS_DEG = 70;
   static final double MAX_MID_ARM_POS_DEG = 262;
 
-  public static final double PICKUP_DEG = 92;
-  public static final double LOW_DEG = 107;
-  public static final double STOW_DEG = 146;  // was 120
-  public static final double MID_DEG = 210.2;
+  public static final double PICKUP_DEG = 114.0;
+  public static final double STOW_DEG = 146;
+  public static final double MID_DEG = 213.2;
   public static final double PICKUP_SHELF_DEG = 213.0;
-  public static final double HIGH_DEG = 260;
+  public static final double HIGH_DEG = 252;
+  public static final double CUBE_MID_DEG = 212.0; 
+  public static final double CUBE_HIGH_DEG = 247.0; // was 247.0
 
 
   // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
@@ -128,9 +126,9 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.setNeutralMode(NeutralMode.Brake);
       
     // set steering motor closed loop control gains
-    m_ArmMotor.config_kP(0, 0.015, 0);
+    m_ArmMotor.config_kP(0, 0.012, 0);  // was 0.015
     m_ArmMotor.config_kI(0, 0.0001, 0);  // 0.0001?
-    m_ArmMotor.config_kD(0, 0.05, 0);
+    m_ArmMotor.config_kD(0, 0.05, 0); // was 0.05
     
     // set integration zone and limiter - must haves for using integral gain!
     m_ArmMotor.config_IntegralZone(0, 10.0*DEG_TO_ENCODERPULSE);
@@ -138,7 +136,7 @@ public class Arm extends SubsystemBase {
 
     // set arm motor peak output and closed loop ramp rate
     m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
-    m_ArmMotor.configClosedloopRamp(0.6);
+    m_ArmMotor.configClosedloopRamp(1.0);
   
     // The other code already is supposed to do this, but keep this as a backup
     // Note the values are set to plus/minus 5 degrees beyond the software limits.
@@ -193,7 +191,7 @@ public void SetEnableArm(boolean Enable) {
     // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
     updateCounter+=1;
     if (updateCounter>=10)
-    { updateCounter=0; updateShuffleboard(); }
+  { updateCounter=0; updateShuffleboard(); }
     else if (updateCounter<0)
       updateCounter=0;
   }
@@ -272,20 +270,20 @@ private void GetArmPositions() {
 }
 
 
-public void EnableFast(boolean enable)
-{
-  if (enable)
-  {
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
-    m_ArmMotor.configClosedloopRamp(0.5);
-  }
-  else
-  {
-    m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
-    m_ArmMotor.configClosedloopRamp(0.6);
-  }
+// public void EnableFast(boolean enable)
+// {
+//   if (enable)
+//   {
+//     m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
+//     m_ArmMotor.configClosedloopRamp(0.5);
+//   }
+//   else
+//   {
+//     m_ArmMotor.configClosedLoopPeakOutput(0,0.65);
+//     m_ArmMotor.configClosedloopRamp(0.6);
+//   }
 
-}
+// }
 
 
   // -------------------- Subsystem Shuffleboard Methods --------------------

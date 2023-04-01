@@ -16,9 +16,12 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
     // Add your commands in the addCommands() call
     addCommands(
     
+    // tilt camera angle
+    //new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_CONEDROPOFF_POS))
+
     // move arm back to drop off cone
     //new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.MID_DEG)),
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)), // was 208.0
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)),
 
     // change camera pipeline
     new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(1)),

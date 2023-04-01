@@ -31,7 +31,7 @@ public class CoopCubePath extends SequentialCommandGroup {
     new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
 
     // switch arm to fast control mode
-    new InstantCommand(() -> RobotContainer.arm.EnableFast(true)),
+    //new InstantCommand(() -> RobotContainer.arm.EnableFast(true)),
     
     // move arm back to drop off cube
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),

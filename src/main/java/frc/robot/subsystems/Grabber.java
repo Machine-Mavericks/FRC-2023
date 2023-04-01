@@ -11,14 +11,19 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import java.util.Map;
 import com.revrobotics.CANSparkMax;
+//import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+//import com.revrobotics.Rev2mDistanceSensor.Port;
+//import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
+//import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 import frc.robot.OI;
 import frc.robot.RobotMap;
@@ -31,6 +36,7 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_GrabberPos;
   private GenericEntry m_MotorSpeed;
   private GenericEntry m_SensorDistance;
+  private GenericEntry m_I2CDistance;
   public GenericEntry m_Volts;
   private GenericEntry m_ConeTargetAreaHigh;
   private GenericEntry m_ConeTargetAreaMid;
@@ -39,6 +45,7 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_ObjectGrabbed;
   private GenericEntry m_UltrasonicDistance;
   private GenericEntry m_UltrasonicDistSelect;
+
 
 
   // spark max motor
@@ -70,6 +77,10 @@ public class Grabber extends SubsystemBase {
   // ultrasonic distance sensor
   private Ultrasonic m_ultrasonicsensor;
 
+  //private Rev2mDistanceSensor I2CSensor;
+
+  // i2c for for TF Luna Sensor
+  private I2C m_i2cPort;
 
   /** Creates a new Grabber. */
   public Grabber() {
@@ -102,6 +113,11 @@ public class Grabber extends SubsystemBase {
 
     Disable();
 
+    // set up I2C sensor
+    //I2CSensor = new Rev2mDistanceSensor(Port.kMXP,Unit.kInches,RangeProfile.kDefault);
+    //I2CSensor.setAutomaticMode(true);
+    //I2CSensor.setEnabled(true);
+
     // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
     AnalogInput.setGlobalSampleRate(100000.0);
     m_sensor = new AnalogInput(0);
@@ -115,6 +131,10 @@ public class Grabber extends SubsystemBase {
     m_ultrasonicsensor.setAutomaticMode(true);
     m_ultrasonicsensor.setEnabled(true);
     
+    // set up TF luna 
+    //i2c
+
+
   }
 
   // This method will be called once per scheduler run
@@ -262,8 +282,8 @@ public class Grabber extends SubsystemBase {
     m_MotorVoltage = l1.add("Volts(V)", 0.0).getEntry();
     m_MotorSpeed = l1.add("Speed(rpm)", 0.0).getEntry();
     m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
-    m_UltrasonicDistance = l1.add("Ultrasonic Dist(m)", 0.0).getEntry();
-
+    m_UltrasonicDistance = l1.add("Ultrasonic Dist(in)", 0.0).getEntry();
+    m_I2CDistance = l1.add("I2C Dist(in)", 0.0).getEntry();
     
     m_ConeTargetAreaHigh = Tab.addPersistent("Target Area High", 0.2)
     .withPosition(1, 0)
@@ -300,11 +320,11 @@ public class Grabber extends SubsystemBase {
     .withProperties(Map.of("min", 0.0, "max", 50.0))
     .getEntry();
 
-    m_Volts = Tab.addPersistent("Volts", 1.50)
+    m_Volts = Tab.addPersistent("Volts", 2.25)
     .withPosition(4, 1)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.00, "max", 2.5))
+    .withProperties(Map.of("min", 0.00, "max", 3.0))
     .getEntry();
 
     // add sensor
@@ -329,6 +349,10 @@ public class Grabber extends SubsystemBase {
 
     // ultrasonic distance
     m_UltrasonicDistance.setDouble(m_ultrasonicsensor.getRangeInches());
+
+    // i2c distance
+    //m_I2CDistance.setDouble(I2CSensor.getRange());
+
   }
 
 }

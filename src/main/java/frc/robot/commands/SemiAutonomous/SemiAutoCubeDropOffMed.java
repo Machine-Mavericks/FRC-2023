@@ -16,18 +16,24 @@ public class SemiAutoCubeDropOffMed extends SequentialCommandGroup {
     // Add your commands in the addCommands() call
     addCommands(
     
+    // tilt camera angle
+    //new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_CUBEDROPOFF_POS))
+
     // move arm back to drop off cone
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)),
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.CUBE_MID_DEG)),
 
     // change camera pipeline
-    new InstantCommand(() -> RobotContainer.limelight_low.setPipeline(0)),
+    //new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(2)),
 
     // delay until camera pipeline changed
     new DelayCommand(0.05),
 
     // move to drop off cube
-    new DriveToCubeDropOff(1),
+    new DriveToCubeDropOff(3),
     
+    // delay to stabilize robot before opening gripper
+    new DelayCommand(0.15),
+
     // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     

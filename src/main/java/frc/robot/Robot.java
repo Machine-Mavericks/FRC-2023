@@ -68,6 +68,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     
+    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // autonomous chooser on the dashboard.
+    //m_robotContainer = new RobotContainer();
+
     // Reset gyro
     //RobotContainer.gyro.resetGyro();
     RobotContainer.gyro2.resetGyro();
@@ -93,6 +97,10 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     
+    // If not already instantiated, create RobotContainer.
+    //if (m_robotContainer==null)
+    //  m_robotContainer = new RobotContainer();
+
     // Reset gyro - temporary - code likely to be moved later
     //RobotContainer.gyro.resetGyro();
     RobotContainer.gyro2.resetGyro();
@@ -111,9 +119,6 @@ public class Robot extends TimedRobot {
 
     // set default swerve drive command to manual drive mode
     RobotContainer.swervedrive.setDefaultCommand(new ManualDriveCommand());
-
-    // set arm to normal speed
-    RobotContainer.arm.EnableFast(false);
 
     // set default arm command to manual speed
     RobotContainer.arm.setDefaultCommand(new ManualArmSpeed());
