@@ -1,12 +1,8 @@
-# 2022 Preseason Codebase
+# 2023 Codebase
 
-This codebase serves as a starting point for developing your own robot code for the the 2022 Preseaon Challenge.
+This codebase is the code for the 2023 FRC Season.
 
-It contains enough code that with some minor configuration you should be able to get a robot driving out of the box.
-
-Teams will expand upon this base by adding subystems, commands, and buttons.
-
-Teams can modify this code however they like. However, the following constants should not be changed to ensure compatibility with provided hardware:
+However, the following constants should not be changed to ensure compatibility with provided hardware:
   - CANIDs - provided constants will be used by the chassis
   - RoboRIO ports - provided ports will be only ones with connections available
   - Controller ports - if driver stations are provided, those ports will be used
