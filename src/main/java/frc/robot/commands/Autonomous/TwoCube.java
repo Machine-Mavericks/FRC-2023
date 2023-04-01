@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
-import frc.robot.commands.DrivetoFieldPose;
 import frc.robot.commands.DrivetoRelativePose;
-import frc.robot.commands.SemiAutonomous.AutoBalance;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffHigh;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoFloorCubePickup;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -29,24 +29,8 @@ public class TwoCube extends SequentialCommandGroup {
     // enable arm, and lift to stow position
     new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
 
-    // switch arm to fast control mode
-    //new InstantCommand(() -> RobotContainer.arm.EnableFast(true)),
-    
     // move arm back to drop off cube
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
-
-    // delay until arm gets back
-    new DelayCommand(1.5),
-    
-    // close gripper
-    new InstantCommand(() -> RobotContainer.grabber.setClose()),
-    
-    // delay for gripper to close
-    new DelayCommand(0.7),
-
-    // move arm to 'forward position' but inside robot bumper)
-    // move to 135deg
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(135.0)),
+    new SemiAutoCubeDropOffHigh(),
 
     // delay for arm to get to stow
     new DelayCommand(1.5),
@@ -55,38 +39,19 @@ public class TwoCube extends SequentialCommandGroup {
     new SafetyCheckStowPosition(),
 
     // drive straight
-    new DrivetoRelativePose(new Pose2d(5.1, 0, new Rotation2d(0.0)),0.8,0.1, 10.0),
+    new DrivetoRelativePose(new Pose2d(4.7, 0, new Rotation2d(0.0)),0.8,0.1, 9.0),
 
     // pick up cube from floor :)
     new SemiAutoFloorCubePickup(),
 
-    // return to pos before cube pickup
-    new DrivetoFieldPose(new Pose2d(0, 1, new Rotation2d(0.0)), 0.8, 0.1, 10.0),
+    // delay
+    new DelayCommand(0.5),
 
     // drive straight back
-    new DrivetoRelativePose(new Pose2d(-5.1, 0, new Rotation2d(0.0)),0.8,0.1, 10.0),
-
-    // enable arm, and lift to stow position
-    new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
-
-    // switch arm to fast control mode
-    //new InstantCommand(() -> RobotContainer.arm.EnableFast(true)),
+    new DrivetoRelativePose(new Pose2d(-5.0, 0, new Rotation2d(0.0)),0.8,0.1, 10.0),
     
     // move arm back to drop off cube
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.MID_DEG)),
-
-    // delay until arm gets back
-    new DelayCommand(1.5),
-    
-    // close gripper
-    new InstantCommand(() -> RobotContainer.grabber.setClose()),
-    
-    // delay for gripper to close
-    new DelayCommand(0.7),
-
-    // move arm to 'forward position' but inside robot bumper)
-    // move to 135deg
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(135.0)),
+    new SemiAutoCubeDropOffMed(),
 
     // delay for arm to get to stow
     new DelayCommand(1.5),
@@ -95,13 +60,13 @@ public class TwoCube extends SequentialCommandGroup {
     new SafetyCheckStowPosition(),
 
     // drive left to center
-    new DrivetoRelativePose(new Pose2d(0,-1, new Rotation2d(0.0)), 1.0, 0.1, 10.0),
+    new DrivetoRelativePose(new Pose2d(0,2.5, new Rotation2d(0.0)), 1.0, 0.1, 6.0)
 
     // drive straight ahead over charge station by 6m
-    new DrivetoRelativePose(new Pose2d(2.5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
+    //new DrivetoRelativePose(new Pose2d(2.5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
     
     // balance
-    new AutoBalance()
+    //new AutoBalance()
     );
   }
 }

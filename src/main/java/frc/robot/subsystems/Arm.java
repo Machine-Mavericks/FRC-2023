@@ -77,7 +77,7 @@ public class Arm extends SubsystemBase {
   static final double MIN_MID_ARM_POS_DEG = 70;
   static final double MAX_MID_ARM_POS_DEG = 262;
 
-  public static final double PICKUP_DEG = 114.0;
+  public static final double PICKUP_DEG = 110.0;
   public static final double STOW_DEG = 146;
   public static final double MID_DEG = 213.2;
   public static final double PICKUP_SHELF_DEG = 213.0;

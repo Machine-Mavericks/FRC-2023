@@ -39,7 +39,7 @@ public class CoopCubePath extends SequentialCommandGroup {
     // delay until arm gets back
     new DelayCommand(1.5),
     
-    // close gripper
+   // place cube
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     
     // delay for gripper to close
