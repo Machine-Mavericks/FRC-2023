@@ -23,6 +23,7 @@ import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.Autonomous.CoopCubePath;
 import frc.robot.commands.Autonomous.LeftPath;
 import frc.robot.commands.Autonomous.RightPath;
+import frc.robot.commands.Autonomous.TwoCube;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
@@ -127,6 +128,8 @@ public class RobotContainer {
       return new LeftPath();
     else if (index == 2)
       return new RightPath();
+    else if (index == 3)
+      return new TwoCube();
     else
       return new CoopCubePath(); 
   }
