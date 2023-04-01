@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 import frc.robot.commands.DrivetoRelativePose;
+import frc.robot.commands.SemiAutonomous.AutoBalance;
 import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffMed;
 import frc.robot.commands.SemiAutonomous.SemiAutoFloorCubePickup;
@@ -60,13 +61,13 @@ public class TwoCube extends SequentialCommandGroup {
     new SafetyCheckStowPosition(),
 
     // drive left to center
-    new DrivetoRelativePose(new Pose2d(0,2.0, new Rotation2d(0.0)), 1.0, 0.1, 5.0)
+    new DrivetoRelativePose(new Pose2d(0,2.0, new Rotation2d(0.0)), 1.0, 0.1, 5.0),
 
     // drive straight ahead over charge station by 6m
-    //new DrivetoRelativePose(new Pose2d(2.5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
+    new DrivetoRelativePose(new Pose2d(2.5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
     
     // balance
-    //new AutoBalance()
+    new AutoBalance()
     );
   }
 }
