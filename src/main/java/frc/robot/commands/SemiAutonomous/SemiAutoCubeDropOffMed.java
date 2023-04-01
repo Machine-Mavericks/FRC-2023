@@ -17,20 +17,23 @@ public class SemiAutoCubeDropOffMed extends SequentialCommandGroup {
     addCommands(
     
     // tilt camera angle
-    new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_CUBEDROPOFF_POS))
+    //new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_CUBEDROPOFF_POS))
 
-    /*// move arm back to drop off cone
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)),
+    // move arm back to drop off cone
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.CUBE_MID_DEG)),
 
     // change camera pipeline
-    new InstantCommand(() -> RobotContainer.limelight_low.setPipeline(0)),
+    //new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(2)),
 
     // delay until camera pipeline changed
     new DelayCommand(0.05),
 
     // move to drop off cube
-    new DriveToCubeDropOff(1),
+    new DriveToCubeDropOff(3),
     
+    // delay to stabilize robot before opening gripper
+    new DelayCommand(0.15),
+
     // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     
@@ -39,7 +42,7 @@ public class SemiAutoCubeDropOffMed extends SequentialCommandGroup {
 
     // move arm to stow position
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG))
-    */
+    
     );
   }
 }

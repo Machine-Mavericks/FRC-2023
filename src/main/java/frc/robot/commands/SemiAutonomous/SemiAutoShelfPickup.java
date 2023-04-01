@@ -19,10 +19,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class SemiAutoShelfPickup extends SequentialCommandGroup {
   /** Creates a new SemiAutoShelfPickup. */
   public SemiAutoShelfPickup() {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+    // Add your commands in the addCommands()
     addCommands(
       
+      // tilt camera angle and set camera pipeline
+      new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_SHELFPICKUP_POS)), 
+      new InstantCommand(() -> RobotContainer.limelight_high.setPipeline(0)),
+
       // ensure sufficient distance away from shelf before starting
       new SafetyCheckRaiseArm(),
 

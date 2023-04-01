@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -78,6 +79,9 @@ public class Grabber extends SubsystemBase {
 
   //private Rev2mDistanceSensor I2CSensor;
 
+  // i2c for for TF Luna Sensor
+  private I2C m_i2cPort;
+
   /** Creates a new Grabber. */
   public Grabber() {
 
@@ -114,7 +118,6 @@ public class Grabber extends SubsystemBase {
     //I2CSensor.setAutomaticMode(true);
     //I2CSensor.setEnabled(true);
 
-
     // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
     AnalogInput.setGlobalSampleRate(100000.0);
     m_sensor = new AnalogInput(0);
@@ -128,6 +131,10 @@ public class Grabber extends SubsystemBase {
     m_ultrasonicsensor.setAutomaticMode(true);
     m_ultrasonicsensor.setEnabled(true);
     
+    // set up TF luna 
+    //i2c
+
+
   }
 
   // This method will be called once per scheduler run
@@ -313,11 +320,11 @@ public class Grabber extends SubsystemBase {
     .withProperties(Map.of("min", 0.0, "max", 50.0))
     .getEntry();
 
-    m_Volts = Tab.addPersistent("Volts", 1.50)
+    m_Volts = Tab.addPersistent("Volts", 2.25)
     .withPosition(4, 1)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.00, "max", 2.5))
+    .withProperties(Map.of("min", 0.00, "max", 3.0))
     .getEntry();
 
     // add sensor

@@ -27,9 +27,8 @@ public class CameraTilt extends SubsystemBase {
   private double m_currentpos;
 
   // predefined camera tilt angle
-  public static final double TILT_FLOORPICKUP_POS = 0.3;
-  public static final double TILT_CONEDROPOFF_POS = 0.4;
-  public static final double TILT_CUBEDROPOFF_POS = 0.4;
+  public static final double TILT_SHELFPICKUP_POS = 0.61;
+  public static final double TILT_FLOORPICKUP_POS = 0.20;
 
 
   /** Creates a new CameraTilt. */
@@ -37,14 +36,15 @@ public class CameraTilt extends SubsystemBase {
     initializeShuffleboard();
   
     // set default camera angle
-    setPosition(TILT_CONEDROPOFF_POS);
+    setPosition(TILT_SHELFPICKUP_POS);
   }
 
   @Override
   public void periodic() {
     // go ahead and set camera angle
-    m_servo.set(m_Test.getDouble(0.5));
-    
+    //m_servo.set(m_Test.getDouble(0.5));
+    m_servo.set(m_currentpos);
+
     // This method will be called once per scheduler run
     updateShuffleboard();
   }
@@ -55,9 +55,10 @@ public class CameraTilt extends SubsystemBase {
       // limit value to allowable range by camera
       if (value > 0.75)  
         value = 0.75;
-      if (value < 0.25)
-        value = 0.25;
+      if (value < 0.0)
+        value = 0.0;
 
+      // set camera value
       m_currentpos = value;
   }
 
