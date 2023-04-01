@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.CameraTilt;
 
 
 
@@ -21,6 +22,11 @@ public class SetArmPosition extends CommandBase {
   /** Creates a new SetArmPosition. */
   public SetArmPosition(double SetPosition) {
     m_TargetPposition = SetPosition;
+    
+    // special-case code - if moving to stow, then set camera to floor pickup position
+    if (m_TargetPposition == RobotContainer.arm.STOW_DEG)
+      RobotContainer.cameratilt.setPosition(CameraTilt.TILT_FLOORPICKUP_POS);
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.arm);
     }

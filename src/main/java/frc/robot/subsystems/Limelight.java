@@ -154,7 +154,7 @@ public class Limelight extends SubsystemBase {
      * get vertical angle from center of camera view to center of target
      * returns -20 to +20 degrees
      */
-     float getVerticalTargetOffsetAngle() {
+     public float getVerticalTargetOffsetAngle() {
       
       return m_table.getEntry("ty").getFloat(0);
     }

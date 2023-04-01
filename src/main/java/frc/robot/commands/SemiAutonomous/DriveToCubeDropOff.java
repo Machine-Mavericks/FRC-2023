@@ -49,17 +49,17 @@ public class DriveToCubeDropOff extends CommandBase {
     m_yController = new PIDController(0.04, 0.00, 0.0);
     m_rotController = new PIDController(0.05, 0.001, 0.0000);
 
-    // change pipeline of low camera
-    RobotContainer.limelight_low.setPipeline(0);
+    // change pipeline of med camera
+    RobotContainer.limelight_med.setPipeline(2);
 
     // set maximum speed used during this command
-    m_maxspeed = 0.6; 
+    m_maxspeed = 0.8; 
 
     m_targetarea_filtered = 0.0;
 
     // initialize filtered horizontal target
-    if (RobotContainer.limelight_low.isTargetPresent())
-      m_targethorangle_filtered = RobotContainer.limelight_low.getHorizontalTargetOffsetAngle();
+    if (RobotContainer.limelight_med.isTargetPresent())
+      m_targethorangle_filtered = RobotContainer.limelight_med.getHorizontalTargetOffsetAngle();
     else
       m_targethorangle_filtered = 0.0;
 
@@ -69,20 +69,20 @@ public class DriveToCubeDropOff extends CommandBase {
   @Override
   public void execute() {
      // forward speed
-     double xSpeed = 0.5;
+     double xSpeed = 0.65;
 
      if (m_camerapipeline==1)
-      xSpeed = 0.5;
+      xSpeed = 0.65;
 
      // assume sideways speed is 0 unless target is detected in camera
      double ySpeed =0.0;
-     if (RobotContainer.limelight_low.isTargetPresent())
+     if (RobotContainer.limelight_med.isTargetPresent())
      {
-        m_targethorangle_filtered =  0.85*m_targethorangle_filtered + 0.15*RobotContainer.limelight_low.getHorizontalTargetOffsetAngle();
+        m_targethorangle_filtered =  0.81*m_targethorangle_filtered + 0.19*RobotContainer.limelight_med.getHorizontalTargetOffsetAngle();
      }
      else
      {
-        m_targethorangle_filtered =  0.85*m_targethorangle_filtered;
+        m_targethorangle_filtered =  0.81*m_targethorangle_filtered;
      }
  
      ySpeed = m_yController.calculate(m_targethorangle_filtered);
@@ -99,7 +99,7 @@ public class DriveToCubeDropOff extends CommandBase {
      // give preference to sideways speed over approach speed
      // note the 1.0x factor can be adjusted to change amount of
      // preference robot gives to sideway over approach speed
-     xSpeed = xSpeed - Math.abs(1.5*ySpeed);
+     xSpeed = xSpeed - Math.abs(2.5*ySpeed);
      if (xSpeed < 0.0)
       xSpeed = 0.0;
 
@@ -108,17 +108,17 @@ public class DriveToCubeDropOff extends CommandBase {
        xSpeed = m_maxspeed;
      if (xSpeed < -m_maxspeed)
        xSpeed = -m_maxspeed;
-     if (ySpeed > m_maxspeed)
-       ySpeed = m_maxspeed; 
-     if (ySpeed < -m_maxspeed)
-       ySpeed = -m_maxspeed;  
+     if (ySpeed > 0.5)
+       ySpeed = 0.5; 
+     if (ySpeed < -0.5)
+       ySpeed = -0.5;  
        
      // drive robot according to x,y,rot PID controller speeds
      RobotContainer.swervedrive.drive(xSpeed, ySpeed, rotSpeed, false, false); 
 
      // update target area
-     if (RobotContainer.limelight_low.isTargetPresent())
-      m_targetarea_filtered = 0.95*m_targetarea_filtered+ 0.05*RobotContainer.limelight_low.getTargetArea();
+     if (RobotContainer.limelight_med.isTargetPresent())
+      m_targetarea_filtered = 0.75*m_targetarea_filtered+ 0.25*RobotContainer.limelight_med.getTargetArea();
      //else
       //m_targetarea_filtered = 0.95*m_targetarea_filtered;
   }
@@ -133,7 +133,7 @@ public class DriveToCubeDropOff extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((m_camerapipeline==0 && m_targetarea_filtered > RobotContainer.grabber.GetCubeTargetAreaHigh()) ||
-            (m_camerapipeline==1 && m_targetarea_filtered > RobotContainer.grabber.GetCubeTargetAreaMid()));
+    return ((m_camerapipeline==2 && m_targetarea_filtered > 2.60) || // was 3.1
+          (m_camerapipeline==3 && m_targetarea_filtered > 2.65));
   }
 }
