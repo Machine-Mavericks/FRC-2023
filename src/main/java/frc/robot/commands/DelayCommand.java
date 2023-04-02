@@ -1,10 +1,11 @@
 package frc.robot.commands;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
 
+// class to perform delay for provided number of seconds
+
 public class DelayCommand extends CommandBase {
-    //
+    
     private Timer m_Timer;
     private double m_delayTimer;
 

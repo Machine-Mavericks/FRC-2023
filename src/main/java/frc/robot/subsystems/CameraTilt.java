@@ -12,10 +12,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import java.util.Map;
 
+
+// class to tilt high camera (located on arm)
 
 public class CameraTilt extends SubsystemBase {
 
@@ -23,10 +22,9 @@ public class CameraTilt extends SubsystemBase {
   Servo m_servo = new Servo(RobotMap.PWMPorts.CAMERA_SERVO_ID);
 
   private GenericEntry m_cameraTiltPos;
-  private GenericEntry m_Test;
   private double m_currentpos;
 
-  // predefined camera tilt angle
+  // predefined camera tilt angles
   public static final double TILT_SHELFPICKUP_POS = 0.61;
   public static final double TILT_FLOORPICKUP_POS = 0.20;
 
@@ -42,7 +40,6 @@ public class CameraTilt extends SubsystemBase {
   @Override
   public void periodic() {
     // go ahead and set camera angle
-    //m_servo.set(m_Test.getDouble(0.5));
     m_servo.set(m_currentpos);
 
     // This method will be called once per scheduler run
@@ -81,13 +78,13 @@ private void initializeShuffleboard() {
     l1.withSize(2, 4);
     m_cameraTiltPos = l1.add("Pos (0 to 1)", 0.0).getEntry();
 
-    m_Test= Tab.add("Test", 0.5)
-    .withPosition(3, 1)
-    .withSize(3, 1)
-    .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 0.0, "max", 1.0))
-    .getEntry();
-
+    // used for testing purposes only
+    // m_Test= Tab.add("Test", 0.5)
+    // .withPosition(3, 1)
+    // .withSize(3, 1)
+    // .withWidget(BuiltInWidgets.kNumberSlider)
+    // .withProperties(Map.of("min", 0.0, "max", 1.0))
+    // .getEntry();
   }
 
   /** Update subsystem shuffle board page with current Gyro values */

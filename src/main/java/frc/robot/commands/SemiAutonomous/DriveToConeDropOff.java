@@ -135,6 +135,9 @@ public class DriveToConeDropOff extends CommandBase {
   @Override
   public boolean isFinished() {
     return ((m_camerapipeline==0 && m_targetarea_filtered > RobotContainer.grabber.GetConeTargetAreaHigh()) ||
-            (m_camerapipeline==1 && m_targetarea_filtered > RobotContainer.grabber.GetConeTargetAreaMid()));
+            (m_camerapipeline==1 && m_targetarea_filtered > RobotContainer.grabber.GetConeTargetAreaMid()) ||
+            //RobotContainer.grabber.GetUltrasonicDistance() < RobotContainer.grabber.GetI2CDistanceSelect()
+            RobotContainer.grabber.GetI2CSensorDist() < RobotContainer.grabber.GetI2CDistanceSelect()
+            );
   }
 }

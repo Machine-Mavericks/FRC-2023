@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -31,7 +30,6 @@ public class Limelight extends SubsystemBase {
     // subsystem shuffleboard controls
     private GenericEntry m_Pipeline;
     private GenericEntry m_TargetPresent;
-
     private GenericEntry m_AprilTagID;
 
     private GenericEntry m_Distance; // For cones & Cubes only
@@ -65,13 +63,12 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_Yawrs;
     private GenericEntry m_Rollrs;
 
+    
+    // true if fiducial information is enabled and to be displayed on shuffleboard
+    private boolean m_FiducialEnable;
     private GenericEntry m_BotPose[] = new GenericEntry[6];
     private GenericEntry m_BotPoseRed[] = new GenericEntry[6];
     private GenericEntry m_BotPoseBlue[] = new GenericEntry[6];
-    // private GenericEntry m_Test1;
-    // private GenericEntry m_Test2;
-
-    private boolean m_FiducialEnable;
 
   
     /**
@@ -394,14 +391,10 @@ public class Limelight extends SubsystemBase {
     
     // update camera pipeline and target detected indicator
     m_Pipeline.setDouble(getPipeline());
-
     m_TargetPresent.setBoolean(isTargetPresent());
     m_AprilTagID.setDouble(getPrimAprilTagID());
     m_Distance.setDouble(getGamePieceDistance());
 
-
-
-    
     // update angles to center of target
     m_AngleX.setDouble(getHorizontalTargetOffsetAngle());
     m_AngleY.setDouble(getVerticalTargetOffsetAngle());

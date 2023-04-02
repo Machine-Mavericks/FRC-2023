@@ -69,10 +69,10 @@ public class DriveToCubeDropOff extends CommandBase {
   @Override
   public void execute() {
      // forward speed
-     double xSpeed = 0.65;
+     double xSpeed = 0.70;
 
      if (m_camerapipeline==1)
-      xSpeed = 0.65;
+      xSpeed = 0.70;
 
      // assume sideways speed is 0 unless target is detected in camera
      double ySpeed =0.0;

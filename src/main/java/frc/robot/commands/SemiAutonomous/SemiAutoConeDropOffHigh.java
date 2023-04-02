@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
+import frc.robot.subsystems.Arm;
 
 
 public class SemiAutoConeDropOffHigh extends SequentialCommandGroup {
@@ -16,11 +17,8 @@ public class SemiAutoConeDropOffHigh extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, 
     addCommands(
     
-    // tilt camera angle
-    //new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_CONEDROPOFF_POS))
-
     // move arm back to drop off cone
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.HIGH_DEG)),
 
     // change camera pipeline
     new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(0)),
@@ -31,6 +29,9 @@ public class SemiAutoConeDropOffHigh extends SequentialCommandGroup {
     // move to drop off cone
     new DriveToConeDropOff(0),
     
+    // delay for gripper to open
+    new DelayCommand(0.10),
+
     // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     

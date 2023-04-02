@@ -33,10 +33,9 @@ public class SemiAutoFloorCubePickup extends SequentialCommandGroup {
 
     // delay until camera pipeline changed
     new DelayCommand(0.75),
-    
+
     // move arm to stow position
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG))
-
 
     );
   }

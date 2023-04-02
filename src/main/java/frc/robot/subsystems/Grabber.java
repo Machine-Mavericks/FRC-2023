@@ -14,8 +14,11 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+
+import java.nio.ByteBuffer;
 import java.util.Map;
 import com.revrobotics.CANSparkMax;
 //import com.revrobotics.Rev2mDistanceSensor;
@@ -33,7 +36,6 @@ public class Grabber extends SubsystemBase {
   // subsystem shuffleboard controls
   private GenericEntry m_MotorCurrent; 
   private GenericEntry m_MotorVoltage;
-  private GenericEntry m_GrabberPos;
   private GenericEntry m_MotorSpeed;
   private GenericEntry m_SensorDistance;
   private GenericEntry m_I2CDistance;
@@ -45,8 +47,7 @@ public class Grabber extends SubsystemBase {
   private GenericEntry m_ObjectGrabbed;
   private GenericEntry m_UltrasonicDistance;
   private GenericEntry m_UltrasonicDistSelect;
-
-
+  private GenericEntry m_I2CDistanceSelect;
 
   // spark max motor
   private CANSparkMax m_motor;
@@ -60,7 +61,7 @@ public class Grabber extends SubsystemBase {
 
   // grabber motor speed (rpm)
   private double GrabberMotorSpeedLoad = 16000.0;
-  private double GrabberMotorSpeedDrop = 1500.0;
+  private double GrabberMotorSpeedDrop = 1700.0;
 
   // grabber motor current limit (amps) (must be integer value)
   private int GrabberMotorCurrentLimitStall = 8;
@@ -77,10 +78,9 @@ public class Grabber extends SubsystemBase {
   // ultrasonic distance sensor
   private Ultrasonic m_ultrasonicsensor;
 
-  //private Rev2mDistanceSensor I2CSensor;
-
   // i2c for for TF Luna Sensor
   private I2C m_i2cPort;
+  private int m_i2cSensorDistanceCm;
 
   /** Creates a new Grabber. */
   public Grabber() {
@@ -113,18 +113,13 @@ public class Grabber extends SubsystemBase {
 
     Disable();
 
-    // set up I2C sensor
-    //I2CSensor = new Rev2mDistanceSensor(Port.kMXP,Unit.kInches,RangeProfile.kDefault);
-    //I2CSensor.setAutomaticMode(true);
-    //I2CSensor.setEnabled(true);
-
     // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
     AnalogInput.setGlobalSampleRate(100000.0);
-    m_sensor = new AnalogInput(0);
+    m_sensor = new AnalogInput(RobotMap.RIO.ANALOG_0);
     m_sensor.setOversampleBits(5);
 
     // set up digital switch - to detect when something is grabbed
-    m_grabsensor = new DigitalInput(0);
+    m_grabsensor = new DigitalInput(RobotMap.RIO.DIO_0);
     
     // ultrasonic distance sensor
     m_ultrasonicsensor = new Ultrasonic(3, 4);
@@ -132,7 +127,8 @@ public class Grabber extends SubsystemBase {
     m_ultrasonicsensor.setEnabled(true);
     
     // set up TF luna 
-    //i2c
+    m_i2cPort = new I2C(Port.kMXP,0x62);
+    m_i2cPort.write(0x00, 0x04);
 
 
   }
@@ -181,6 +177,20 @@ public class Grabber extends SubsystemBase {
     else
       // we are disabled - turn motor off
       { m_motor.setVoltage(0.0); stalltimer=0.0; }
+
+
+
+  // read i2c sensor
+  byte[] bytearray= new byte[2];
+  m_i2cPort.read(0x8f, 2, bytearray);
+  
+
+ m_i2cSensorDistanceCm = (int) Integer.toUnsignedLong(bytearray[0] << 8) + Byte.toUnsignedInt(bytearray[1]);
+ //m_i2cSensorDistanceCm = bytearray[0] * 256 + bytearray[1];
+
+  // i2c start sensor sample
+  m_i2cPort.write(0x00, 0x04);
+
 
   }
 
@@ -264,6 +274,16 @@ public class Grabber extends SubsystemBase {
     return !m_grabsensor.get();
   }
 
+  public double GetI2CDistanceSelect()
+  {
+    return m_I2CDistanceSelect.getDouble(150.0);
+  }
+
+  public double GetI2CSensorDist()
+  {
+    return m_i2cSensorDistanceCm;
+  }
+
 
 
   // -------------------- Subsystem Shuffleboard Methods --------------------
@@ -276,15 +296,14 @@ public class Grabber extends SubsystemBase {
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Grabber", BuiltInLayouts.kList);
     l1.withPosition(0, 0);
-    l1.withSize(1, 5);
-    m_GrabberPos= l1.add("Grabber Pos", 0.0).getEntry();
+    l1.withSize(1, 6);
     m_MotorCurrent = l1.add("Current(A)", 0.0).getEntry(); 
     m_MotorVoltage = l1.add("Volts(V)", 0.0).getEntry();
     m_MotorSpeed = l1.add("Speed(rpm)", 0.0).getEntry();
     m_SensorDistance = l1.add("Sensor Volts", 0.0).getEntry();
     m_UltrasonicDistance = l1.add("Ultrasonic Dist(in)", 0.0).getEntry();
-    m_I2CDistance = l1.add("I2C Dist(in)", 0.0).getEntry();
-    
+    m_I2CDistance = l1.add("I2C Dist(cm)", 0.0).getEntry();
+
     m_ConeTargetAreaHigh = Tab.addPersistent("Target Area High", 0.2)
     .withPosition(1, 0)
     .withSize(3, 1)
@@ -327,6 +346,13 @@ public class Grabber extends SubsystemBase {
     .withProperties(Map.of("min", 0.00, "max", 3.0))
     .getEntry();
 
+    m_I2CDistanceSelect = Tab.add("Cone Distance Select", 150.0)
+    .withPosition(4, 2)
+    .withSize(3, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 150, "max", 200.0))
+    .getEntry();
+
     // add sensor
     m_ObjectGrabbed = Tab.add("Cone Grabbed", false).withPosition(4,2).getEntry();
 
@@ -351,7 +377,7 @@ public class Grabber extends SubsystemBase {
     m_UltrasonicDistance.setDouble(m_ultrasonicsensor.getRangeInches());
 
     // i2c distance
-    //m_I2CDistance.setDouble(I2CSensor.getRange());
+    m_I2CDistance.setInteger(m_i2cSensorDistanceCm);
 
   }
 

@@ -77,13 +77,13 @@ public class Arm extends SubsystemBase {
   static final double MIN_MID_ARM_POS_DEG = 70;
   static final double MAX_MID_ARM_POS_DEG = 262;
 
-  public static final double PICKUP_DEG = 114.0;
+  public static final double PICKUP_DEG = 110.0;
   public static final double STOW_DEG = 146;
-  public static final double MID_DEG = 213.2;
+  public static final double MID_DEG = 212.2;
   public static final double PICKUP_SHELF_DEG = 213.0;
-  public static final double HIGH_DEG = 252;
+  public static final double HIGH_DEG = 255; // was 252
   public static final double CUBE_MID_DEG = 212.0; 
-  public static final double CUBE_HIGH_DEG = 247.0; // was 247.0
+  public static final double CUBE_HIGH_DEG = 235.0; // was 247.0
 
 
   // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
