@@ -48,7 +48,7 @@ public class DriveToCubeDropOff extends CommandBase {
     // set up PIDs
     m_yController = new PIDController(0.04, 0.00, 0.0);
     m_rotController = new PIDController(0.05, 0.001, 0.0000);
-
+    
     // change pipeline of med camera
     RobotContainer.limelight_med.setPipeline(2);
 
@@ -120,7 +120,7 @@ public class DriveToCubeDropOff extends CommandBase {
      if (RobotContainer.limelight_med.isTargetPresent())
       m_targetarea_filtered = 0.75*m_targetarea_filtered+ 0.25*RobotContainer.limelight_med.getTargetArea();
      //else
-      //m_targetarea_filtered = 0.95*m_targetarea_filtered;
+      //m_targetarea_filtered = 0.75*m_targetarea_filtered;
   }
 
   // Called once the command ends or is interrupted.

@@ -23,12 +23,10 @@ public class SetArmPosition extends CommandBase {
   public SetArmPosition(double SetPosition) {
     m_TargetPposition = SetPosition;
     
-    // special-case code - if moving to stow, then set camera to floor pickup position
-    if (m_TargetPposition == RobotContainer.arm.STOW_DEG)
-      RobotContainer.cameratilt.setPosition(CameraTilt.TILT_FLOORPICKUP_POS);
-
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.arm);
+    addRequirements(RobotContainer.cameratilt);
+    
     }
 
   // Called when the command is initially scheduled.
@@ -40,6 +38,11 @@ public class SetArmPosition extends CommandBase {
       // Arm subsystem is not happy
       m_CommandError = true;
     }
+
+    // special-case code - if moving to stow, then set camera to floor pickup position
+    if (m_TargetPposition == RobotContainer.arm.STOW_DEG)
+      RobotContainer.cameratilt.setPosition(CameraTilt.TILT_FLOORPICKUP_POS);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.

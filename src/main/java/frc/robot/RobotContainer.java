@@ -129,6 +129,6 @@ public class RobotContainer {
     else if (index == 4)
       return new CoopCube2();
     else
-      return new CoopCubePath(); 
+      return null;
   }
 }

@@ -349,7 +349,6 @@ public class SwerveDrive extends SubsystemBase {
     if (fieldOriented) {
       // convert speeds from field relative according to current gyro angle 
       // note negative sign for gyro angle to have robot drive in correct direction
-      //s= ChassisSpeeds.fromFieldRelativeSpeeds(s, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
       s= ChassisSpeeds.fromFieldRelativeSpeeds(s, Rotation2d.fromDegrees(RobotContainer.gyro2.getYaw()));
     }
       

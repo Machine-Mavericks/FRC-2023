@@ -16,9 +16,6 @@ public class DriveToCubeFloorPickup extends CommandBase {
   // maximum drive speed to use during command (m/s)
   private double m_maxspeed = 0.8;
 
-  // target distance - low-pass filtered
-  private double m_targetdist_filtered;
-
   // camera target angle - low-pass filtered
   private double m_targetangle_filtered;
 
@@ -27,9 +24,6 @@ public class DriveToCubeFloorPickup extends CommandBase {
 
   // current speed to move forward at
   private double xSpeed;
-
-  private double timer;
-  private boolean timer_enabled;
 
   /** Creates a new DriveToCubeFloorPickup. */
   public DriveToCubeFloorPickup() {
@@ -48,17 +42,10 @@ public class DriveToCubeFloorPickup extends CommandBase {
     RobotContainer.limelight_high.setPipeline(1);
 
     // reset filtered values
-    m_targetdist_filtered = 0.0;
     m_targetangle_filtered = 0.0;
 
     // reset target x speed
     m_targetxSpeed = -1.0;
-
-    // reset [initial] forward speed
-    //xSpeed = m_targetxSpeed;
-
-    timer = 0.0;
-    timer_enabled = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -68,20 +55,7 @@ public class DriveToCubeFloorPickup extends CommandBase {
     // set forward speed
     xSpeed = m_targetxSpeed;
 
-    // if (RobotContainer.grabber.GetUltrasonicDistance() < 50.0)
-    // {
-    //   xSpeed = (xSpeed-0.5)+ 0.5* (RobotContainer.grabber.GetUltrasonicDistance()-20.0)/30.0;
-    //   if (xSpeed < 0.5)
-    //     xSpeed = 0.5;
-    // }
-
-    // get distance sensor reading (in volts) and low pass filter it
-    //double dist = RobotContainer.grabber.GetSensorDistance();
-    //m_targetdist_filtered = 0.65*m_targetdist_filtered + 0.35*dist;     // 0.8 and 0.2
-    
     // low pass filter camera target
-    // note: camera filter corner frequency must be sufficiently low to filter out natural wobble frequency of arm (with camera on it)
-    // 83 and 17 working very well.
     if (RobotContainer.limelight_high.isTargetPresent())
     {
       m_targetangle_filtered = 0.81*m_targetangle_filtered + 0.19*RobotContainer.limelight_high.getHorizontalTargetOffsetAngle();
@@ -113,13 +87,6 @@ public class DriveToCubeFloorPickup extends CommandBase {
   
   // drive robot according to x,y,rot PID controller speeds
   RobotContainer.swervedrive.drive(xSpeed, ySpeed, 0.0, false, false);  
-  
-  if (RobotContainer.limelight_high.isTargetPresent() && RobotContainer.limelight_high.getTargetArea() >= 14.0)
-  { timer_enabled = true;}
-  
-  if (timer_enabled)
-   timer+=0.02;
-
   }
 
   // Called once the command ends or is interrupted.
@@ -132,8 +99,8 @@ public class DriveToCubeFloorPickup extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // we are finished when cube size >19
-    //return (timer > 0.15);
+    
+    // finished when sensor distance is <= target from shuffleboard
     return (RobotContainer.grabber.GetSensorDistance() >= RobotContainer.grabber.m_Volts.getDouble(2.25));
   }
 }

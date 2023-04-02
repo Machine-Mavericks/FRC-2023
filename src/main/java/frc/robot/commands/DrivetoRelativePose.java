@@ -78,11 +78,9 @@ public class DrivetoRelativePose extends CommandBase {
     
     m_odometry = new SwerveDriveOdometry(RobotContainer.swervedrive.getKinematics(),
                                       new Rotation2d(RobotContainer.gyro2.getYaw() * DEGtoRAD),                                    
-                                       //new Rotation2d(RobotContainer.gyro.getYaw() * DEGtoRAD),
                                         RobotContainer.swervedrive.GetSwerveDistances() );
 
 
-   // m_odometry.resetPosition(new Rotation2d(RobotContainer.gyro.getYaw() * DEGtoRAD),
     m_odometry.resetPosition(new Rotation2d(RobotContainer.gyro2.getYaw() * DEGtoRAD),
     RobotContainer.swervedrive.GetSwerveDistances(),
     new Pose2d(0.0,0.0,new Rotation2d(0.0)));
@@ -93,7 +91,6 @@ public class DrivetoRelativePose extends CommandBase {
   public void execute() {
 
     // get gyro angle (in degrees) and make rotation vector
-    //Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro.getYaw() * DEGtoRAD);
     Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro2.getYaw() * DEGtoRAD);
     m_odometry.update(gyroangle, RobotContainer.swervedrive.GetSwerveDistances());
 
