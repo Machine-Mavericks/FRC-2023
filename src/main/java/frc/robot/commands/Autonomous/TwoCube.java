@@ -30,8 +30,24 @@ public class TwoCube extends SequentialCommandGroup {
     // enable arm, and lift to stow position
     new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
 
+    // enable arm, and lift to stow position
+    new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
+    
     // move arm back to drop off cube
-    new SemiAutoCubeDropOffHigh(),
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
+  
+    // delay until arm gets back
+    new DelayCommand(1.0),
+      
+    // place cube
+    new InstantCommand(() -> RobotContainer.grabber.setClose()),
+      
+    // delay for gripper to close
+    new DelayCommand(0.7),
+  
+    // move arm to 'forward position' but inside robot bumper)
+    // move to 135deg
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(135.0)),
 
     // delay for arm to get to stow
     new DelayCommand(1.0),
@@ -40,7 +56,7 @@ public class TwoCube extends SequentialCommandGroup {
     new SafetyCheckStowPosition(),
 
     // drive straight
-    new DrivetoRelativePose(new Pose2d(4.0, 0, new Rotation2d(0.0)),1.5,0.1, 7.0),
+    new DrivetoRelativePose(new Pose2d(5.0, 0, new Rotation2d(0.0)),1.5,0.1, 7.0),
 
     // pick up cube from floor :)
     new SemiAutoFloorCubePickup(),
@@ -49,7 +65,7 @@ public class TwoCube extends SequentialCommandGroup {
     new DelayCommand(0.5),
 
     // drive straight back
-    new DrivetoRelativePose(new Pose2d(-4.5, 0, new Rotation2d(0.0)),1.5,0.1, 7.0),
+    new DrivetoRelativePose(new Pose2d(-5.0, 0, new Rotation2d(0.0)),1.5,0.1, 7.0),
     
     // move arm back to drop off cube
     new SemiAutoCubeDropOffMed()
