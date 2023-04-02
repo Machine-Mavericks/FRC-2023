@@ -50,17 +50,13 @@ public class SemiAutoShelfPickup extends SequentialCommandGroup {
       // drive straight back to clear shelf
       new DrivetoRelativePose(new Pose2d(0.7, 0, new Rotation2d(0.0)),0.25,0.1, 30.0),
 
+      // set camera angle
+      new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_FLOORPICKUP_POS)),
+      new InstantCommand(() -> RobotContainer.limelight_high.setPipeline(1)),
+
       // stow arm
       new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG))
       
-      // open gripper, change auto pickup so the gripper spins for longer. 3 sec instead of 1. 
-      //new InstantCommand(() -> RobotContainer.grabber.setOpen()),
-
-      // delay until arm gets back
-      //new DelayCommand(0.5),
-
-      // lift arm
-      //new InstantCommand(() -> RobotContainer.arm.SetArmPosition(220.0))
 
     );
   }

@@ -67,10 +67,6 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    //m_robotContainer = new RobotContainer();
 
     // Reset gyro
     //RobotContainer.gyro.resetGyro();
@@ -96,10 +92,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    
-    // If not already instantiated, create RobotContainer.
-    //if (m_robotContainer==null)
-    //  m_robotContainer = new RobotContainer();
 
     // Reset gyro - temporary - code likely to be moved later
     //RobotContainer.gyro.resetGyro();

@@ -32,10 +32,15 @@ public Pigeon() {
   gyro = new WPI_Pigeon2(RobotMap.CANID.PIGEON, "Drivebase");
   }
 
+  private int updateCounter=4;
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    updateShuffleboard();
+    // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
+    updateCounter+=1;
+    if (updateCounter>=10)
+    { updateCounter=0; updateShuffleboard(); }
+    else if (updateCounter<0)
+      updateCounter=0;
   }
 
   /** Gets the yaw of the robot

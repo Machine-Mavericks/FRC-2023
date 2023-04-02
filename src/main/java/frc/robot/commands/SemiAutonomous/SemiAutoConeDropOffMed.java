@@ -16,9 +16,6 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
     // Add your commands in the addCommands() call
     addCommands(
     
-    // tilt camera angle
-    //new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_CONEDROPOFF_POS))
-
     // move arm back to drop off cone
     //new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.MID_DEG)),
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)),
@@ -32,6 +29,9 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
     // move to drop off cone
     new DriveToConeDropOff(1),
     
+// delay for gripper to open
+new DelayCommand(0.10),
+
     // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     

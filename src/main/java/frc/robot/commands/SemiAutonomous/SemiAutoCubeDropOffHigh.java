@@ -14,9 +14,6 @@ public class SemiAutoCubeDropOffHigh extends SequentialCommandGroup {
   public SemiAutoCubeDropOffHigh() {
     // Add your commands in the addCommands() call
     addCommands(
- 
-    // tilt camera angle
-    //new InstantCommand(() -> RobotContainer.cameratilt.setPosition(RobotContainer.cameratilt.TILT_CUBEDROPOFF_POS))
 
     // move arm back to drop off cube
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.CUBE_HIGH_DEG)),
