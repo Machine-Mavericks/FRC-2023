@@ -32,6 +32,8 @@ deploy {
                    jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
                    jvmArgs.add("-Djava.rmi.server.hostname=10.74.80.2")
                    jvmArgs.add("-Xmx64M")
+                   jvmArgs.add("-XX:+HeapDumpOnOutOfMemoryError")
+                   jvmArgs.add("-XX:HeapDumpPath=/tmp")
                 }
 
                 // Static files artifact
