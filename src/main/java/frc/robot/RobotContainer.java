@@ -123,6 +123,6 @@ public class RobotContainer {
     else if (index == 2)
       return new RightPath();
     else
-      return new CoopCubePath(); 
+      return null;
   }
 }

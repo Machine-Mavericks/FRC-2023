@@ -11,7 +11,6 @@ public class DriveToShelfPickup extends CommandBase {
   
     // y PID controllers to get us to the intended destination
     private PIDController m_yController; 
-    //private PIDController m_omegaController;
 
     // maximum drive speed to use during command (m/s)
     private double m_maxspeed = 1.4;
@@ -42,14 +41,9 @@ public class DriveToShelfPickup extends CommandBase {
 
     // set up PIDs
     m_yController = new PIDController(0.03, 0.001, 0.0);  // was 0.022
-    //m_omegaController = new PIDController(0.001, 0.0, 0.0);
 
     // change pipeline of high camera
-    // use #1 for left object, use #2 for right object-side
-    //if (RobotContainer.targetselector.IsPickupRightSide())
     RobotContainer.limelight_high.setPipeline(0);
-    //else
-    //  RobotContainer.limelight_high.setPipeline(1);
 
     // reset filtered values
     m_targetdist_filtered = 0.0;
@@ -57,9 +51,6 @@ public class DriveToShelfPickup extends CommandBase {
 
     // reset target x speed
     m_targetxSpeed = 1.0;
-
-    // reset [initial] forward speed
-    //xSpeed = m_targetxSpeed;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -81,8 +72,6 @@ public class DriveToShelfPickup extends CommandBase {
     m_targetdist_filtered = 0.65*m_targetdist_filtered + 0.35*dist;     // 0.8 and 0.2
     
     // low pass filter camera target
-    // note: camera filter corner frequency must be sufficiently low to filter out natural wobble frequency of arm (with camera on it)
-    // 83 and 17 working very well.
     if (RobotContainer.limelight_high.isTargetPresent())
     {
       m_targetangle_filtered = 0.81*m_targetangle_filtered + 0.19*RobotContainer.limelight_high.getHorizontalTargetOffsetAngle();
@@ -112,23 +101,16 @@ public class DriveToShelfPickup extends CommandBase {
     if (ySpeed < -0.5)
       ySpeed = -0.5;  
     
-
     // have we reached point (indicated by sensor) where we need to slow down to a stop?
     // deceleration used to reduce unintended longitudinal movement of arm when robot stops to pick up cone
     //if (m_targetdist_filtered >RobotContainer.grabber.m_Volts.getDouble(1.50))
     //  m_targetxSpeed = 0;
-
-   
     // if we are to decelerate, then reduce speed in controlled fashion (limit deceleration) until robot is stopped
     //if (xSpeed > m_targetxSpeed)
     //  { xSpeed = xSpeed - 0.05;
     //    if (xSpeed < 0.0)
     //      xSpeed = 0.0;
     //  }
-
-
-    // correct robot rotation according to gyro
-    //double omegaSpeed = m_omegaController.calculate(RobotContainer.gyro.getYaw());
 
 
     // drive robot according to x,y,rot PID controller speeds

@@ -73,7 +73,7 @@ public class Grabber extends SubsystemBase {
   private AnalogInput m_sensor;
 
   // grabber sensor
- private  DigitalInput m_grabsensor;
+  private DigitalInput m_grabsensor;
 
   // ultrasonic distance sensor
   private Ultrasonic m_ultrasonicsensor;
@@ -115,14 +115,14 @@ public class Grabber extends SubsystemBase {
 
     // set up range sensor - set ADC to 250 kS/s, and set analog input to oversample by 32 (2^5)
     AnalogInput.setGlobalSampleRate(100000.0);
-    m_sensor = new AnalogInput(RobotMap.RIO.ANALOG_0);
+    m_sensor = new AnalogInput(RobotMap.RIO.AIN_0_FLOORSENSOR);
     m_sensor.setOversampleBits(5);
 
     // set up digital switch - to detect when something is grabbed
-    m_grabsensor = new DigitalInput(RobotMap.RIO.DIO_0);
+    m_grabsensor = new DigitalInput(RobotMap.RIO.DIO_0_GRABBERSW);
     
     // ultrasonic distance sensor
-    m_ultrasonicsensor = new Ultrasonic(3, 4);
+    m_ultrasonicsensor = new Ultrasonic(RobotMap.RIO.DIO_3_ULTRASONIC_A, RobotMap.RIO.DIO_4_ULTRASONIC_B);
     m_ultrasonicsensor.setAutomaticMode(true);
     m_ultrasonicsensor.setEnabled(true);
     

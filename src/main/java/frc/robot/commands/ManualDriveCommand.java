@@ -99,7 +99,6 @@ public class ManualDriveCommand extends CommandBase {
         // If the target is unset, set it to current heading
         if(m_PIDTarget == null)
         {
-          //m_PIDTarget = RobotContainer.gyro.getYaw();
           m_PIDTarget = RobotContainer.gyro2.getYaw();
           m_headingPID.reset(); // Clear existing integral term as may accumulate while not in use
         }
@@ -108,8 +107,7 @@ public class ManualDriveCommand extends CommandBase {
         if (dX==0.0 && dY==0.0)
           omega = 0.0;
         else         // Compute rotational command from PID controller
-        omega = m_headingPID.calculate(Utils.AngleDifference(m_PIDTarget, RobotContainer.gyro2.getYaw()));
-        //omega = m_headingPID.calculate(Utils.AngleDifference(m_PIDTarget, RobotContainer.gyro.getYaw()));
+          omega = m_headingPID.calculate(Utils.AngleDifference(m_PIDTarget, RobotContainer.gyro2.getYaw()));
       }
     } 
     else

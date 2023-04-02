@@ -191,7 +191,9 @@ public void SetEnableArm(boolean Enable) {
     // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
     updateCounter+=1;
     if (updateCounter>=10)
-  { updateCounter=0; updateShuffleboard(); }
+      { updateCounter=0;
+        updateShuffleboard();
+      }
     else if (updateCounter<0)
       updateCounter=0;
   }
@@ -203,8 +205,8 @@ public void SetEnableArm(boolean Enable) {
 public boolean ArmSpeed_PosCtrl(double speed) {
 
   if (!m_ArmEnabled) {return false;}
-  if (m_ArmMotor.getSensorCollection().isFwdLimitSwitchClosed() == 0.0) {return false;}
-  if (m_ArmMotor.getSensorCollection().isRevLimitSwitchClosed() == 0.0) {return false;}
+  //if (m_ArmMotor.getSensorCollection().isFwdLimitSwitchClosed() == 0.0) {return false;}
+  //if (m_ArmMotor.getSensorCollection().isRevLimitSwitchClosed() == 0.0) {return false;}
 
   // arm position delta = arm speed in deg/second * time delta
   // arm position target = current arm position + (arm speed in deg/second * time delta)
@@ -224,10 +226,10 @@ public boolean ArmSpeed_PosCtrl(double speed) {
 
 
 // Set Arm Position deg
-   public boolean SetArmPosition(double PosDeg) {
+public boolean SetArmPosition(double PosDeg) {
     if (!m_ArmEnabled) {return false;}
-    if (m_ArmMotor.getSensorCollection().isFwdLimitSwitchClosed() == 0.0) {return false;}
-    if (m_ArmMotor.getSensorCollection().isRevLimitSwitchClosed() == 0.0) {return false;}
+    //if (m_ArmMotor.getSensorCollection().isFwdLimitSwitchClosed() == 0.0) {return false;}
+    //if (m_ArmMotor.getSensorCollection().isRevLimitSwitchClosed() == 0.0) {return false;}
 
     // Do not set the arm position if an invalid arm position is selected.
     if ((PosDeg >= MIN_MID_ARM_POS_DEG) && (PosDeg <= MAX_MID_ARM_POS_DEG)) {
