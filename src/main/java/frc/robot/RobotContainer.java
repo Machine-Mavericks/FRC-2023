@@ -20,6 +20,7 @@ import frc.robot.subsystems.Pigeon;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.SetArmPosition;
+import frc.robot.commands.Autonomous.CoopCube2;
 import frc.robot.commands.Autonomous.CoopCubePath;
 import frc.robot.commands.Autonomous.LeftPath;
 import frc.robot.commands.Autonomous.RightPath;
@@ -130,6 +131,8 @@ public class RobotContainer {
       return new RightPath();
     else if (index == 3)
       return new TwoCube();
+    else if (index == 4)
+      return new CoopCube2();
     else
       return new CoopCubePath(); 
   }
