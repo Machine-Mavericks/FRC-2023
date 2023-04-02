@@ -53,7 +53,7 @@ public class RobotMap {
 
 
         
-        /** Pin of Analog Input connection 1 */
+        // Analog range sensor - used for floor cone pickup
         public static final int ANALOG_0 = 0;
         
         /** CAN ID of left talon 1. */

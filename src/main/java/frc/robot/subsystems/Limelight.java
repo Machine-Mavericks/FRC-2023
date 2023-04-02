@@ -115,7 +115,7 @@ public class Limelight extends SubsystemBase {
       m_UpdateTimer++;
       if (m_UpdateTimer>=10)
       {
-        //updateShuffleboard();
+        updateShuffleboard();
         m_UpdateTimer=0;
       }
     }
