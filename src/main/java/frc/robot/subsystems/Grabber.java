@@ -160,7 +160,6 @@ public class Grabber extends SubsystemBase {
       if (Open){   
         // apply full speed for 5s or until motor stalled for 1.0s.
         if (t<5.0 && stalltimer<1.0) {
-          // if motor is in close mode, apply full effort for limited time, after which, reduce to 1V
             m_PIDController.setReference(GrabberMotorSpeedLoad, CANSparkMax.ControlType.kVelocity);
         } else {
             m_PIDController.setIAccum(0.0);

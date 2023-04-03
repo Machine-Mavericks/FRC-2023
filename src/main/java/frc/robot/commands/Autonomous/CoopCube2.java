@@ -12,32 +12,26 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 import frc.robot.commands.DrivetoRelativePose;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
-
+import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
+import frc.robot.commands.SemiAutonomous.SemiAutoFloorCubePickup;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class CoopCubePath extends SequentialCommandGroup {
-  /** Creates a new CoopCubePath. */
-  public CoopCubePath() {
+public class CoopCube2 extends SequentialCommandGroup {
+  /** Creates a new CoopCube2. */
+  public CoopCube2() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-
-    // This section currently being worked on (a work in progress)
-    // commented out so robot will not run unexpectedly
-  
-    // enable arm, and lift to stow position
+      // enable arm, and lift to stow position
     new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
-
-    // switch arm to fast control mode
-    //new InstantCommand(() -> RobotContainer.arm.EnableFast(true)),
     
     // move arm back to drop off cube
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
 
     // delay until arm gets back
-    new DelayCommand(1.5),
+    new DelayCommand(1.0),
     
    // place cube
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
@@ -55,36 +49,29 @@ public class CoopCubePath extends SequentialCommandGroup {
     // ensure arm is stowed before it is allow to begin moving over charge station
     new SafetyCheckStowPosition(),
 
-    // drive straight ahead over charge station by 6m
-    new DrivetoRelativePose(new Pose2d(2.5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
+    // drive right 
+   // new DrivetoRelativePose(new Pose2d(0,-2.0, new Rotation2d(0.0)), 1.0, 0.1, 5.0),
     
-    // drive straight back onto charge station
-    //new DrivetoRelativePose(new Pose2d(-1.7, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
+    // drive straight
+    new DrivetoRelativePose(new Pose2d(5.0, 0, new Rotation2d(0.0)),1.8,0.1, 7.0),
 
+    // pick up cube from floor :)
+    new SemiAutoFloorCubePickup(),
 
-    // drive straight ahead over charge station by 6m
-    //new DrivetoRelativePose(new Pose2d(5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
-        
-    // drive straight back onto charge station
-    //new DrivetoRelativePose(new Pose2d(-1.7, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),//
+    // delay
+    new DelayCommand(0.5),
 
+    // drive back
+    //new DrivetoRelativePose(new Pose2d(1.0,0, new Rotation2d(0.0)), 1.0, 0.1, 2.0),
+
+    // drive left to center
+    new DrivetoRelativePose(new Pose2d(-1.0,2.0, new Rotation2d(0.0)), 1.8, 0.1, 5.0),
+
+    // drive straight onto charge station
+    new DrivetoRelativePose(new Pose2d(-1.5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
 
     // balance
     new AutoBalance()
-    
-
-
-    
     );
-    
-    
-    /**
-     * place cube on high (5,2)
-     * drive backwards over charging station past line
-     * drive forwards onto charging station
-     * balance/dock
-     */
-
-    
   }
 }
