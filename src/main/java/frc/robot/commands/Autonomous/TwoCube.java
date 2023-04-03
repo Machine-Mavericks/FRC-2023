@@ -56,7 +56,7 @@ public class TwoCube extends SequentialCommandGroup {
     new SafetyCheckStowPosition(),
 
     // drive straight
-    new DrivetoRelativePose(new Pose2d(5.0, 0, new Rotation2d(0.0)),1.5,0.1, 7.0),
+    new DrivetoRelativePose(new Pose2d(5.0, 0, new Rotation2d(0.0)),1.8,0.1, 7.0),
 
     // pick up cube from floor :)
     new SemiAutoFloorCubePickup(),
@@ -65,7 +65,7 @@ public class TwoCube extends SequentialCommandGroup {
     new DelayCommand(0.5),
 
     // drive straight back
-    new DrivetoRelativePose(new Pose2d(-5.0, 0, new Rotation2d(0.0)),1.5,0.1, 7.0),
+    new DrivetoRelativePose(new Pose2d(-5.0, 0, new Rotation2d(0.0)),1.8,0.1, 7.0),
     
     // move arm back to drop off cube
     new SemiAutoCubeDropOffMed()

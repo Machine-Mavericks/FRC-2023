@@ -14,7 +14,7 @@ public class DriveToCubeFloorPickup extends CommandBase {
   //private PIDController m_omegaController;
 
   // maximum drive speed to use during command (m/s)
-  private double m_maxspeed = 0.8;
+  private double m_maxspeed = 1.0;
 
   // camera target angle - low-pass filtered
   private double m_targetangle_filtered;
