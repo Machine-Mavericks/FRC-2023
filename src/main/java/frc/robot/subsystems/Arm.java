@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
@@ -94,7 +94,7 @@ public class Arm extends SubsystemBase {
   private CANCoder m_ArmCanCoder;
 
   // create motor objects
-  private TalonFX m_ArmMotor;
+  private WPI_TalonFX m_ArmMotor;
 
   private boolean m_ArmEnabled;
 
@@ -112,7 +112,7 @@ public class Arm extends SubsystemBase {
     m_ArmCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     
     // create motors and initalize to factory default
-    m_ArmMotor = new TalonFX(RobotMap.CANID.ARM_MOTOR);
+    m_ArmMotor = new WPI_TalonFX(RobotMap.CANID.ARM_MOTOR);
 
     InitializeArm();
 
@@ -147,8 +147,12 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
     m_ArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 
+    // enable safety oversight of motor
+    m_ArmMotor.setSafetyEnabled(true);
+
     // initialize encoders according to CANCoder positions
     ResetArmEncoders();
+
   }
 
   

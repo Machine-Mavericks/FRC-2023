@@ -32,7 +32,6 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_TargetPresent;
     private GenericEntry m_AprilTagID;
 
-    private GenericEntry m_Distance; // For cones & Cubes only
     //private DoubleArraySubscriber m_llpythonSub;
 
     private GenericEntry m_AngleX;
@@ -323,9 +322,6 @@ public class Limelight extends SubsystemBase {
     // april tag target id
     m_AprilTagID = Tab.add("AprilTag Target ID", 0).withPosition(0,2).getEntry();
 
-    // Distance testing
-    m_Distance = Tab.add("Game Peice Distance (cm)", 0).withPosition(3, 0).getEntry();
-
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Target", BuiltInLayouts.kList);
     l1.withPosition(2, 0);
@@ -393,7 +389,6 @@ public class Limelight extends SubsystemBase {
     m_Pipeline.setDouble(getPipeline());
     m_TargetPresent.setBoolean(isTargetPresent());
     m_AprilTagID.setDouble(getPrimAprilTagID());
-    m_Distance.setDouble(getGamePieceDistance());
 
     // update angles to center of target
     m_AngleX.setDouble(getHorizontalTargetOffsetAngle());

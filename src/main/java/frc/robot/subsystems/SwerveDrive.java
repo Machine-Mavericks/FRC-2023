@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.robot.RobotMap;
@@ -97,15 +97,15 @@ public class SwerveDrive extends SubsystemBase {
   private CANCoder m_LRCanCoder;
   private CANCoder m_RRCanCoder;
   // create steer motor objects
-  private TalonFX m_LFSteerMotor;
-  private TalonFX m_RFSteerMotor;
-  private TalonFX m_LRSteerMotor;
-  private TalonFX m_RRSteerMotor;
+  private WPI_TalonFX m_LFSteerMotor;
+  private WPI_TalonFX m_RFSteerMotor;
+  private WPI_TalonFX m_LRSteerMotor;
+  private WPI_TalonFX m_RRSteerMotor;
   // create drive motor objects
-  private TalonFX m_LFDriveMotor;
-  private TalonFX m_RFDriveMotor;
-  private TalonFX m_LRDriveMotor;
-  private TalonFX m_RRDriveMotor;
+  private WPI_TalonFX m_LFDriveMotor;
+  private WPI_TalonFX m_RFDriveMotor;
+  private WPI_TalonFX m_LRDriveMotor;
+  private WPI_TalonFX m_RRDriveMotor;
 
   // The drivetrain's kinematics model
   private final SwerveDriveKinematics m_kinematics;
@@ -171,17 +171,17 @@ public class SwerveDrive extends SubsystemBase {
     // create steeer motors - for 2023, swerve drive is on Canimore canbus network
     if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
     {
-      m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
-      m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
-      m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
-      m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
+      m_LFSteerMotor = new WPI_TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
+      m_RFSteerMotor = new WPI_TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
+      m_LRSteerMotor = new WPI_TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
+      m_RRSteerMotor = new WPI_TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
     }
     else
     {
-      m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
-      m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
-      m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
-      m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
+      m_LFSteerMotor = new WPI_TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
+      m_RFSteerMotor = new WPI_TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
+      m_LRSteerMotor = new WPI_TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
+      m_RRSteerMotor = new WPI_TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
     }
     m_LFSteerMotor.configFactoryDefault();
     m_RFSteerMotor.configFactoryDefault();
@@ -229,20 +229,26 @@ public class SwerveDrive extends SubsystemBase {
     // m_LRSteerMotor.configClosedloopRamp(0.5);
     // m_RRSteerMotor.configClosedloopRamp(0.5);
 
+    // turn on safety oversight of steer motors
+    m_LFSteerMotor.setSafetyEnabled(true);
+    m_RFSteerMotor.setSafetyEnabled(true);
+    m_LRSteerMotor.setSafetyEnabled(true);
+    m_RRSteerMotor.setSafetyEnabled(true);
+
     // create steeer motors - for 2023, swerve drive is on Canimore canbus network
     if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
     {
-      m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
-      m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
-      m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
-      m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
+      m_LFDriveMotor = new WPI_TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
+      m_RFDriveMotor = new WPI_TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
+      m_LRDriveMotor = new WPI_TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
+      m_RRDriveMotor = new WPI_TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
     }
     else
     {
-      m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
-      m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
-      m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
-      m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
+      m_LFDriveMotor = new WPI_TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
+      m_RFDriveMotor = new WPI_TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
+      m_LRDriveMotor = new WPI_TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
+      m_RRDriveMotor = new WPI_TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
     }
     m_LFDriveMotor.configFactoryDefault();
     m_RFDriveMotor.configFactoryDefault();
@@ -278,11 +284,20 @@ public class SwerveDrive extends SubsystemBase {
     m_LRDriveMotor.configMaxIntegralAccumulator(0, 0.15*METERS_TO_ENCODERPULSE);
     m_RRDriveMotor.configMaxIntegralAccumulator(0, 0.15*METERS_TO_ENCODERPULSE);
 
+    // turn on safety of all drive motors
+    m_LFDriveMotor.setSafetyEnabled(true);
+    m_RFDriveMotor.setSafetyEnabled(true);
+    m_LRDriveMotor.setSafetyEnabled(true);
+    m_RRDriveMotor.setSafetyEnabled(true);
+
     // initialize encoders of each steer motor according to CANCoder positions
     ResetSteerEncoders();
 
     // create subsystem shuffle board page
     initializeShuffleboard();
+
+    // initially motors are off
+    drive(0.0, 0.0, 0.0, false, false);
   }
 
   
@@ -316,7 +331,7 @@ public class SwerveDrive extends SubsystemBase {
     
     // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
     updateCounter+=1;
-    if (updateCounter>=10)
+    if (updateCounter>=20)
     { updateCounter=0; updateShuffleboard(); }
     else if (updateCounter<0)
       updateCounter=0;

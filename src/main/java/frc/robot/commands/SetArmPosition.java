@@ -42,7 +42,6 @@ public class SetArmPosition extends CommandBase {
     // special-case code - if moving to stow, then set camera to floor pickup position
     if (m_TargetPposition == RobotContainer.arm.STOW_DEG)
       RobotContainer.cameratilt.setPosition(CameraTilt.TILT_FLOORPICKUP_POS);
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
