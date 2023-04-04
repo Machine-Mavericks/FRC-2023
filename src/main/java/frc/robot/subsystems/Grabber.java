@@ -345,7 +345,7 @@ public class Grabber extends SubsystemBase {
     .withProperties(Map.of("min", 0.00, "max", 3.0))
     .getEntry();
 
-    m_I2CDistanceSelect = Tab.add("Cone Distance Select", 150.0)
+    m_I2CDistanceSelect = Tab.addPersistent("Cone Distance Select", 150.0)
     .withPosition(4, 2)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)

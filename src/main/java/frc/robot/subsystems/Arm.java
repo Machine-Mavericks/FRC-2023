@@ -78,7 +78,7 @@ public class Arm extends SubsystemBase {
   static final double MAX_MID_ARM_POS_DEG = 262;
 
   public static final double PICKUP_DEG = 110.0;
-  public static final double STOW_DEG = 146;
+  public static final double STOW_DEG = 145;
   public static final double MID_DEG = 212.2;
   public static final double PICKUP_SHELF_DEG = 213.0;
   public static final double HIGH_DEG = 255; // was 252
@@ -146,9 +146,6 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.configForwardSoftLimitEnable(true);
     m_ArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
     m_ArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-
-    // enable safety oversight of motor
-    m_ArmMotor.setSafetyEnabled(true);
 
     // initialize encoders according to CANCoder positions
     ResetArmEncoders();

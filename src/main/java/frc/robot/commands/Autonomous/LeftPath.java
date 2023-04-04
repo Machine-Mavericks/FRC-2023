@@ -11,16 +11,18 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 import frc.robot.commands.DrivetoRelativePose;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+// Auto routine:
+// 1_ Drop cube in top co-op place
+// 2) Drive ahead over line
+//
+// Initial conditions:
+// Robot squared-up against wood, arm preloaded wtih cube
+
 public class LeftPath extends SequentialCommandGroup {
   /** Creates a new LeftPath. */
   public LeftPath() {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+    // Add your commands in the addCommands() 
     addCommands(
-
 
     // enable arm, and lift to stow position
     new InstantCommand(() -> RobotContainer.arm.SetEnableArm(true)),
@@ -32,19 +34,13 @@ public class LeftPath extends SequentialCommandGroup {
     new DelayCommand(2.0),
 
     // open gripper
-    new InstantCommand(() -> RobotContainer.grabber.setOpen()),
-
-    // delay for gripper to open
-    new DelayCommand(0.5),
-    
-    // close gripper
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     
-    // delay for gripper to close
-    new DelayCommand(0.40),
+    // delay for gripper to open
+    new DelayCommand(0.50),
 
-    // move arm to stow position - 25deg  (aka 'forward position' but inside robot bumper)
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG-25.0)),
+    // move arm to stow position
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG)),
 
     // delay for arm to get to stow
     new DelayCommand(1.5),
@@ -57,18 +53,6 @@ public class LeftPath extends SequentialCommandGroup {
 
     // drive straight ahead over charge station by 6m
     new DrivetoRelativePose(new Pose2d(5.1, 0, new Rotation2d(0.0)),0.4,0.1, 10.0)
-    
-    /**
-     Drive forward
-     place cone on 9,2
-      if no place game piece command
-        move arm to out position for high pole
-        drop game piece (ie. open grabber)
-        retract arm
-     drive backward past line
-     drive right
-     balance/ dock
-     */
 
     );
   }
