@@ -8,22 +8,27 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveOdometry;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.AutoPathSelect;
-import frc.robot.subsystems.TargetSelect;
+import frc.robot.subsystems.CameraTilt;
+import frc.robot.subsystems.Pigeon;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.ManualArmSpeed;
 import frc.robot.commands.SetArmPosition;
+import frc.robot.commands.Autonomous.CoopCube2;
 import frc.robot.commands.Autonomous.CoopCubePath;
 import frc.robot.commands.Autonomous.LeftPath;
 import frc.robot.commands.Autonomous.RightPath;
+import frc.robot.commands.Autonomous.TwoCube;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffMed;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffHigh;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffMed;
+import frc.robot.commands.SemiAutonomous.SemiAutoFloorCubePickup;
 import frc.robot.commands.SemiAutonomous.SemiAutoShelfPickup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
@@ -42,7 +47,8 @@ public class RobotContainer {
   public static final AutoPathSelect autopathselect = new AutoPathSelect();
   
   // Create instances of robot subsystems
-  public static final NavX gyro = new NavX();
+  public static final Pigeon gyro2 = new Pigeon();
+  public static final CameraTilt cameratilt = new CameraTilt();
   public static final Limelight limelight_high = new Limelight("high");
   public static final Limelight limelight_med = new Limelight("med"); 
   public static final SwerveDrive swervedrive = new SwerveDrive();
@@ -67,7 +73,6 @@ public class RobotContainer {
     // set default arm command to manual drive mode
     arm.setDefaultCommand(new ManualArmSpeed());
 
-    //LEDStrip.setDefaultCommand(new LEDCommand());
   }
 
   /**
@@ -79,21 +84,23 @@ public class RobotContainer {
   private static void configureButtonBindings() {
 
     // reset gyro button
-    OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro.resetGyro()));
+    OI.DriverButtons.gyro_reset_Button.onTrue(new InstantCommand(()-> gyro2.resetGyro()));
     
     // shelf pickup semi-auto routine
     OI.DriverButtons.shelfpickup_Button.whileTrue(new SemiAutoShelfPickup());
     OI.DriverButtons.DropoffHigh_Button.whileTrue(new SemiAutoConeDropOffHigh());
     OI.DriverButtons.DropoffMed_Button.whileTrue(new SemiAutoConeDropOffMed());
     OI.DriverButtons.auto_balance_Button.whileTrue(new AutoBalance());
-    
+    OI.DriverButtons.CubeDropoffHigh_Button.whileTrue(new SemiAutoCubeDropOffHigh());
+    OI.DriverButtons.CubeDropoffMed_Button.whileTrue(new SemiAutoCubeDropOffMed());
+    OI.DriverButtons.CubeFloorPickup_Button.whileTrue(new SemiAutoFloorCubePickup());
 
-    // arrm movement buttons
+    // arm movement buttons
     OI.OperatorButtons.ground_Button.onTrue(new SetArmPosition(Arm.PICKUP_DEG));
     OI.OperatorButtons.mid_Button.onTrue(new SetArmPosition(Arm.MID_DEG));
     OI.OperatorButtons.high_Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
     OI.OperatorButtons.stow_Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
-    OI.OperatorButtons.shelf_pickup_Button.onTrue(new SetArmPosition(Arm.PICKUP_SHELF_DEG));
+    OI.OperatorButtons.shelf_pickup_Button.onTrue(new SetArmPosition(Arm.PICKUP_SHELF_DEG + arm.GetArmPickupPosAdjust()));
 
     // grabber open/close
     OI.OperatorButtons.GrabberButton.whileTrue(new InstantCommand(()-> grabber.setOpen()));
@@ -117,7 +124,9 @@ public class RobotContainer {
       return new LeftPath();
     else if (index == 2)
       return new RightPath();
+    else if (index == 3)
+      return new TwoCube();
     else
-      return new CoopCubePath(); 
+      return null;
   }
 }

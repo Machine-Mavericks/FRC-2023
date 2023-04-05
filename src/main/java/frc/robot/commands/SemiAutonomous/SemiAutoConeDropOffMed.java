@@ -9,18 +9,16 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 import frc.robot.subsystems.Arm;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
   /** Creates a new SemiAutoConeDropOffMed. */
   public SemiAutoConeDropOffMed() {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+    
+    // Add your commands in the addCommands() call
     addCommands(
-       // move arm back to drop off cone
+    
+    // move arm back to drop off cone
     //new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.MID_DEG)),
-   new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)), // was 208.0
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.MID_DEG)),
 
     // change camera pipeline
     new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(1)),
@@ -30,20 +28,17 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
 
     // move to drop off cone
     new DriveToConeDropOff(1),
-
-    // delay until arm gets back
-    new DelayCommand(1.0),
     
-    // open gripper
-    new InstantCommand(() -> RobotContainer.grabber.setOpen()),
+// delay for gripper to open
+new DelayCommand(0.10),
 
-    // delay for gripper to open
-    new DelayCommand(0.25),
-    
-    // close gripper
+//wait for arm to be at destination
+new AutoWaitArmToBeAtDestination(Arm.MID_DEG),
+
+    // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     
-    // delay for gripper to close
+    // delay for gripper to open
     new DelayCommand(0.40),
 
     // move arm to stow position

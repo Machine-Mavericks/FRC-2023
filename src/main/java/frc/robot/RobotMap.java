@@ -8,13 +8,6 @@ public class RobotMap {
     
 
     /**
-     * Inner class to hold limelight physical position offsets
-     */
-    public static class LimelightOffsets {
-        public static final double FLOOR_LIMELIGHT_OFFSET_X = 0;
-        public static final double FLOOR_LIMELIGHT_OFFSET_Y = 0;
-    }
-    /**
      * Inner class to hold CAN ID constants.
      */
     public static class CANID {
@@ -48,29 +41,24 @@ public class RobotMap {
      * Inner class to hold RoboRIO I/O connection constants
      */
   public static class RIO {
-        /** Pin of DIO connection 1 */
-        public static final int DIO_1 = 0;
-        /** Pin of DIO connection 2 */
-        public static final int DIO_2 = 1;
+        // Grabber - Input Digital Switch (true if item is grabbed)
+        public static final int DIO_0_GRABBERSW = 0;
 
-        /** Pin of Analog Input connection 1 */
-        public static final int ANALOG_1 = 0;
+        // Ultrasonic sensor - used for distance to shelf pickup
+        public static final int DIO_3_ULTRASONIC_A = 3;
+        public static final int DIO_4_ULTRASONIC_B = 4;
+
+        // Analog range sensor - used for floor cone pickup
+        public static final int AIN_0_FLOORSENSOR = 0;
         
-        /** CAN ID of left talon 1. */
-        public static final int LEFT_CONTROLLER_1 = 0;
-        /** CAN ID of left talon 2. */
-        public static final int LEFT_CONTROLLER_2 = 1;
-        
-        /** CAN ID of right talon 1. */
-        public static final int RIGHT_CONTROLLER_1 = 2;
-        /** CAN ID of right talon 2. */
-        public static final int RIGHT_CONTROLLER_2 = 3;
     }
-//LED's
+
     public static class PWMPorts {
         /** PWM Port for led strip */
-        //public static final int LED_STRIP1 = 0;
         public static final int LED_BLINKIN = 0;
+
+        // PWM port for camera tilting subsystem
+        public static final int CAMERA_SERVO_ID = 1;
     } 
 
 }

@@ -29,13 +29,18 @@ public Pigeon() {
   initializeShuffleboard();
   
   // make pigeon object
-  gyro = new WPI_Pigeon2(RobotMap.CANID.PIGEON);
+  gyro = new WPI_Pigeon2(RobotMap.CANID.PIGEON, "Drivebase");
   }
 
+  private int updateCounter=4;
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    updateShuffleboard();
+    // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
+    updateCounter+=1;
+    if (updateCounter>=20)
+    { updateCounter=0; updateShuffleboard(); }
+    else if (updateCounter<0)
+      updateCounter=0;
   }
 
   /** Gets the yaw of the robot
@@ -55,9 +60,8 @@ public Pigeon() {
   /** Gets the pitch of the robot
    * @return current pitch value in deg */
   public double getPitch() {
-    //gyro.get
     
-    return gyro.getPitch();
+    return -gyro.getPitch();
   }
 
   /** Resets yaw to zero */
@@ -90,7 +94,7 @@ public Pigeon() {
     ShuffleboardTab Tab = Shuffleboard.getTab("Pigeon");
 
     // create controls to display robot position, angle, and gyro angle
-    ShuffleboardLayout l1 = Tab.getLayout("NavX", BuiltInLayouts.kList);
+    ShuffleboardLayout l1 = Tab.getLayout("Values", BuiltInLayouts.kList);
     l1.withPosition(0, 0);
     l1.withSize(1, 3);
     m_gyroPitch = l1.add("Pitch (deg)", 0.0).getEntry();

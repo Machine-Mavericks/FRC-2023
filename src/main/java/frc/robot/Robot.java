@@ -67,10 +67,9 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    
+
     // Reset gyro
-    RobotContainer.gyro.resetGyro();
-    //RobotContainer.gyro2.resetGyro();
+    RobotContainer.gyro2.resetGyro();
 
     // Reset swerve drive encoders
     RobotContainer.swervedrive.ResetSteerEncoders();
@@ -92,10 +91,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    
+
     // Reset gyro - temporary - code likely to be moved later
-    RobotContainer.gyro.resetGyro();
-    //RobotContainer.gyro2.resetGyro();
+    // RobotContainer.gyro2.resetGyro();
 
     // Reset swerve drive encoders - temporary - code likely to be moved later.
     RobotContainer.swervedrive.ResetSteerEncoders();
@@ -111,9 +109,6 @@ public class Robot extends TimedRobot {
 
     // set default swerve drive command to manual drive mode
     RobotContainer.swervedrive.setDefaultCommand(new ManualDriveCommand());
-
-    // set arm to normal speed
-    RobotContainer.arm.EnableFast(false);
 
     // set default arm command to manual speed
     RobotContainer.arm.setDefaultCommand(new ManualArmSpeed());

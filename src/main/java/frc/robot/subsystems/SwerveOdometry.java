@@ -31,10 +31,6 @@ public class SwerveOdometry extends SubsystemBase {
   private GenericEntry m_robotY;
   private GenericEntry m_robotAngle;
 
-  private GenericEntry m_initialX;
-  private GenericEntry m_initialY;
-  private GenericEntry m_initialAngle;
-
   /** Creates a new SwerveOdometry. */
   public SwerveOdometry() {
 
@@ -55,15 +51,6 @@ public class SwerveOdometry extends SubsystemBase {
 
   // -------------------- Initialize and Update Odometry Methods
 
-  /**
-   * Initialize robot odometry use shuffleboard settings and current gyro angle
-   */
-  public void InitializefromShuffleboard() {
-    setPosition(m_initialX.getDouble(0.0),
-        m_initialY.getDouble(0.0),
-        m_initialAngle.getDouble(0.0),
-        0.0);
-  } // get gyro angle from subsystem
 
   /** Initialize robot odometry to zero */
   public void InitializetoZero() {
@@ -86,18 +73,22 @@ public class SwerveOdometry extends SubsystemBase {
   }
 
   /** Update current robot dometry - called by scheduler at 50Hz */
+  private int updateCounter=3;
   @Override
   public void periodic() {
 
     // get gyro angle (in degrees) and make rotation vector
-    Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro.getYaw() * DEGtoRAD);
+    Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro2.getYaw() * DEGtoRAD);
 
     // update odometry
     m_odometry.update(gyroangle, RobotContainer.swervedrive.GetSwerveDistances());
     
-    
-    // update odemetry shuffleboard page
-    updateShuffleboard();
+    // update odemetry shuffleboard page at reduced rate to save cpu cycles
+    updateCounter+=1;
+    if (updateCounter>=10)
+    { updateCounter=0; updateShuffleboard(); }
+    else if (updateCounter<0)
+      updateCounter=0;
   }
 
   // -------------------- Robot Current Odometry Access Methods --------------------
@@ -105,7 +96,6 @@ public class SwerveOdometry extends SubsystemBase {
   /** return robot's current position vector Pose2d */
   public Pose2d getPose2d() {
     return m_odometry.getPoseMeters();
-    //return new Pose2d(getX(), getY(), new Rotation2d(getAngle() * DEGtoRAD));
   }
 
 
@@ -151,13 +141,6 @@ public class SwerveOdometry extends SubsystemBase {
     m_robotY = l1.add("Y (m)", 0.0).getEntry();
     m_robotAngle = l1.add("Angle(deg)", 0.0).getEntry();
 
-    // Controls to set initial robot position and angle
-    ShuffleboardLayout l2 = Tab.getLayout("Initial Position", BuiltInLayouts.kList);
-    l2.withPosition(4, 0);
-    l2.withSize(1, 3);
-    m_initialX = l2.add("X (m)", 0.0).getEntry();           // eventually can use .addPersistent once code finalized
-    m_initialY = l2.add("Y (m)", 0.0).getEntry();           // eventually can use .addPersentent once code finalized
-    m_initialAngle = l2.add("Angle(deg)", 0.0).getEntry();  // eventually can use .addPersentent once code finalized
   }
 
   /** Update subsystem shuffle board page with current odometry values */

@@ -7,38 +7,36 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
-import frc.robot.subsystems.Arm;
 
 
-public class SemiAutoConeDropOffHigh extends SequentialCommandGroup {
+public class SemiAutoCubeDropOffHigh extends SequentialCommandGroup {
   /** Creates a new SemiAutoConeDropOffHigh. */
-  public SemiAutoConeDropOffHigh() {
-    
-    // Add your commands in the addCommands() call, 
+  public SemiAutoCubeDropOffHigh() {
+    // Add your commands in the addCommands() call
     addCommands(
-    
-    // move arm back to drop off cone
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.HIGH_DEG)),
+
+    // move arm back to drop off cube
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.CUBE_HIGH_DEG)),
 
     // change camera pipeline
-    new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(0)),
+    //new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(2)),
 
     // delay until camera pipeline changed
     new DelayCommand(0.05),
 
-    // move to drop off cone
-    new DriveToConeDropOff(0),
+    // move to drop off cube
+    new DriveToCubeDropOff(2),
     
-    // delay for gripper to open
-    new DelayCommand(0.10),
+    // delay to stabilize robot before opening gripper
+    new DelayCommand(0.15),
 
     //wait for arm to be at destination
-    new AutoWaitArmToBeAtDestination(Arm.HIGH_DEG),
+    new AutoWaitArmToBeAtDestination(RobotContainer.arm.CUBE_HIGH_DEG),
 
     // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     
-    // delay for gripper to open
+    // delay for gripper to close
     new DelayCommand(0.40),
 
     // move arm to stow position

@@ -11,21 +11,16 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 import frc.robot.commands.DrivetoRelativePose;
-import frc.robot.commands.SemiAutonomous.AutoBalance;
+import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffMed;
+import frc.robot.commands.SemiAutonomous.AutoFloorCubePickup;
 
-// Auto routine:
-// 1_ Drop cube in top co-op place
-// 2) Drive onto balancer
-// 3) Balance on charger
-//
-// Initial conditions:
-// Robot squared-up against wood, arm preloaded wtih cube
-// 
 
-public class CoopCubePath extends SequentialCommandGroup {
-  /** Creates a new CoopCubePath. */
-  public CoopCubePath() {
-    // Add your commands in the addCommands() 
+public class TwoCube extends SequentialCommandGroup {
+
+  Pose2d startingPose;
+  /** Creates a new TwoCube. */
+  public TwoCube() {
+    // Add your commands in the addCommands() call
     addCommands(
 
     // enable arm, and lift to stow position
@@ -33,35 +28,41 @@ public class CoopCubePath extends SequentialCommandGroup {
     
     // move arm back to drop off cube
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
-
+  
     // delay until arm gets back
-    new DelayCommand(1.5),
-    
+    new DelayCommand(1.0),
+      
     // place cube
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
-    
+      
     // delay for gripper to close
     new DelayCommand(0.7),
-
+  
     // move arm to 'forward position' but inside robot bumper)
     // move to 135deg
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(135.0)),
 
     // delay for arm to get to stow
-    new DelayCommand(1.5),
+    new DelayCommand(1.0),
 
     // ensure arm is stowed before it is allow to begin moving over charge station
     new SafetyCheckStowPosition(),
 
-    // drive straight ahead over charge station
-    new DrivetoRelativePose(new Pose2d(2.5, 0, new Rotation2d(0.0)),1.0,0.1, 30.0),
-    
-    // balance
-    new AutoBalance()
-    
-    );
-    
+    // drive straight
+    new DrivetoRelativePose(new Pose2d(4.7, 0, new Rotation2d(0.0)),1.8,0.1, 7.0),
 
+    // pick up cube from floor :)
+    new AutoFloorCubePickup(),
+
+    // delay
+    new DelayCommand(0.5),
+
+    // drive straight back
+    new DrivetoRelativePose(new Pose2d(-4.5, 0, new Rotation2d(0.0)),1.8,0.1, 7.0),
     
+    // move arm back to drop off cube
+    new SemiAutoCubeDropOffMed()
+
+    );
   }
 }

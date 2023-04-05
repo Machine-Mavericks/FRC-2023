@@ -31,8 +31,10 @@ public class OI {
         public static JoystickButton DropoffHigh_Button = new JoystickButton(driverController, XboxController.Button.kX.value);
         public static JoystickButton DropoffMed_Button = new JoystickButton(driverController, XboxController.Button.kA.value);
         public static JoystickButton auto_balance_Button = new JoystickButton(driverController, XboxController.Button.kB.value);
-        
-        
+        public static JoystickButton CubeDropoffHigh_Button = new JoystickButton(driverController, XboxController.Button.kLeftStick.value);
+        public static JoystickButton CubeDropoffMed_Button = new JoystickButton(driverController, XboxController.Button.kRightStick.value);
+        public static JoystickButton CubeFloorPickup_Button = new JoystickButton(driverController, XboxController.Button.kStart.value);
+
         // park button
         public static JoystickButton park_Button = new JoystickButton(driverController, XboxController.Button.kLeftBumper.value);
     }

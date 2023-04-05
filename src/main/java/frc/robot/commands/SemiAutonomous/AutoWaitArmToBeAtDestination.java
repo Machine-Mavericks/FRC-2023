@@ -2,35 +2,24 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Autonomous;
+package frc.robot.commands.SemiAutonomous;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import edu.wpi.first.wpilibj.Timer;
 
-/** Command used to delay start of autonomous command
- *  Place command as first step of autonomous routine
- *  Reads delay time from shuffleboard page */
-public class AutoDelayCommand extends CommandBase {
+public class AutoWaitArmToBeAtDestination extends CommandBase {
   
-  private Timer m_Timer;
-  private double m_delayTime;
-  
-  /** Creates a new AutoDelayCommand. */
-  public AutoDelayCommand() {
+  double m_target;
+
+  /** Creates a new AutoWaitArmToBeAtDestination. */
+  public AutoWaitArmToBeAtDestination(double targetpos) {
     // Use addRequirements() here to declare subsystem dependencies.
+    m_target = targetpos;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    m_Timer = new Timer();
-    m_Timer.reset();
-    m_Timer.start();
-    
-    // get time to delay from shuffleboard OI
-    m_delayTime = RobotContainer.autopathselect.getAutoDelay();
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -43,6 +32,8 @@ public class AutoDelayCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_Timer.hasElapsed(m_delayTime);
+    
+    return Math.abs(RobotContainer.arm.GetArmPosition() - m_target) <= 10.0;
+    
   }
 }

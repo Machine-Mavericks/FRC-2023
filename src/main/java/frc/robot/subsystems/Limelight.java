@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -31,11 +30,9 @@ public class Limelight extends SubsystemBase {
     // subsystem shuffleboard controls
     private GenericEntry m_Pipeline;
     private GenericEntry m_TargetPresent;
-
     private GenericEntry m_AprilTagID;
 
-    private GenericEntry m_Distance; // For cones & Cubes only
-    private DoubleArraySubscriber m_llpythonSub;
+    //private DoubleArraySubscriber m_llpythonSub;
 
     private GenericEntry m_AngleX;
     private GenericEntry m_AngleY;
@@ -65,13 +62,12 @@ public class Limelight extends SubsystemBase {
     private GenericEntry m_Yawrs;
     private GenericEntry m_Rollrs;
 
+    
+    // true if fiducial information is enabled and to be displayed on shuffleboard
+    private boolean m_FiducialEnable;
     private GenericEntry m_BotPose[] = new GenericEntry[6];
     private GenericEntry m_BotPoseRed[] = new GenericEntry[6];
     private GenericEntry m_BotPoseBlue[] = new GenericEntry[6];
-    // private GenericEntry m_Test1;
-    // private GenericEntry m_Test2;
-
-    private boolean m_FiducialEnable;
 
   
     /**
@@ -89,10 +85,10 @@ public class Limelight extends SubsystemBase {
       
       // record fiducial enable
       m_FiducialEnable = FiducialEnable;
-      
+    
       // set pointer to limelight network table
       m_table = NetworkTableInstance.getDefault().getTable("limelight-"+name);
-
+      
       // initialize camera to use LED mode set in the current pipeline setup
       m_table.getEntry("ledMode").setNumber(0);
 
@@ -100,8 +96,8 @@ public class Limelight extends SubsystemBase {
       // side-by-side
       m_table.getEntry("stream").setNumber(0);
 
-      m_llpythonSub = m_table.getDoubleArrayTopic("llpython").subscribe(new double[] {});
-
+      //m_llpythonSub = m_table.getDoubleArrayTopic("llpython").subscribe(new double[] {});
+    
       // set initial pipeline to 0
       setPipeline(0);
   
@@ -116,7 +112,7 @@ public class Limelight extends SubsystemBase {
     public void periodic() {
       // update shuffleboard - update at 5Hz is sufficient for this subsystem
       m_UpdateTimer++;
-      if (m_UpdateTimer>=10)
+      if (m_UpdateTimer>=15)
       {
         updateShuffleboard();
         m_UpdateTimer=0;
@@ -154,7 +150,7 @@ public class Limelight extends SubsystemBase {
      * get vertical angle from center of camera view to center of target
      * returns -20 to +20 degrees
      */
-     float getVerticalTargetOffsetAngle() {
+     public float getVerticalTargetOffsetAngle() {
       
       return m_table.getEntry("ty").getFloat(0);
     }
@@ -215,10 +211,10 @@ public class Limelight extends SubsystemBase {
       // }
 
       
-      double[] llpython = m_llpythonSub.get();
-      if (llpython.length > 0){
-        return llpython[0];
-      } 
+      //double[] llpython = m_llpythonSub.get();
+      //if (llpython.length > 0){
+      //  return llpython[0];
+      //} 
       return 0;
     }
 
@@ -326,9 +322,6 @@ public class Limelight extends SubsystemBase {
     // april tag target id
     m_AprilTagID = Tab.add("AprilTag Target ID", 0).withPosition(0,2).getEntry();
 
-    // Distance testing
-    m_Distance = Tab.add("Game Peice Distance (cm)", 0).withPosition(3, 0).getEntry();
-
     // camera target information
     ShuffleboardLayout l1 = Tab.getLayout("Target", BuiltInLayouts.kList);
     l1.withPosition(2, 0);
@@ -394,14 +387,9 @@ public class Limelight extends SubsystemBase {
     
     // update camera pipeline and target detected indicator
     m_Pipeline.setDouble(getPipeline());
-
     m_TargetPresent.setBoolean(isTargetPresent());
     m_AprilTagID.setDouble(getPrimAprilTagID());
-    m_Distance.setDouble(getGamePieceDistance());
 
-
-
-    
     // update angles to center of target
     m_AngleX.setDouble(getHorizontalTargetOffsetAngle());
     m_AngleY.setDouble(getVerticalTargetOffsetAngle());

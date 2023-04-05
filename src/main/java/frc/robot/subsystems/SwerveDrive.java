@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.robot.RobotMap;
@@ -85,14 +85,6 @@ public class SwerveDrive extends SubsystemBase {
   private GenericEntry m_RFDriveMotorSpeed;
   private GenericEntry m_LRDriveMotorSpeed;
   private GenericEntry m_RRDriveMotorSpeed;
-  private GenericEntry m_LFDriveMotorVolts;
-  private GenericEntry m_RFDriveMotorVolts;
-  private GenericEntry m_LRDriveMotorVolts;
-  private GenericEntry m_RRDriveMotorVolts;
-  private GenericEntry m_LFDriveMotorTemp;
-  private GenericEntry m_RFDriveMotorTemp;
-  private GenericEntry m_LRDriveMotorTemp;
-  private GenericEntry m_RRDriveMotorTemp;
   private GenericEntry m_BattVolts;
   private GenericEntry m_SpeedLimit;
   private GenericEntry m_AccelLimit;
@@ -105,15 +97,15 @@ public class SwerveDrive extends SubsystemBase {
   private CANCoder m_LRCanCoder;
   private CANCoder m_RRCanCoder;
   // create steer motor objects
-  private TalonFX m_LFSteerMotor;
-  private TalonFX m_RFSteerMotor;
-  private TalonFX m_LRSteerMotor;
-  private TalonFX m_RRSteerMotor;
+  private WPI_TalonFX m_LFSteerMotor;
+  private WPI_TalonFX m_RFSteerMotor;
+  private WPI_TalonFX m_LRSteerMotor;
+  private WPI_TalonFX m_RRSteerMotor;
   // create drive motor objects
-  private TalonFX m_LFDriveMotor;
-  private TalonFX m_RFDriveMotor;
-  private TalonFX m_LRDriveMotor;
-  private TalonFX m_RRDriveMotor;
+  private WPI_TalonFX m_LFDriveMotor;
+  private WPI_TalonFX m_RFDriveMotor;
+  private WPI_TalonFX m_LRDriveMotor;
+  private WPI_TalonFX m_RRDriveMotor;
 
   // The drivetrain's kinematics model
   private final SwerveDriveKinematics m_kinematics;
@@ -179,17 +171,17 @@ public class SwerveDrive extends SubsystemBase {
     // create steeer motors - for 2023, swerve drive is on Canimore canbus network
     if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
     {
-      m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
-      m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
-      m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
-      m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
+      m_LFSteerMotor = new WPI_TalonFX(RobotMap.CANID.LF_STEER_MOTOR,"Drivebase");
+      m_RFSteerMotor = new WPI_TalonFX(RobotMap.CANID.RF_STEER_MOTOR,"Drivebase");
+      m_LRSteerMotor = new WPI_TalonFX(RobotMap.CANID.LR_STEER_MOTOR,"Drivebase");
+      m_RRSteerMotor = new WPI_TalonFX(RobotMap.CANID.RR_STEER_MOTOR,"Drivebase");
     }
     else
     {
-      m_LFSteerMotor = new TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
-      m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
-      m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
-      m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
+      m_LFSteerMotor = new WPI_TalonFX(RobotMap.CANID.LF_STEER_MOTOR);
+      m_RFSteerMotor = new WPI_TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
+      m_LRSteerMotor = new WPI_TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
+      m_RRSteerMotor = new WPI_TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
     }
     m_LFSteerMotor.configFactoryDefault();
     m_RFSteerMotor.configFactoryDefault();
@@ -237,20 +229,26 @@ public class SwerveDrive extends SubsystemBase {
     // m_LRSteerMotor.configClosedloopRamp(0.5);
     // m_RRSteerMotor.configClosedloopRamp(0.5);
 
+    // turn on safety oversight of steer motors
+    m_LFSteerMotor.setSafetyEnabled(true);
+    m_RFSteerMotor.setSafetyEnabled(true);
+    m_LRSteerMotor.setSafetyEnabled(true);
+    m_RRSteerMotor.setSafetyEnabled(true);
+
     // create steeer motors - for 2023, swerve drive is on Canimore canbus network
     if (Robot.robotBase == Robot.RobotBaseType.SwerveBase2023)
     {
-      m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
-      m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
-      m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
-      m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
+      m_LFDriveMotor = new WPI_TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR,"Drivebase");
+      m_RFDriveMotor = new WPI_TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR,"Drivebase");
+      m_LRDriveMotor = new WPI_TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR,"Drivebase");
+      m_RRDriveMotor = new WPI_TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR,"Drivebase");
     }
     else
     {
-      m_LFDriveMotor = new TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
-      m_RFDriveMotor = new TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
-      m_LRDriveMotor = new TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
-      m_RRDriveMotor = new TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
+      m_LFDriveMotor = new WPI_TalonFX(RobotMap.CANID.LF_DRIVE_MOTOR);
+      m_RFDriveMotor = new WPI_TalonFX(RobotMap.CANID.RF_DRIVE_MOTOR);
+      m_LRDriveMotor = new WPI_TalonFX(RobotMap.CANID.LR_DRIVE_MOTOR);
+      m_RRDriveMotor = new WPI_TalonFX(RobotMap.CANID.RR_DRIVE_MOTOR);
     }
     m_LFDriveMotor.configFactoryDefault();
     m_RFDriveMotor.configFactoryDefault();
@@ -286,11 +284,20 @@ public class SwerveDrive extends SubsystemBase {
     m_LRDriveMotor.configMaxIntegralAccumulator(0, 0.15*METERS_TO_ENCODERPULSE);
     m_RRDriveMotor.configMaxIntegralAccumulator(0, 0.15*METERS_TO_ENCODERPULSE);
 
+    // turn on safety of all drive motors
+    m_LFDriveMotor.setSafetyEnabled(true);
+    m_RFDriveMotor.setSafetyEnabled(true);
+    m_LRDriveMotor.setSafetyEnabled(true);
+    m_RRDriveMotor.setSafetyEnabled(true);
+
     // initialize encoders of each steer motor according to CANCoder positions
     ResetSteerEncoders();
 
     // create subsystem shuffle board page
     initializeShuffleboard();
+
+    // initially motors are off
+    drive(0.0, 0.0, 0.0, false, false);
   }
 
   
@@ -318,13 +325,13 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
-  private int updateCounter=0;
+  private int updateCounter=2;
   @Override
   public void periodic() {
     
-    // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
+    // update shuffle board values - update at reduced rate to save CPU cycles
     updateCounter+=1;
-    if (updateCounter>=5)
+    if (updateCounter>=20)
     { updateCounter=0; updateShuffleboard(); }
     else if (updateCounter<0)
       updateCounter=0;
@@ -357,7 +364,7 @@ public class SwerveDrive extends SubsystemBase {
     if (fieldOriented) {
       // convert speeds from field relative according to current gyro angle 
       // note negative sign for gyro angle to have robot drive in correct direction
-      s= ChassisSpeeds.fromFieldRelativeSpeeds(s, Rotation2d.fromDegrees(RobotContainer.gyro.getYaw()));
+      s= ChassisSpeeds.fromFieldRelativeSpeeds(s, Rotation2d.fromDegrees(RobotContainer.gyro2.getYaw()));
     }
       
     // determine desired swerve module states from desired chassis speeds
@@ -544,8 +551,6 @@ public SwerveDriveKinematics getKinematics() {
     m_LFDriveMotorPos = l1.add("Drive Pos'n", 0.0).getEntry();
     m_LFDriveMotorSpeed = l1.add("Drive Speed", 0.0).getEntry();
     m_LFDriveMotorTargetSpeed = l1.add("Drive Target Spd", 0.0).getEntry();
-    m_LFDriveMotorVolts = l1.add("Volts", 0.0).getEntry();
-    m_LFDriveMotorTemp = l1.add("Dr Mtr(degC)", 0.0).getEntry();
 
     // create controls to right-front swerve data
     ShuffleboardLayout l2 = Tab.getLayout("Right-Front", BuiltInLayouts.kList);
@@ -557,8 +562,6 @@ public SwerveDriveKinematics getKinematics() {
     m_RFDriveMotorPos = l2.add("Drive Pos'n", 0.0).getEntry();
     m_RFDriveMotorSpeed = l2.add("Drive Speed", 0.0).getEntry();
     m_RFDriveMotorTargetSpeed = l2.add("Drive Target Spd", 0.0).getEntry();
-    m_RFDriveMotorVolts = l2.add("Volts", 0.0).getEntry();
-    m_RFDriveMotorTemp = l2.add("Dr Mtr(degC)", 0.0).getEntry();
 
     // create controls to left-rear swerve data
     ShuffleboardLayout l3 = Tab.getLayout("Left-Rear", BuiltInLayouts.kList);
@@ -570,8 +573,6 @@ public SwerveDriveKinematics getKinematics() {
     m_LRDriveMotorPos = l3.add("Drive Pos'n", 0.0).getEntry();
     m_LRDriveMotorSpeed = l3.add("Drive Speed", 0.0).getEntry();
     m_LRDriveMotorTargetSpeed = l3.add("Drive Target Spd", 0.0).getEntry();
-    m_LRDriveMotorVolts = l3.add("Volts", 0.0).getEntry();
-    m_LRDriveMotorTemp = l3.add("Dr Mtr(degC)", 0.0).getEntry();
 
     // create controls to right-rear swerve data
     ShuffleboardLayout l4 = Tab.getLayout("Right-Rear", BuiltInLayouts.kList);
@@ -583,8 +584,6 @@ public SwerveDriveKinematics getKinematics() {
     m_RRDriveMotorPos = l4.add("Drive Pos'n", 0.0).getEntry();
     m_RRDriveMotorSpeed = l4.add("Drive Speed", 0.0).getEntry();
     m_RRDriveMotorTargetSpeed = l4.add("Drive Target Spd", 0.0).getEntry();
-    m_RRDriveMotorVolts = l4.add("Volts", 0.0).getEntry();
-    m_RRDriveMotorTemp = l4.add("Dr Mtr(degC)", 0.0).getEntry();
 
     // create controls to bus voltage
     ShuffleboardLayout l5 = Tab.getLayout("Battery", BuiltInLayouts.kList);
@@ -631,18 +630,6 @@ public SwerveDriveKinematics getKinematics() {
     m_RFDriveMotorTargetSpeed.setDouble(m_RFDriveMotor.getClosedLoopTarget());
     m_LRDriveMotorTargetSpeed.setDouble(m_LRDriveMotor.getClosedLoopTarget());
     m_RRDriveMotorTargetSpeed.setDouble(m_RRDriveMotor.getClosedLoopTarget());
-
-    // update drive motor volts
-    m_LFDriveMotorVolts.setDouble(m_LFDriveMotor.getMotorOutputVoltage());
-    m_RFDriveMotorVolts.setDouble(m_RFDriveMotor.getMotorOutputVoltage());
-    m_LRDriveMotorVolts.setDouble(m_LRDriveMotor.getMotorOutputVoltage());
-    m_RRDriveMotorVolts.setDouble(m_RRDriveMotor.getMotorOutputVoltage());
-
-    // update drive motor temperatures (degC)
-    m_LFDriveMotorTemp.setDouble(m_LFDriveMotor.getTemperature());
-    m_RFDriveMotorTemp.setDouble(m_RFDriveMotor.getTemperature());
-    m_LRDriveMotorTemp.setDouble(m_LRDriveMotor.getTemperature());
-    m_RRDriveMotorTemp.setDouble(m_RRDriveMotor.getTemperature());
 
     // update battery voltage (volts)
     m_BattVolts.setDouble(m_LFDriveMotor.getBusVoltage());

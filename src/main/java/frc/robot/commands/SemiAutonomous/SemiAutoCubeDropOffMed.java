@@ -9,36 +9,35 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 import frc.robot.subsystems.Arm;
 
-
-public class SemiAutoConeDropOffHigh extends SequentialCommandGroup {
-  /** Creates a new SemiAutoConeDropOffHigh. */
-  public SemiAutoConeDropOffHigh() {
+public class SemiAutoCubeDropOffMed extends SequentialCommandGroup {
+  /** Creates a new SemiAutoConeDropOffMed. */
+  public SemiAutoCubeDropOffMed() {
     
-    // Add your commands in the addCommands() call, 
+    // Add your commands in the addCommands() call
     addCommands(
-    
+
     // move arm back to drop off cone
-    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.HIGH_DEG)),
+    new InstantCommand(() -> RobotContainer.arm.SetArmPosition(Arm.CUBE_MID_DEG)),
 
     // change camera pipeline
-    new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(0)),
+    //new InstantCommand(() -> RobotContainer.limelight_med.setPipeline(2)),
 
     // delay until camera pipeline changed
     new DelayCommand(0.05),
 
-    // move to drop off cone
-    new DriveToConeDropOff(0),
+    // move to drop off cube
+    new DriveToCubeDropOff(3),
     
-    // delay for gripper to open
-    new DelayCommand(0.10),
+    // delay to stabilize robot before opening gripper
+    new DelayCommand(0.15),
 
     //wait for arm to be at destination
-    new AutoWaitArmToBeAtDestination(Arm.HIGH_DEG),
+    new AutoWaitArmToBeAtDestination(RobotContainer.arm.CUBE_MID_DEG),
 
     // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     
-    // delay for gripper to open
+    // delay for gripper to close
     new DelayCommand(0.40),
 
     // move arm to stow position
