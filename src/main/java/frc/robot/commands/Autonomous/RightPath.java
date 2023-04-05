@@ -29,19 +29,13 @@ public class RightPath extends SequentialCommandGroup {
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.HIGH_DEG)),
 
     // delay until arm gets back
-    new DelayCommand(2.0),
-
-    // open gripper
-    new InstantCommand(() -> RobotContainer.grabber.setOpen()),
-
-    // delay for gripper to open
-    new DelayCommand(0.5),
+    new DelayCommand(1.5),
     
-    // close gripper
+    // place cube
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
-    
+         
     // delay for gripper to close
-    new DelayCommand(0.40),
+    new DelayCommand(0.7),
 
     // move arm to stow position - 25deg  (aka 'forward position' but inside robot bumper)
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.STOW_DEG-25.0)),
