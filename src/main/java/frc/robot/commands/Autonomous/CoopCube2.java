@@ -13,7 +13,7 @@ import frc.robot.commands.DelayCommand;
 import frc.robot.commands.DrivetoRelativePose;
 import frc.robot.commands.SemiAutonomous.AutoBalance;
 import frc.robot.commands.SemiAutonomous.SemiAutoConeDropOffHigh;
-import frc.robot.commands.SemiAutonomous.SemiAutoFloorCubePickup;
+import frc.robot.commands.SemiAutonomous.AutoFloorCubePickup;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -56,7 +56,7 @@ public class CoopCube2 extends SequentialCommandGroup {
     new DrivetoRelativePose(new Pose2d(5.0, 0, new Rotation2d(0.0)),1.8,0.1, 7.0),
 
     // pick up cube from floor :)
-    new SemiAutoFloorCubePickup(),
+    new AutoFloorCubePickup(),
 
     // delay
     new DelayCommand(0.5),

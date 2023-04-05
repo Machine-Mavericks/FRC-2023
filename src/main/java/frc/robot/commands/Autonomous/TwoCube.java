@@ -12,7 +12,7 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 import frc.robot.commands.DrivetoRelativePose;
 import frc.robot.commands.SemiAutonomous.SemiAutoCubeDropOffMed;
-import frc.robot.commands.SemiAutonomous.SemiAutoFloorCubePickup;
+import frc.robot.commands.SemiAutonomous.AutoFloorCubePickup;
 
 
 public class TwoCube extends SequentialCommandGroup {
@@ -49,16 +49,16 @@ public class TwoCube extends SequentialCommandGroup {
     new SafetyCheckStowPosition(),
 
     // drive straight
-    new DrivetoRelativePose(new Pose2d(5.0, 0, new Rotation2d(0.0)),1.5,0.1, 7.0),
+    new DrivetoRelativePose(new Pose2d(4.7, 0, new Rotation2d(0.0)),1.8,0.1, 7.0),
 
     // pick up cube from floor :)
-    new SemiAutoFloorCubePickup(),
+    new AutoFloorCubePickup(),
 
     // delay
     new DelayCommand(0.5),
 
     // drive straight back
-    new DrivetoRelativePose(new Pose2d(-4.0, 0, new Rotation2d(0.0)),1.5,0.1, 7.0),
+    new DrivetoRelativePose(new Pose2d(-4.5, 0, new Rotation2d(0.0)),1.8,0.1, 7.0),
     
     // move arm back to drop off cube
     new SemiAutoCubeDropOffMed()

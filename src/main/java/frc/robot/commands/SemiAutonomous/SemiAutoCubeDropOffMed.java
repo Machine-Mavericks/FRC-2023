@@ -31,6 +31,9 @@ public class SemiAutoCubeDropOffMed extends SequentialCommandGroup {
     // delay to stabilize robot before opening gripper
     new DelayCommand(0.15),
 
+    //wait for arm to be at destination
+    new AutoWaitArmToBeAtDestination(RobotContainer.arm.CUBE_MID_DEG),
+
     // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     

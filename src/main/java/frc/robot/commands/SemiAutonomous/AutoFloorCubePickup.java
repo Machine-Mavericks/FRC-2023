@@ -9,9 +9,9 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.DelayCommand;
 
 
-public class SemiAutoFloorCubePickup extends SequentialCommandGroup {
+public class AutoFloorCubePickup extends SequentialCommandGroup {
   /** Creates a new SemiAutoFloorCubePickup. */
-  public SemiAutoFloorCubePickup() {
+  public AutoFloorCubePickup() {
     // Add your commands in the addCommands()
     addCommands(
 
@@ -26,7 +26,7 @@ public class SemiAutoFloorCubePickup extends SequentialCommandGroup {
     new InstantCommand(() -> RobotContainer.grabber.setOpen()),
 
     // drive to cube
-    new DriveToCubeFloorPickup(false, 0.0),
+    new DriveToCubeFloorPickup(true, 1.5),
 
     // set arm position to pickup
     new InstantCommand(() -> RobotContainer.arm.SetArmPosition(RobotContainer.arm.PICKUP_DEG)),

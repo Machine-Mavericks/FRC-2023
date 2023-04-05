@@ -112,7 +112,7 @@ public class Limelight extends SubsystemBase {
     public void periodic() {
       // update shuffleboard - update at 5Hz is sufficient for this subsystem
       m_UpdateTimer++;
-      if (m_UpdateTimer>=10)
+      if (m_UpdateTimer>=15)
       {
         updateShuffleboard();
         m_UpdateTimer=0;

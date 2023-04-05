@@ -20,7 +20,8 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
+import java.util.Map;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 
 public class Arm extends SubsystemBase {
 //public class Arm extends ProfiledPIDSubsystem {
@@ -60,6 +61,8 @@ public class Arm extends SubsystemBase {
   private GenericEntry m_ArmEnabledFB;
   private GenericEntry m_ArmForwardLimit;
   private GenericEntry m_ArmReverseLimit;
+  
+  private GenericEntry m_PickupPosAdjust;
 
   
   // Arm Position in degrees for the end arm section relative to the mid arm section
@@ -78,12 +81,12 @@ public class Arm extends SubsystemBase {
   static final double MAX_MID_ARM_POS_DEG = 262;
 
   public static final double PICKUP_DEG = 110.0;
-  public static final double STOW_DEG = 145;
+  public static final double STOW_DEG = 152;  // was 144
   public static final double MID_DEG = 212.2;
   public static final double PICKUP_SHELF_DEG = 213.0;
   public static final double HIGH_DEG = 255; // was 252
-  public static final double CUBE_MID_DEG = 212.0; 
-  public static final double CUBE_HIGH_DEG = 235.0; // was 247.0
+  public static final double CUBE_MID_DEG = 209.0; 
+  public static final double CUBE_HIGH_DEG = 244.0; // was 247.0
 
 
   // Arm Cancoder position offset - The angle of the cancoder reported value when the arm is pointing straight down.
@@ -126,12 +129,12 @@ public class Arm extends SubsystemBase {
     m_ArmMotor.setNeutralMode(NeutralMode.Brake);
       
     // set steering motor closed loop control gains
-    m_ArmMotor.config_kP(0, 0.012, 0);  // was 0.015
-    m_ArmMotor.config_kI(0, 0.0001, 0);  // 0.0001?
-    m_ArmMotor.config_kD(0, 0.05, 0); // was 0.05
+    m_ArmMotor.config_kP(0, 0.012, 0);  // was 0.015  // was 0.012
+    m_ArmMotor.config_kI(0, 0.00005, 0);  // 0.0001?
+    m_ArmMotor.config_kD(0, 0.000, 0); // was 0.05
     
     // set integration zone and limiter - must haves for using integral gain!
-    m_ArmMotor.config_IntegralZone(0, 10.0*DEG_TO_ENCODERPULSE);
+    m_ArmMotor.config_IntegralZone(0, 20.0*DEG_TO_ENCODERPULSE);
     m_ArmMotor.configMaxIntegralAccumulator(0, 1000.0*DEG_TO_ENCODERPULSE);
 
     // set arm motor peak output and closed loop ramp rate
@@ -191,7 +194,7 @@ public void SetEnableArm(boolean Enable) {
 
     // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
     updateCounter+=1;
-    if (updateCounter>=10)
+    if (updateCounter>=15)
       { updateCounter=0;
         updateShuffleboard();
       }
@@ -273,6 +276,11 @@ private void GetArmPositions() {
 }
 
 
+// get arm pickup adjust in from shuffleboard
+public double GetArmPickupPosAdjust() {
+  return  m_PickupPosAdjust.getDouble(0.0);
+}
+
 // public void EnableFast(boolean enable)
 // {
 //   if (enable)
@@ -331,6 +339,15 @@ private void GetArmPositions() {
     m_ArmEnabledFB= l4.add("Arm Enabled", false).getEntry();
     m_ArmForwardLimit= l4.add("Forward Limit OK", false).getEntry();    
     m_ArmReverseLimit= l4.add("Reverse Limit OK", false).getEntry();
+  
+    m_PickupPosAdjust = Tab.addPersistent("Pickup Pos Adjust", 0.0)
+    .withPosition(6, 0)
+    .withSize(2, 1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", -4.0, "max", 2.0))
+    .getEntry();
+  
+  
   }
 
   /** Update subsystem shuffle board page with current values */

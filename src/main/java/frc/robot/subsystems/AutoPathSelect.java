@@ -91,7 +91,6 @@ public class AutoPathSelect extends SubsystemBase {
         m_autonomousPath.addOption("Left Path",1);
         m_autonomousPath.addOption("Right Path", 2);
         m_autonomousPath.addOption("Two cubes",3);
-        m_autonomousPath.addOption("Coop Cube v2",4);
         m_autonomousPath.setDefaultOption("Co-op Cube Path", 0);
 
         tab.add("Preround Paths", m_autonomousPath).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 0).withSize(2,1);

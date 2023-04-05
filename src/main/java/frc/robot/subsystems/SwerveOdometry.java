@@ -73,6 +73,7 @@ public class SwerveOdometry extends SubsystemBase {
   }
 
   /** Update current robot dometry - called by scheduler at 50Hz */
+  private int updateCounter=3;
   @Override
   public void periodic() {
 
@@ -82,9 +83,12 @@ public class SwerveOdometry extends SubsystemBase {
     // update odometry
     m_odometry.update(gyroangle, RobotContainer.swervedrive.GetSwerveDistances());
     
-    
-    // update odemetry shuffleboard page
-    updateShuffleboard();
+    // update odemetry shuffleboard page at reduced rate to save cpu cycles
+    updateCounter+=1;
+    if (updateCounter>=10)
+    { updateCounter=0; updateShuffleboard(); }
+    else if (updateCounter<0)
+      updateCounter=0;
   }
 
   // -------------------- Robot Current Odometry Access Methods --------------------

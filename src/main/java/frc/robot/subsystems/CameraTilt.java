@@ -26,7 +26,7 @@ public class CameraTilt extends SubsystemBase {
 
   // predefined camera tilt angles
   public static final double TILT_SHELFPICKUP_POS = 0.61;
-  public static final double TILT_FLOORPICKUP_POS = 0.20;
+  public static final double TILT_FLOORPICKUP_POS = 0.14;
 
 
   /** Creates a new CameraTilt. */

@@ -100,7 +100,7 @@ public class RobotContainer {
     OI.OperatorButtons.mid_Button.onTrue(new SetArmPosition(Arm.MID_DEG));
     OI.OperatorButtons.high_Button.onTrue(new SetArmPosition(Arm.HIGH_DEG));
     OI.OperatorButtons.stow_Button.onTrue(new SetArmPosition(Arm.STOW_DEG));
-    OI.OperatorButtons.shelf_pickup_Button.onTrue(new SetArmPosition(Arm.PICKUP_SHELF_DEG));
+    OI.OperatorButtons.shelf_pickup_Button.onTrue(new SetArmPosition(Arm.PICKUP_SHELF_DEG + arm.GetArmPickupPosAdjust()));
 
     // grabber open/close
     OI.OperatorButtons.GrabberButton.whileTrue(new InstantCommand(()-> grabber.setOpen()));
@@ -126,8 +126,6 @@ public class RobotContainer {
       return new RightPath();
     else if (index == 3)
       return new TwoCube();
-    else if (index == 4)
-      return new CoopCube2();
     else
       return null;
   }

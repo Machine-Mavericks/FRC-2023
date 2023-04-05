@@ -6,6 +6,7 @@ package frc.robot.commands.SemiAutonomous;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 
 public class DriveToCubeFloorPickup extends CommandBase {
   
@@ -25,10 +26,21 @@ public class DriveToCubeFloorPickup extends CommandBase {
   // current speed to move forward at
   private double xSpeed;
 
+  // function to prevent driving too far in autonomous
+  private boolean m_DelayEnable;
+  private double m_Delay;
+  private Timer m_Timer;
+
   /** Creates a new DriveToCubeFloorPickup. */
-  public DriveToCubeFloorPickup() {
+  public DriveToCubeFloorPickup(boolean DelayEnable, double delay) {
     // this command requires use of swervedrive subsystem
     addRequirements(RobotContainer.swervedrive);
+
+    m_DelayEnable = DelayEnable;
+    m_Delay = delay;
+
+    m_Timer = new Timer();
+  
   }
 
   // Called when the command is initially scheduled.
@@ -46,6 +58,11 @@ public class DriveToCubeFloorPickup extends CommandBase {
 
     // reset target x speed
     m_targetxSpeed = -1.0;
+
+    // restart timer
+    m_Timer.reset();
+    m_Timer.start();
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -101,6 +118,7 @@ public class DriveToCubeFloorPickup extends CommandBase {
   public boolean isFinished() {
     
     // finished when sensor distance is <= target from shuffleboard
-    return (RobotContainer.grabber.GetSensorDistance() >= RobotContainer.grabber.m_Volts.getDouble(2.25));
+    return (RobotContainer.grabber.GetSensorDistance() >= RobotContainer.grabber.m_Volts.getDouble(2.25) ||
+    (m_DelayEnable && m_Timer.hasElapsed(m_Delay) ));
   }
 }

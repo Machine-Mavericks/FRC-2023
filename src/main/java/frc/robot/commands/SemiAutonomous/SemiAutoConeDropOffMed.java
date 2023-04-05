@@ -32,6 +32,9 @@ public class SemiAutoConeDropOffMed extends SequentialCommandGroup {
 // delay for gripper to open
 new DelayCommand(0.10),
 
+//wait for arm to be at destination
+new AutoWaitArmToBeAtDestination(Arm.MID_DEG),
+
     // open gripper - NEED TO CORRECT as open/close is backwards! - TBD
     new InstantCommand(() -> RobotContainer.grabber.setClose()),
     

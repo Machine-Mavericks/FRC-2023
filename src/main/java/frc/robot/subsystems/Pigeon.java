@@ -37,7 +37,7 @@ public Pigeon() {
   public void periodic() {
     // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
     updateCounter+=1;
-    if (updateCounter>=10)
+    if (updateCounter>=20)
     { updateCounter=0; updateShuffleboard(); }
     else if (updateCounter<0)
       updateCounter=0;

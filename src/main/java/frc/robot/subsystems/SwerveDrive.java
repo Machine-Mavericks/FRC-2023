@@ -329,7 +329,7 @@ public class SwerveDrive extends SubsystemBase {
   @Override
   public void periodic() {
     
-    // update shuffle board values - update at reduced 5Hz rate to save CPU cycles
+    // update shuffle board values - update at reduced rate to save CPU cycles
     updateCounter+=1;
     if (updateCounter>=20)
     { updateCounter=0; updateShuffleboard(); }

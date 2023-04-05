@@ -61,7 +61,7 @@ public class Grabber extends SubsystemBase {
 
   // grabber motor speed (rpm)
   private double GrabberMotorSpeedLoad = 16000.0;
-  private double GrabberMotorSpeedDrop = 1700.0;
+  private double GrabberMotorSpeedDrop = 1900.0;  // was 1700
 
   // grabber motor current limit (amps) (must be integer value)
   private int GrabberMotorCurrentLimitStall = 8;
@@ -349,7 +349,7 @@ public class Grabber extends SubsystemBase {
     .withPosition(4, 2)
     .withSize(3, 1)
     .withWidget(BuiltInWidgets.kNumberSlider)
-    .withProperties(Map.of("min", 150, "max", 200.0))
+    .withProperties(Map.of("min", 0.0, "max", 200.0))
     .getEntry();
 
     // add sensor
